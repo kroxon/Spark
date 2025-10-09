@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "972554233199",
+    "project_id": "iskra-112",
+    "storage_bucket": "iskra-112.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972554233199:android:3bbb7b56c5666454eff49a",
+        "android_client_info": {
+          "package_name": "com.example.iskra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAZeHLLU1xVQqtjYtDjO8V0bvq4ys-Msk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

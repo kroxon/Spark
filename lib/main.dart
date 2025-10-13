@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart'; // Import do Firebase
-import 'firebase_options.dart'; // Import pliku konfiguracyjnego
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iskra/features/auth/auth_gate.dart';
+import 'firebase_options.dart';
 
-void main() async { // Zmieniamy funkcję na 'async'
-  // Upewniamy się, że Flutter jest gotowy
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Inicjujemy Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
-  runApp(const MyApp());
+
+  runApp(const ProviderScope(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,14 +23,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Iskra',
       theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Iskra połączona z Firebase!'),
-        ),
-      ),
+      home: const AuthGate(),
     );
   }
 }

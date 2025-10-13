@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:972554233199:android:3bbb7b56c5666454eff49a",
+        "mobilesdk_app_id": "1:972554233199:android:1fad01c15f209ddeeff49a",
         "android_client_info": {
-          "package_name": "com.example.iskra"
+          "package_name": "com.iskra.app112"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "972554233199-miqh7rnj9ll4oeqcs9lfnga296lv2iie.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iskra.app112",
+            "certificate_hash": "f31271b58f1452220189f2cbee3af0d0d3f6ad75"
+          }
+        },
+        {
+          "client_id": "972554233199-ic8sms5jafr7dspm5464kqjl52n71484.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCAZeHLLU1xVQqtjYtDjO8V0bvq4ys-Msk"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "972554233199-ic8sms5jafr7dspm5464kqjl52n71484.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "972554233199-qqp7kn5ubs1v6bk6koklqqljgthoeu6v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.iskra.app112"
+              }
+            }
+          ]
         }
       }
     }

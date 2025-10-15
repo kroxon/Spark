@@ -1,5 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:iskra/common_widgets/app_primary_button.dart';
+import 'package:iskra/common_widgets/app_text_field.dart';
+import 'package:iskra/core/theme/app_colors.dart';
+import 'package:iskra/core/theme/app_decorations.dart';
+import 'package:iskra/core/services/auth_email_localization.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -39,6 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final user = credential.user;
       if (user != null) {
         try {
+          await AuthEmailLocalization.ensurePolish();
           await user.sendEmailVerification();
         } on FirebaseAuthException catch (e) {
           _showMessage(_mapAuthError(e));
@@ -77,6 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
+          shape: AppDecorations.dialogShape(),
           title: const Text('Potwierdź adres e-mail'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -160,87 +167,94 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
         title: const Text('Rejestracja'),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 24),
-              Text(
-                'Dołącz do Iskry',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Podaj dane logowania, aby utworzyć konto.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 32),
-              Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'E-mail',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.email_outlined),
-                      ),
-                      validator: _validateEmail,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Hasło',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock_outline),
-                      ),
-                      validator: _validatePassword,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _repeatPasswordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Powtórz hasło',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock_reset),
-                      ),
-                      validator: _validateRepeatPassword,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _register,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 3,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.mainGradient),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 460),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+                  decoration: AppDecorations.elevatedSurface(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Dołącz do Iskry',
+                        textAlign: TextAlign.left,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
                         ),
-                      )
-                    : const Text('Utwórz konto'),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Podaj dane logowania, aby utworzyć konto.',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: Colors.black.withOpacity(0.72),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Form(
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          children: [
+                            AppTextField(
+                              label: 'E-mail',
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: _validateEmail,
+                              prefixIcon: Icons.email_outlined,
+                            ),
+                            const SizedBox(height: 20),
+                            AppTextField(
+                              label: 'Hasło',
+                              controller: _passwordController,
+                              obscureText: true,
+                              validator: _validatePassword,
+                              prefixIcon: Icons.lock_outline,
+                              autocorrect: false,
+                              enableSuggestions: false,
+                              enableObscureToggle: true,
+                            ),
+                            const SizedBox(height: 20),
+                            AppTextField(
+                              label: 'Powtórz hasło',
+                              controller: _repeatPasswordController,
+                              obscureText: true,
+                              validator: _validateRepeatPassword,
+                              prefixIcon: Icons.lock_reset,
+                              autocorrect: false,
+                              enableSuggestions: false,
+                              enableObscureToggle: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      AppPrimaryButton(
+                        label: 'Utwórz konto',
+                        onPressed: _register,
+                        isLoading: _isLoading,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ],
+            ),
           ),
         ),
       ),

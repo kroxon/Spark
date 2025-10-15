@@ -1,5 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:iskra/common_widgets/app_outlined_button.dart';
+import 'package:iskra/common_widgets/app_primary_button.dart';
+import 'package:iskra/core/services/auth_email_localization.dart';
+import 'package:iskra/core/theme/app_colors.dart';
+import 'package:iskra/core/theme/app_decorations.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -27,7 +32,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         _signOut();
       },
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: Colors.white,
           title: const Text('Potwierdź adres e-mail'),
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -36,67 +45,73 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             tooltip: 'Wróć do logowania',
           ),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 24),
-                Icon(
-                  Icons.mark_email_read_outlined,
-                  size: 80,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Na adres $email wysłaliśmy link weryfikacyjny.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Kliknij link w wiadomości, aby aktywować konto. Jeśli nie widzisz maila, sprawdź folder spam.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const Spacer(),
-                ElevatedButton(
-                  onPressed: _isChecking ? null : _checkStatus,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: _isChecking
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 3,
+        body: Container(
+          decoration: const BoxDecoration(gradient: AppColors.mainGradient),
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 460),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+                    decoration: AppDecorations.elevatedSurface(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 80,
+                          width: 80,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              colors: [AppColors.primary, AppColors.secondary],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
                           ),
-                        )
-                      : const Text('Sprawdź ponownie'),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton(
-                  onPressed: _isResending ? null : _resendEmail,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: const Icon(Icons.mark_email_read_outlined, color: Colors.white, size: 40),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Na adres $email wysłaliśmy link weryfikacyjny.',
+                          textAlign: TextAlign.left,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Kliknij link w wiadomości, aby aktywować konto. Jeśli nie widzisz maila, sprawdź folder spam.',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: Colors.black.withOpacity(0.72),
+                              ),
+                        ),
+                        const SizedBox(height: 32),
+                        AppPrimaryButton(
+                          label: 'Sprawdź ponownie',
+                          onPressed: _checkStatus,
+                          isLoading: _isChecking,
+                        ),
+                        const SizedBox(height: 16),
+                        AppOutlinedButton(
+                          label: 'Wyślij ponownie link',
+                          onPressed: _resendEmail,
+                          isLoading: _isResending,
+                          icon: const Icon(Icons.refresh, color: AppColors.secondary),
+                        ),
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: _signOut,
+                          style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                          child: const Text('Wyloguj się'),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: _isResending
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(strokeWidth: 3),
-                        )
-                      : const Text('Wyślij ponownie link'),
                 ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: _signOut,
-                  child: const Text('Wyloguj się'),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -148,6 +163,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     });
 
     try {
+      await AuthEmailLocalization.ensurePolish();
       await user.sendEmailVerification();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

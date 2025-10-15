@@ -1,8 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:iskra/features/auth/register_page.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:iskra/common_widgets/app_primary_button.dart';
+import 'package:iskra/common_widgets/app_text_field.dart';
+import 'package:iskra/common_widgets/google_sign_in_button.dart';
+import 'package:iskra/core/theme/app_colors.dart';
+import 'package:iskra/core/theme/app_decorations.dart';
+import 'package:iskra/core/services/auth_email_localization.dart';
+import 'package:iskra/features/auth/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -90,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
+      await AuthEmailLocalization.ensurePolish();
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -135,11 +143,14 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       debugPrint('FirebaseAuthException (Google sign-in): ${e.code} ${e.message}');
       _showSnack(_mapAuthError(e));
+    } on PlatformException catch (e, stack) {
+      debugPrint('PlatformException (Google sign-in): ${e.code} ${e.message}');
+      debugPrintStack(stackTrace: stack);
+      _showSnack(_mapGooglePlatformError(e));
     } catch (error, stack) {
       debugPrint('Nieudane logowanie Google: $error');
       debugPrintStack(stackTrace: stack);
-      final message = error is Exception ? error.toString() : 'Nie udało się zalogować przez Google. Spróbuj ponownie.';
-      _showSnack(message);
+      _showSnack(_mapUnknownGoogleError(error));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -186,6 +197,25 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  String _mapGooglePlatformError(PlatformException exception) {
+    switch (exception.code) {
+      case GoogleSignIn.kNetworkError:
+        return 'Nie udało się połączyć z Google. Sprawdź połączenie internetowe lub spróbuj ponownie za chwilę.';
+      case GoogleSignIn.kSignInCanceledError:
+        return 'Logowanie Google zostało anulowane.';
+      case GoogleSignIn.kSignInFailedError:
+        return 'Logowanie Google nie powiodło się. Spróbuj ponownie.';
+      case GoogleSignIn.kSignInRequiredError:
+        return 'Google wymaga ponownego logowania. Spróbuj ponownie.';
+      default:
+        return 'Wystąpił nieoczekiwany błąd podczas logowania Google. Spróbuj ponownie.';
+    }
+  }
+
+  String _mapUnknownGoogleError(Object error) {
+    return 'Nie udało się zalogować przez Google. Spróbuj ponownie.';
+  }
+
   Future<void> _handleUnverified(User user) async {
     final email = user.email ?? 'twój adres e-mail';
 
@@ -214,6 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: isSending
                       ? null
                       : () async {
+                          await AuthEmailLocalization.ensurePolish();
                           setState(() => isSending = true);
                           try {
                             await user.sendEmailVerification();
@@ -272,125 +303,136 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              // Tytuł
-              Text(
-                'Witaj w Iskrze',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Zaloguj się, aby kontynuować',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 48),
-
-              // Pole na e-mail
-              Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'E-mail',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.email_outlined),
-                      ),
-                      validator: _validateEmail,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Hasło',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock_outline),
-                      ),
-                      validator: _validatePassword,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _resetPassword,
-                  child: const Text('Nie pamiętasz hasła?'),
-                ),
-              ),
-
-              // Przycisk logowania
-              ElevatedButton(
-                onPressed: _isLoading ? null : _signIn,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 3,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.mainGradient),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+                  decoration: AppDecorations.elevatedSurface(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        height: 64,
+                        width: 64,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [AppColors.primary, AppColors.secondary],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
                         ),
-                      )
-                    : const Text('Zaloguj się'),
-              ),
-              const Spacer(),
-
-              Row(
-                children: [
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Text(
-                      'lub',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                        child: const Icon(Icons.flash_on, color: Colors.white, size: 30),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Witaj w Iskrze',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Zaloguj się, aby kontynuować',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: Colors.black.withOpacity(0.72),
+                        ),
+                      ),
+                      const SizedBox(height: 36),
+                      Form(
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          children: [
+                            AppTextField(
+                              label: 'E-mail',
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: _validateEmail,
+                              prefixIcon: Icons.email_outlined,
+                            ),
+                            const SizedBox(height: 18),
+                            AppTextField(
+                              label: 'Hasło',
+                              controller: _passwordController,
+                              obscureText: true,
+                              validator: _validatePassword,
+                              prefixIcon: Icons.lock_outline,
+                              autocorrect: false,
+                              enableSuggestions: false,
+                              enableObscureToggle: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _resetPassword,
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.secondary,
+                            textStyle: theme.textTheme.labelLarge,
+                          ),
+                          child: const Text('Nie pamiętasz hasła?'),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      AppPrimaryButton(
+                        label: 'Zaloguj się',
+                        onPressed: _signIn,
+                        isLoading: _isLoading,
+                      ),
+                      const SizedBox(height: 28),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: AppColors.primary.withOpacity(0.2))),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: Text(
+                              'lub',
+                              style: theme.textTheme.bodySmall?.copyWith(color: Colors.black54),
+                            ),
+                          ),
+                          Expanded(child: Divider(color: AppColors.primary.withOpacity(0.2))),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      GoogleSignInButton(
+                        onPressed: _signInWithGoogle,
+                        isLoading: _isLoading,
+                      ),
+                      const SizedBox(height: 28),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Nie masz konta?'),
+                          TextButton(
+                            onPressed: _navigateToRegister,
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                              textStyle: theme.textTheme.labelLarge,
+                            ),
+                            child: const Text('Zarejestruj się'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              OutlinedButton.icon(
-                onPressed: _isLoading ? null : _signInWithGoogle,
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                icon: const Icon(Icons.login, color: Colors.redAccent),
-                label: const Text('Kontynuuj z Google'),
               ),
-              const SizedBox(height: 24),
-
-              // Przycisk do przejścia na stronę rejestracji
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Nie masz konta?"),
-                  TextButton(
-              onPressed: _navigateToRegister,
-                    child: const Text("Zarejestruj się"),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -10,7 +10,6 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Ekran Główny'),
         actions: [
-          // Przycisk do wylogowania
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {

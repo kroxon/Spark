@@ -4,7 +4,6 @@ import 'package:iskra/common_widgets/app_primary_button.dart';
 import 'package:iskra/common_widgets/app_text_field.dart';
 import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_decorations.dart';
-import 'package:iskra/core/services/auth_email_localization.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -44,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final user = credential.user;
       if (user != null) {
         try {
-          await AuthEmailLocalization.ensurePolish();
+          await FirebaseAuth.instance.setLanguageCode('pl');
           await user.sendEmailVerification();
         } on FirebaseAuthException catch (e) {
           _showMessage(_mapAuthError(e));

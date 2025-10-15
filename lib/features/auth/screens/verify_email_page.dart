@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iskra/common_widgets/app_outlined_button.dart';
 import 'package:iskra/common_widgets/app_primary_button.dart';
-import 'package:iskra/core/services/auth_email_localization.dart';
 import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_decorations.dart';
 
@@ -163,7 +162,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     });
 
     try {
-      await AuthEmailLocalization.ensurePolish();
+      await FirebaseAuth.instance.setLanguageCode('pl');
       await user.sendEmailVerification();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

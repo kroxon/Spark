@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:iskra/features/auth/login_page.dart';
-import 'package:iskra/features/auth/verify_email_page.dart';
+import 'package:iskra/features/auth/screens/login_page.dart';
+import 'package:iskra/features/auth/screens/verify_email_page.dart';
 import 'package:iskra/features/home/home_page.dart';
 
 class AuthGate extends StatelessWidget {
@@ -12,7 +12,6 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.userChanges(),
       builder: (context, snapshot) {
-        // Jeśli snapshot wciąż ładuje dane, pokaż kółko ładowania
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(

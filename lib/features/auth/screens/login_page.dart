@@ -8,8 +8,7 @@ import 'package:iskra/common_widgets/app_text_field.dart';
 import 'package:iskra/common_widgets/google_sign_in_button.dart';
 import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_decorations.dart';
-import 'package:iskra/core/services/auth_email_localization.dart';
-import 'package:iskra/features/auth/register_page.dart';
+import 'package:iskra/features/auth/screens/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,14 +19,10 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  // Kontrolery do odczytywania tekstu z pól
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // Zmienna do pokazywania kółka ładowania
   bool _isLoading = false;
 
-  // Funkcja logowania
   Future<void> _signIn() async {
     if (_isLoading) return;
 
@@ -44,7 +39,6 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      // Logowanie za pomocą Firebase Auth
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -57,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
     } on FirebaseAuthException catch (e) {
-      // Wyświetlanie błędu, jeśli logowanie się nie powiedzie
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -67,7 +60,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } finally {
-      // Zawsze wyłączaj kółko ładowania na koniec
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -97,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      await AuthEmailLocalization.ensurePolish();
+      await FirebaseAuth.instance.setLanguageCode('pl');
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -244,9 +236,9 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: isSending
                       ? null
                       : () async {
-                          await AuthEmailLocalization.ensurePolish();
                           setState(() => isSending = true);
                           try {
+                            await FirebaseAuth.instance.setLanguageCode('pl');
                             await user.sendEmailVerification();
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(

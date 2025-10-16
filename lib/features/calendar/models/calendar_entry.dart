@@ -38,4 +38,24 @@ class CalendarEntry {
     this.notes,
     this.customDetails,
   });
+
+  CalendarEntry copyWith({
+    String? id,
+    DateTime? date,
+    EntryType? entryType,
+    bool? isScheduledDay,
+    double? hours,
+    String? notes,
+    CustomAbsenceDetails? customDetails,
+  }) {
+    return CalendarEntry(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      entryType: entryType ?? this.entryType,
+      isScheduledDay: isScheduledDay ?? this.isScheduledDay,
+      hours: hours ?? this.hours,
+      notes: notes ?? this.notes,
+      customDetails: customDetails ?? this.customDetails,
+    );
+  }
 }

@@ -24,7 +24,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
           return;
         }
@@ -84,7 +84,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         Text(
                           'Kliknij link w wiadomości, aby aktywować konto. Jeśli nie widzisz maila, sprawdź folder spam.',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Colors.black.withOpacity(0.72),
+                                color: Colors.black.withValues(alpha: 0.72),
                               ),
                         ),
                         const SizedBox(height: 32),

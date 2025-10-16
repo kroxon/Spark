@@ -1,19 +1,50 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:iskra/features/auth/models/user_profile.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iskra/features/auth/data/user_profile_repository.dart';
+import 'package:iskra/features/auth/domain/models/user_profile.dart';
+import 'package:iskra/features/calendar/data/calendar_entry_repository.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
+import 'package:iskra/features/calendar/widgets/day_detail_dialog.dart';
 import 'package:iskra/features/calendar/widgets/shift_month_calendar.dart';
+import 'package:iskra/features/home/application/home_controller.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  late final ShiftCycleCalculator _cycle;
+
+  @override
+  void initState() {
+    super.initState();
+    _cycle = ShiftCycleCalculator();
+  }
+
+  void _handleMonthChanged(DateTime month) {
+    ref.read(homeControllerProvider.notifier).setVisibleMonth(month);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final cycle = ShiftCycleCalculator();
-    final profile = _sampleProfile();
-    final entries = _sampleEntries(cycle, profile);
-    final now = DateTime.now();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+
+    final homeState = ref.watch(homeControllerProvider);
+    final visibleMonth = homeState.visibleMonth;
+
+    final profileAsync = ref.watch(
+      userProfileProvider(
+        UserProfileRequest(uid: user.uid, email: user.email),
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -27,123 +58,178 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: profileAsync.when(
+        data: (profile) => _buildCalendarView(
+          context,
+          user,
+          profile,
+          visibleMonth,
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => _ErrorView(
+          message: 'Nie udało się załadować profilu użytkownika.',
+          detailed: error.toString(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCalendarView(
+    BuildContext context,
+    User user,
+    UserProfile profile,
+    DateTime visibleMonth,
+  ) {
+    final entriesAsync = ref.watch(
+      calendarEntriesStreamProvider(
+        CalendarEntriesRequest(userId: user.uid, month: visibleMonth),
+      ),
+    );
+
+    return entriesAsync.when(
+      data: (entries) => _CalendarContent(
+        month: visibleMonth,
+        profile: profile,
+        entries: entries,
+        cycle: _cycle,
+        onMonthChanged: _handleMonthChanged,
+        onDayTap: (day) => _openDayDialog(context, user, profile, entries, day),
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _ErrorView(
+        message: 'Nie udało się załadować wpisów z Firestore.',
+        detailed: error.toString(),
+      ),
+    );
+  }
+
+  void _openDayDialog(
+    BuildContext context,
+    User user,
+    UserProfile profile,
+    List<CalendarEntry> entries,
+    DateTime selectedDay,
+  ) {
+    DayDetailDialog.show(
+      context: context,
+      day: selectedDay,
+      userProfile: profile,
+      shiftCycleCalculator: _cycle,
+      allEntries: entries,
+    ).then((note) async {
+      final trimmed = note?.trim();
+      if (trimmed == null) {
+        return;
+      }
+
+      final controller = ref.read(homeControllerProvider.notifier);
+      try {
+        await controller.saveDayNote(
+          userId: user.uid,
+          day: selectedDay,
+          note: trimmed,
+        );
+        if (!context.mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Notatka zapisana.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } catch (error) {
+        if (!context.mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Nie udało się zapisać notatki: $error'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    });
+  }
+}
+
+class _CalendarContent extends StatelessWidget {
+  const _CalendarContent({
+    required this.month,
+    required this.profile,
+    required this.entries,
+    required this.cycle,
+    required this.onMonthChanged,
+    required this.onDayTap,
+  });
+
+  final DateTime month;
+  final UserProfile profile;
+  final List<CalendarEntry> entries;
+  final ShiftCycleCalculator cycle;
+  final ValueChanged<DateTime> onMonthChanged;
+  final ValueChanged<DateTime> onDayTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Zalogowano! Witaj w Iskrze!',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 24),
+          Card(
+            elevation: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: ShiftMonthCalendar(
+                initialMonth: month,
+                userProfile: profile,
+                entries: entries,
+                shiftCycleCalculator: cycle,
+                onDaySelected: onDayTap,
+                onMonthChanged: onMonthChanged,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.message, required this.detailed});
+
+  final String message;
+  final String detailed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Zalogowano! Witaj w Iskrze!',
+              message,
               style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
-            Card(
-              elevation: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: ShiftMonthCalendar(
-                  initialMonth: DateTime(now.year, now.month),
-                  userProfile: profile,
-                  entries: entries,
-                  shiftCycleCalculator: cycle,
-                  onDaySelected: (selectedDay) {
-                    // TODO(pk): Hook up to detail view once implemented.
-                  },
-                ),
-              ),
+            const SizedBox(height: 12),
+            Text(
+              detailed,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
             ),
           ],
         ),
       ),
     );
   }
-}
-
-UserProfile _sampleProfile() {
-  return UserProfile(
-    uid: 'demo-user',
-    email: 'demo@iskra.app',
-    subscriptionPlan: 'free',
-    shiftHistory: [
-      ShiftAssignment(
-        shiftId: 2,
-        startDate: DateTime(2024, 1, 1),
-      ),
-    ],
-    standardVacationHours: 208,
-    additionalVacationHours: 104,
-  );
-}
-
-List<CalendarEntry> _sampleEntries(ShiftCycleCalculator cycle, UserProfile profile) {
-  final sortedHistory = List<ShiftAssignment>.from(profile.shiftHistory)
-    ..sort((a, b) => a.startDate.compareTo(b.startDate));
-  final today = DateUtils.dateOnly(DateTime.now());
-  final currentMonth = DateTime(today.year, today.month, 1);
-  final monthEnd = DateTime(currentMonth.year, currentMonth.month + 1, 0);
-
-  final dutyDays = <DateTime>[];
-  for (DateTime day = currentMonth;
-      !day.isAfter(monthEnd);
-      day = day.add(const Duration(days: 1))) {
-    if (cycle.isScheduledDayForUser(day, sortedHistory)) {
-      dutyDays.add(day);
-    }
-  }
-
-  if (dutyDays.isEmpty) {
-    return const <CalendarEntry>[];
-  }
-
-  final sampleEntries = <CalendarEntry>[];
-  final skipIndices = <int>{1, 4, 7};
-
-  for (var i = 0; i < dutyDays.length; i++) {
-    final day = dutyDays[i];
-    if (skipIndices.contains(i)) {
-      sampleEntries.add(
-        CalendarEntry(
-          id: _entryId(day),
-          date: day,
-          entryType: EntryType.dayOff,
-          isScheduledDay: true,
-          notes: 'Zmiana odpuszczona wg grafiku',
-        ),
-      );
-    }
-  }
-
-  final vacationDay = dutyDays.elementAt(dutyDays.length > 3 ? 3 : 0);
-  sampleEntries.add(
-    CalendarEntry(
-      id: _entryId(vacationDay),
-      date: vacationDay,
-      entryType: EntryType.vacationStandard,
-      isScheduledDay: true,
-      notes: 'Urlop etatowy',
-    ),
-  );
-
-  final customDay = currentMonth.add(const Duration(days: 5));
-  sampleEntries.add(
-    CalendarEntry(
-      id: _entryId(customDay),
-      date: customDay,
-      entryType: EntryType.custom,
-      isScheduledDay: false,
-      customDetails: CustomAbsenceDetails(
-        name: 'Szkolenie',
-        payoutPercentage: 100,
-      ),
-    ),
-  );
-
-  return sampleEntries;
-}
-
-String _entryId(DateTime date) {
-  final normalized = DateUtils.dateOnly(date);
-  final month = normalized.month.toString().padLeft(2, '0');
-  final day = normalized.day.toString().padLeft(2, '0');
-  return '${normalized.year}-$month-$day';
 }

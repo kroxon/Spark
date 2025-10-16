@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:iskra/features/auth/models/user_profile.dart';
+import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
 

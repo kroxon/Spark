@@ -94,7 +94,7 @@ class _AppTextFieldState extends State<AppTextField> {
       labelStyle: theme.textTheme.bodyMedium?.copyWith(color: Colors.black87),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.primary.withOpacity(0.18)),
+        borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.18)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),

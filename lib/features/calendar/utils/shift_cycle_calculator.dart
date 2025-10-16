@@ -1,4 +1,4 @@
-import 'package:iskra/features/auth/models/user_profile.dart';
+import 'package:iskra/features/auth/domain/models/user_profile.dart';
 
 DateTime _dateOnly(DateTime value) => DateTime(value.year, value.month, value.day);
 

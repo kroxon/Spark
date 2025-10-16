@@ -21,10 +21,10 @@ class AppOutlinedButton extends StatelessWidget {
     final effectiveOnPressed = isLoading ? null : onPressed;
     final style = OutlinedButton.styleFrom(
       foregroundColor: AppColors.primary,
-      side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+      side: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: Colors.white.withOpacity(0.85),
+      backgroundColor: Colors.white.withValues(alpha: 0.85),
     );
 
     final Widget labelWidget = isLoading

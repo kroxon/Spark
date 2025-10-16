@@ -8,7 +8,7 @@ import 'package:iskra/common_widgets/app_text_field.dart';
 import 'package:iskra/common_widgets/google_sign_in_button.dart';
 import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_decorations.dart';
-import 'package:iskra/features/auth/screens/register_page.dart';
+import 'package:iskra/features/auth/presentation/pages/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -338,7 +338,7 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         'Zaloguj się, aby kontynuować',
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          color: Colors.black.withOpacity(0.72),
+                          color: Colors.black.withValues(alpha: 0.72),
                         ),
                       ),
                       const SizedBox(height: 36),
@@ -389,7 +389,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 28),
                       Row(
                         children: [
-                          Expanded(child: Divider(color: AppColors.primary.withOpacity(0.2))),
+                          Expanded(child: Divider(color: AppColors.primary.withValues(alpha: 0.2))),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: Text(
@@ -397,24 +397,28 @@ class _LoginPageState extends State<LoginPage> {
                               style: theme.textTheme.bodySmall?.copyWith(color: Colors.black54),
                             ),
                           ),
-                          Expanded(child: Divider(color: AppColors.primary.withOpacity(0.2))),
+                          Expanded(child: Divider(color: AppColors.primary.withValues(alpha: 0.2))),
                         ],
                       ),
                       const SizedBox(height: 18),
                       GoogleSignInButton(
+                        label: 'Kontynuuj z Google',
                         onPressed: _signInWithGoogle,
                         isLoading: _isLoading,
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Nie masz konta?'),
+                          Text(
+                            'Nie masz konta?',
+                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black.withValues(alpha: 0.7)),
+                          ),
                           TextButton(
                             onPressed: _navigateToRegister,
                             style: TextButton.styleFrom(
-                              foregroundColor: AppColors.primary,
-                              textStyle: theme.textTheme.labelLarge,
+                              foregroundColor: AppColors.secondary,
+                              textStyle: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             child: const Text('Zarejestruj się'),
                           ),

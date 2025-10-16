@@ -202,7 +202,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       Text(
                         'Podaj dane logowania, aby utworzyć konto.',
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          color: Colors.black.withOpacity(0.72),
+                          color: Colors.black.withValues(alpha: 0.72),
                         ),
                       ),
                       const SizedBox(height: 32),

@@ -7,11 +7,11 @@ class AppDecorations {
 
   static BoxDecoration elevatedSurface({double radius = 28}) {
     return BoxDecoration(
-      color: AppColors.surface.withOpacity(0.96),
+      color: AppColors.surface.withValues(alpha: 0.96),
       borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.12),
+          color: Colors.black.withValues(alpha: 0.12),
           blurRadius: 32,
           offset: const Offset(0, 18),
         ),

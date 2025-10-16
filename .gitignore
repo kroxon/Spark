@@ -60,3 +60,6 @@ windows/runner/GoogleService-Info.json
 
 # Plik z lokalnymi właściwościami dla Androida (np. klucz do Google Maps)
 /android/local.properties
+
+# Project context file
+CONTEXT.md

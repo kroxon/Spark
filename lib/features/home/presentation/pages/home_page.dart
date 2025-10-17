@@ -46,30 +46,17 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ekran Główny'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-            },
-          ),
-        ],
+    return profileAsync.when(
+      data: (profile) => _buildCalendarView(
+        context,
+        user,
+        profile,
+        visibleMonth,
       ),
-      body: profileAsync.when(
-        data: (profile) => _buildCalendarView(
-          context,
-          user,
-          profile,
-          visibleMonth,
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => _ErrorView(
-          message: 'Nie udało się załadować profilu użytkownika.',
-          detailed: error.toString(),
-        ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _ErrorView(
+        message: 'Nie udało się załadować profilu użytkownika.',
+        detailed: error.toString(),
       ),
     );
   }
@@ -172,32 +159,32 @@ class _CalendarContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Zalogowano! Witaj w Iskrze!',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 24),
-          Card(
-            elevation: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: ShiftMonthCalendar(
-                initialMonth: month,
-                userProfile: profile,
-                entries: entries,
-                shiftCycleCalculator: cycle,
-                onDaySelected: onDayTap,
-                onMonthChanged: onMonthChanged,
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 24);
+        double cardHeight;
+        if (constraints.maxHeight.isFinite && constraints.maxHeight > padding.vertical) {
+          cardHeight = constraints.maxHeight - padding.vertical;
+        } else {
+          final media = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.vertical - padding.vertical;
+          cardHeight = media.isFinite && media > 0 ? media : 600;
+        }
+
+        return Padding(
+          padding: padding,
+          child: SizedBox(
+            height: cardHeight,
+            child: ShiftMonthCalendar(
+              initialMonth: month,
+              userProfile: profile,
+              entries: entries,
+              shiftCycleCalculator: cycle,
+              onDaySelected: onDayTap,
+              onMonthChanged: onMonthChanged,
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -210,6 +197,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -218,13 +207,13 @@ class _ErrorView extends StatelessWidget {
           children: [
             Text(
               message,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: theme.textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               detailed,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: theme.textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
           ],

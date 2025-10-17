@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iskra/common_widgets/app_primary_button.dart';
 import 'package:iskra/common_widgets/app_text_field.dart';
 import 'package:iskra/core/theme/app_colors.dart';
@@ -54,7 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
       await FirebaseAuth.instance.signOut();
 
       if (mounted) {
-        Navigator.of(context).pop(true);
+        context.pop(true);
       }
     } on FirebaseAuthException catch (e) {
       _showMessage(_mapAuthError(e));

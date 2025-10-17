@@ -2,13 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:iskra/common_widgets/app_primary_button.dart';
 import 'package:iskra/common_widgets/app_text_field.dart';
 import 'package:iskra/common_widgets/google_sign_in_button.dart';
+import 'package:iskra/core/navigation/routes.dart';
 import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_decorations.dart';
-import 'package:iskra/features/auth/presentation/pages/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -71,9 +72,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _navigateToRegister() async {
     if (_isLoading) return;
 
-    await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (context) => const RegisterPage()),
-    );
+    if (!mounted) return;
+    await context.pushNamed(AppRouteName.authRegister);
   }
 
   Future<void> _resetPassword() async {
@@ -119,7 +119,11 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      final googleSignIn = GoogleSignIn();
+      final googleSignIn = GoogleSignIn(
+        scopes: const ['email'],
+        forceCodeForRefreshToken: true,
+      );
+      await googleSignIn.signOut();
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         return;

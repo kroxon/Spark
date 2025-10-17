@@ -29,11 +29,9 @@ class ShiftMonthCalendar extends StatefulWidget {
 }
 
 class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
-  static const double _tileHeight = 96;
   late DateTime _visibleMonth;
   late List<ShiftAssignment> _sortedShiftHistory;
   late Map<DateTime, List<CalendarEntry>> _entriesByDate;
-  DateTime? _selectedDay;
 
   @override
   void initState() {
@@ -78,9 +76,9 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
 
   @override
   Widget build(BuildContext context) {
-  final theme = Theme.of(context);
-  final headerLabel = _polishMonthLabel(_visibleMonth);
-  final weekdayLabels = _polishWeekdayLabels();
+    final theme = Theme.of(context);
+    final headerLabel = _polishMonthLabel(_visibleMonth);
+    final weekdayLabels = _polishWeekdayLabels();
     final days = _daysInVisibleMonth();
 
     return Column(
@@ -133,18 +131,26 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
           ),
         ),
         const SizedBox(height: 4),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final cellWidth = constraints.maxWidth / 7;
-            final columnWidths = <int, TableColumnWidth>{
-              for (var i = 0; i < 7; i++) i: FixedColumnWidth(cellWidth),
-            };
-            return Table(
-              columnWidths: columnWidths,
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: _buildRows(days, theme, cellWidth),
-            );
-          },
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final rowCount = (days.length / 7).ceil();
+              final cellWidth = constraints.maxWidth / 7;
+              final cellHeight = constraints.maxHeight.isFinite && constraints.maxHeight > 0
+                  ? constraints.maxHeight / rowCount
+                  : 96.0;
+              final columnWidths = <int, TableColumnWidth>{
+                for (var i = 0; i < 7; i++) i: FixedColumnWidth(cellWidth),
+              };
+              return SizedBox.expand(
+                child: Table(
+                  columnWidths: columnWidths,
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: _buildRows(days, theme, cellWidth, cellHeight),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -189,24 +195,23 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     return '$monthName ${month.year}';
   }
 
-  List<TableRow> _buildRows(List<DateTime> days, ThemeData theme, double cellWidth) {
+  List<TableRow> _buildRows(List<DateTime> days, ThemeData theme, double cellWidth, double cellHeight) {
     final rows = <TableRow>[];
     for (var i = 0; i < days.length; i += 7) {
       final week = days.sublist(i, i + 7);
       rows.add(
         TableRow(
-          children: week.map((day) => _buildCell(day, theme, cellWidth)).toList(),
+          children: week.map((day) => _buildCell(day, theme, cellWidth, cellHeight)).toList(),
         ),
       );
     }
     return rows;
   }
 
-  Widget _buildCell(DateTime day, ThemeData theme, double cellWidth) {
+  Widget _buildCell(DateTime day, ThemeData theme, double cellWidth, double cellHeight) {
     final colors = theme.colorScheme;
     final dateOnly = DateUtils.dateOnly(day);
     final isCurrentMonth = dateOnly.year == _visibleMonth.year && dateOnly.month == _visibleMonth.month;
-    final isSelected = _selectedDay != null && DateUtils.isSameDay(_selectedDay, dateOnly);
     final isToday = DateUtils.isSameDay(DateTime.now(), dateOnly);
     final onDuty = widget.shiftCycleCalculator.isScheduledDayForUser(dateOnly, _sortedShiftHistory);
     final shiftOnDuty = widget.shiftCycleCalculator.shiftOn(dateOnly);
@@ -246,13 +251,12 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     } else {
       textColor = colors.onSurfaceVariant.withValues(alpha: 0.55);
     }
-    final shadowColor = isSelected ? colors.primary.withValues(alpha: 0.2) : Colors.transparent;
     final overlayTextColor = _contrastingTextColor(dutyColor, colors);
-    final overlayHeight = _tileHeight * 0.3;
+    final overlayHeight = cellHeight * 0.3;
 
     return SizedBox(
       width: cellWidth,
-      height: _tileHeight,
+      height: cellHeight,
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: InkWell(
@@ -263,15 +267,7 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
               color: backgroundColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderColor, width: borderWidth),
-              boxShadow: shadowColor == Colors.transparent
-                  ? null
-                  : [
-                      BoxShadow(
-                        color: shadowColor,
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                      ),
-                    ],
+              boxShadow: null,
             ),
             padding: EdgeInsets.zero,
             child: ClipRRect(
@@ -339,9 +335,6 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
   }
 
   void _handleDayTap(DateTime day) {
-    setState(() {
-      _selectedDay = day;
-    });
     widget.onDaySelected?.call(day);
   }
 

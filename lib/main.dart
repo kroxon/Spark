@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/core/navigation/app_router.dart';
 import 'package:iskra/core/theme/app_theme.dart';
+import 'package:iskra/core/theme/theme_mode_controller.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -25,10 +26,13 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'Iskra',
       theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: themeMode,
       locale: const Locale('pl', 'PL'),
       supportedLocales: const [
         Locale('pl', 'PL'),

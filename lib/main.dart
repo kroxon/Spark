@@ -14,7 +14,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseFirestore.setLoggingEnabled(true);
+  FirebaseFirestore.setLoggingEnabled(true); // for debugging purposes
   Intl.defaultLocale = 'pl_PL';
 
   runApp(const ProviderScope(

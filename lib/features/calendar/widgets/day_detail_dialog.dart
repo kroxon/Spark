@@ -215,14 +215,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
           final entry = widget.entries[index];
           final label = _entryTypeLabel(entry);
           final note = entry.notes?.trim();
-          final info = <String>[];
-          if (entry.hours != null) {
-            final hours = entry.hours!;
-            info.add(hours == hours.roundToDouble() ? '${hours.toInt()} h' : '${hours.toStringAsFixed(1)} h');
-          }
-          if (entry.isScheduledDay) {
-            info.add('Dzień obowiązkowy');
-          }
+          final info = _entryInfoLines(entry);
 
           return ListTile(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -266,10 +259,12 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
 
   String _entryTypeLabel(CalendarEntry entry) {
     switch (entry.entryType) {
-      case EntryType.dayOff:
-        return 'Zaplanowana nieobecność';
-      case EntryType.overtime:
-        return 'Nadgodziny';
+      case EntryType.scheduledService:
+        return 'Zaplanowana służba';
+      case EntryType.vacationStandard:
+        return 'Urlop wypoczynkowy';
+      case EntryType.vacationAdditional:
+        return 'Urlop dodatkowy';
       case EntryType.sickLeave80:
         return 'Zwolnienie lekarskie 80%';
       case EntryType.sickLeave100:
@@ -278,12 +273,78 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
         return 'Delegacja';
       case EntryType.bloodDonation:
         return 'Oddanie krwi';
-      case EntryType.vacationStandard:
-        return 'Urlop wypoczynkowy';
-      case EntryType.vacationAdditional:
-        return 'Urlop dodatkowy';
+      case EntryType.dayOff:
+        return 'Dzień wolny za służbę';
       case EntryType.custom:
         return entry.customDetails?.name ?? 'Zdarzenie niestandardowe';
+      case EntryType.worked:
+        return 'Przepracowana służba';
+      case EntryType.overtimeOffDay:
+        return 'Praca w dniu wolnym';
     }
+  }
+
+  List<String> _entryInfoLines(CalendarEntry entry) {
+    final info = <String>[];
+
+    if (entry.scheduledHours > 0) {
+      info.add('Plan: ${_formatHours(entry.scheduledHours)}');
+    }
+
+    if (entry.actualHours != null && entry.actualHours! >= 0) {
+      info.add('Rzeczywiste: ${_formatHours(entry.actualHours!)}');
+    }
+
+    if (entry.vacationHoursDeducted != null && entry.vacationHoursDeducted! > 0) {
+      info.add('Urlop: ${_formatHours(entry.vacationHoursDeducted!)}');
+    }
+
+    final base = entry.baseHoursWorked;
+    final showBase = base > 0 &&
+        !(entry.entryType == EntryType.scheduledService && base == entry.scheduledHours);
+    if (showBase) {
+      info.add('Norma: ${_formatHours(base)}');
+    }
+
+    final overtime = entry.overtimeHours;
+    if (overtime > 0) {
+      info.add('Nadgodziny: ${_formatHours(overtime)}');
+    }
+
+    final undertime = entry.undertimeHours;
+    if (undertime > 0) {
+      info.add('Niewyrobione: ${_formatHours(undertime)}');
+    }
+
+    if (_replacesSchedule(entry)) {
+      info.add('Zastępuje służbę');
+    } else if (entry.entryType == EntryType.scheduledService) {
+      info.add('Służba z grafiku');
+    } else if (entry.entryType == EntryType.overtimeOffDay) {
+      info.add('Dzień wolny w grafiku');
+    }
+
+    return info;
+  }
+
+  bool _replacesSchedule(CalendarEntry entry) {
+    switch (entry.entryType) {
+      case EntryType.vacationStandard:
+      case EntryType.vacationAdditional:
+      case EntryType.sickLeave80:
+      case EntryType.sickLeave100:
+      case EntryType.delegation:
+      case EntryType.bloodDonation:
+      case EntryType.dayOff:
+        return true;
+      case EntryType.custom:
+        return entry.scheduledHours > 0;
+      default:
+        return false;
+    }
+  }
+
+  String _formatHours(double hours) {
+    return hours == hours.roundToDouble() ? '${hours.toInt()} h' : '${hours.toStringAsFixed(1)} h';
   }
 }

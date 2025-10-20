@@ -37,8 +37,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       return const SizedBox.shrink();
     }
 
-    final homeState = ref.watch(homeControllerProvider);
-    final visibleMonth = homeState.visibleMonth;
+  final homeState = ref.watch(homeControllerProvider);
+  final visibleMonth = homeState.visibleMonth;
+  final isEditingSchedule = homeState.isEditingSchedule;
 
     final profileAsync = ref.watch(
       userProfileProvider(
@@ -52,6 +53,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         user,
         profile,
         visibleMonth,
+        isEditingSchedule,
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => _ErrorView(
@@ -66,6 +68,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     User user,
     UserProfile profile,
     DateTime visibleMonth,
+    bool isEditingSchedule,
   ) {
     final entriesAsync = ref.watch(
       calendarEntriesStreamProvider(
@@ -73,14 +76,45 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
 
+    final controller = ref.read(homeControllerProvider.notifier);
+
     return entriesAsync.when(
       data: (entries) => _CalendarContent(
         month: visibleMonth,
         profile: profile,
         entries: entries,
         cycle: _cycle,
+        isEditing: isEditingSchedule,
         onMonthChanged: _handleMonthChanged,
         onDayTap: (day) => _openDayDialog(context, user, profile, entries, day),
+        onToggleEditing: controller.toggleScheduleEditing,
+        onAssignScheduled: (day) async {
+          try {
+            await controller.assignScheduledService(
+              userId: user.uid,
+              day: day,
+            );
+            if (!context.mounted) {
+              return;
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Dodano służbę 24h do harmonogramu.'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          } catch (error) {
+            if (!context.mounted) {
+              return;
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Nie udało się zaktualizować harmonogramu: $error'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        },
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => _ErrorView(
@@ -146,16 +180,22 @@ class _CalendarContent extends StatelessWidget {
     required this.profile,
     required this.entries,
     required this.cycle,
+    required this.isEditing,
     required this.onMonthChanged,
     required this.onDayTap,
+    required this.onToggleEditing,
+    required this.onAssignScheduled,
   });
 
   final DateTime month;
   final UserProfile profile;
   final List<CalendarEntry> entries;
   final ShiftCycleCalculator cycle;
+  final bool isEditing;
   final ValueChanged<DateTime> onMonthChanged;
   final ValueChanged<DateTime> onDayTap;
+  final VoidCallback onToggleEditing;
+  final Future<void> Function(DateTime day) onAssignScheduled;
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +221,9 @@ class _CalendarContent extends StatelessWidget {
               shiftCycleCalculator: cycle,
               onDaySelected: onDayTap,
               onMonthChanged: onMonthChanged,
+              isEditing: isEditing,
+              onEditModeToggle: onToggleEditing,
+              onAssignScheduledService: onAssignScheduled,
             ),
           ),
         );

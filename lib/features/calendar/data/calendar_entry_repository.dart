@@ -60,7 +60,11 @@ class CalendarEntryRepository {
     final collection = _userEntriesCollection(userId);
     for (final entry in entries) {
       final dto = CalendarEntryDto.fromDomain(entry);
-      batch.set(collection.doc(entry.id), dto.toFirestore(), SetOptions(merge: true));
+      batch.set(
+        collection.doc(entry.id),
+        dto.toFirestore(includeSentinels: true),
+        SetOptions(merge: true),
+      );
     }
     await batch.commit();
   }
@@ -78,8 +82,66 @@ class CalendarEntryRepository {
     }
     for (final entry in entries) {
       final dto = CalendarEntryDto.fromDomain(entry);
-      batch.set(collection.doc(entry.id), dto.toFirestore());
+      batch.set(
+        collection.doc(entry.id),
+        dto.toFirestore(includeSentinels: false),
+      );
     }
+    await batch.commit();
+  }
+
+  Future<void> assignScheduledService({
+    required String userId,
+    required DateTime day,
+    double scheduledHours = 24,
+  }) async {
+    final normalized = DateTime(day.year, day.month, day.day);
+    final next = normalized.add(const Duration(days: 1));
+    final collection = _userEntriesCollection(userId);
+    final query = await collection
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(normalized))
+        .where('date', isLessThan: Timestamp.fromDate(next))
+        .get();
+
+    final batch = _firestore.batch();
+    DocumentReference<Map<String, dynamic>>? scheduledRef;
+
+    for (final doc in query.docs) {
+      final entry = CalendarEntryDto.fromFirestore(doc).toDomain();
+      if (_requiresScheduleHoursUpdate(entry)) {
+        batch.update(doc.reference, <String, Object?>{
+          'scheduledHours': scheduledHours,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+      if (entry.entryType == EntryType.scheduledService) {
+        scheduledRef = doc.reference;
+      }
+    }
+
+    if (scheduledRef != null) {
+      batch.set(
+        scheduledRef,
+        <String, Object?>{
+          'entryType': EntryType.scheduledService.name,
+          'scheduledHours': scheduledHours,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } else {
+      final scheduledEntry = CalendarEntry(
+        id: _scheduledEntryId(normalized),
+        date: normalized,
+        entryType: EntryType.scheduledService,
+        scheduledHours: scheduledHours,
+      );
+      batch.set(
+        collection.doc(scheduledEntry.id),
+        CalendarEntryDto.fromDomain(scheduledEntry).toFirestore(includeSentinels: false),
+      );
+    }
+
     await batch.commit();
   }
 
@@ -88,7 +150,7 @@ class CalendarEntryRepository {
     required DateTime day,
     required String note,
   }) async {
-  final normalized = DateTime(day.year, day.month, day.day);
+    final normalized = DateTime(day.year, day.month, day.day);
     final next = normalized.add(const Duration(days: 1));
     final collection = _userEntriesCollection(userId);
     final query = await collection
@@ -106,10 +168,12 @@ class CalendarEntryRepository {
         id: _noteEntryId(normalized),
         date: normalized,
         entryType: EntryType.custom,
-        isScheduledDay: false,
+        scheduledHours: 0,
         notes: trimmedNote,
       );
-      await collection.doc(entry.id).set(CalendarEntryDto.fromDomain(entry).toFirestore());
+      await collection.doc(entry.id).set(
+        CalendarEntryDto.fromDomain(entry).toFirestore(includeSentinels: false),
+      );
       return;
     }
 
@@ -129,6 +193,31 @@ class CalendarEntryRepository {
     final month = date.month.toString().padLeft(2, '0');
     final day = date.day.toString().padLeft(2, '0');
     return '${date.year}-$month-$day-note';
+  }
+
+  String _scheduledEntryId(DateTime date) {
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$month-$day-scheduled';
+  }
+
+  bool _requiresScheduleHoursUpdate(CalendarEntry entry) {
+    switch (entry.entryType) {
+      case EntryType.scheduledService:
+      case EntryType.worked:
+      case EntryType.vacationStandard:
+      case EntryType.vacationAdditional:
+      case EntryType.sickLeave80:
+      case EntryType.sickLeave100:
+      case EntryType.delegation:
+      case EntryType.bloodDonation:
+      case EntryType.dayOff:
+        return true;
+      case EntryType.custom:
+        return entry.customDetails != null || entry.scheduledHours > 0;
+      case EntryType.overtimeOffDay:
+        return false;
+    }
   }
 }
 

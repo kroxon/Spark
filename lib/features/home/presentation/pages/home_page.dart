@@ -88,18 +88,28 @@ class _HomePageState extends ConsumerState<HomePage> {
         onMonthChanged: _handleMonthChanged,
         onDayTap: (day) => _openDayDialog(context, user, profile, entries, day),
         onToggleEditing: controller.toggleScheduleEditing,
-        onAssignScheduled: (day) async {
+        onToggleScheduled: (day, assign) async {
           try {
-            await controller.assignScheduledService(
-              userId: user.uid,
-              day: day,
-            );
+            if (assign) {
+              await controller.assignScheduledService(
+                userId: user.uid,
+                day: day,
+              );
+            } else {
+              await controller.removeScheduledService(
+                userId: user.uid,
+                day: day,
+              );
+            }
             if (!context.mounted) {
               return;
             }
+            final message = assign
+                ? 'Dodano służbę 24h do harmonogramu.'
+                : 'Usunięto służbę 24h z harmonogramu.';
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Dodano służbę 24h do harmonogramu.'),
+              SnackBar(
+                content: Text(message),
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -184,7 +194,7 @@ class _CalendarContent extends StatelessWidget {
     required this.onMonthChanged,
     required this.onDayTap,
     required this.onToggleEditing,
-    required this.onAssignScheduled,
+  required this.onToggleScheduled,
   });
 
   final DateTime month;
@@ -195,7 +205,7 @@ class _CalendarContent extends StatelessWidget {
   final ValueChanged<DateTime> onMonthChanged;
   final ValueChanged<DateTime> onDayTap;
   final VoidCallback onToggleEditing;
-  final Future<void> Function(DateTime day) onAssignScheduled;
+  final Future<void> Function(DateTime day, bool assign) onToggleScheduled;
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +233,7 @@ class _CalendarContent extends StatelessWidget {
               onMonthChanged: onMonthChanged,
               isEditing: isEditing,
               onEditModeToggle: onToggleEditing,
-              onAssignScheduledService: onAssignScheduled,
+              onToggleScheduledService: onToggleScheduled,
             ),
           ),
         );

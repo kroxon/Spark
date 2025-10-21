@@ -77,6 +77,17 @@ class HomeController extends Notifier<HomeState> {
       scheduledHours: scheduledHours,
     );
   }
+
+  Future<void> removeScheduledService({
+    required String userId,
+    required DateTime day,
+  }) async {
+    final repository = ref.read(calendarEntryRepositoryProvider);
+    await repository.removeScheduledService(
+      userId: userId,
+      day: day,
+    );
+  }
 }
 
 final homeControllerProvider =

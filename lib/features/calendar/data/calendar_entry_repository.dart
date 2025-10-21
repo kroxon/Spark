@@ -43,6 +43,14 @@ class CalendarEntryRepository {
         .where('date', isLessThan: Timestamp.fromDate(end));
   }
 
+  Query<Map<String, dynamic>> _dayQuery(String userId, DateTime day) {
+    final normalized = DateTime(day.year, day.month, day.day);
+    final next = normalized.add(const Duration(days: 1));
+    return _userEntriesCollection(userId)
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(normalized))
+        .where('date', isLessThan: Timestamp.fromDate(next));
+  }
+
   Stream<List<CalendarEntry>> watchEntries(CalendarEntriesRequest request) {
     return _monthQuery(request.userId, request.month)
         .snapshots()
@@ -96,50 +104,56 @@ class CalendarEntryRepository {
     double scheduledHours = 24,
   }) async {
     final normalized = DateTime(day.year, day.month, day.day);
-    final next = normalized.add(const Duration(days: 1));
+    final query = await _dayQuery(userId, normalized).get();
     final collection = _userEntriesCollection(userId);
-    final query = await collection
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(normalized))
-        .where('date', isLessThan: Timestamp.fromDate(next))
-        .get();
-
     final batch = _firestore.batch();
-    DocumentReference<Map<String, dynamic>>? scheduledRef;
 
-    for (final doc in query.docs) {
-      final entry = CalendarEntryDto.fromFirestore(doc).toDomain();
-      if (_requiresScheduleHoursUpdate(entry)) {
-        batch.update(doc.reference, <String, Object?>{
-          'scheduledHours': scheduledHours,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      }
-      if (entry.entryType == EntryType.scheduledService) {
-        scheduledRef = doc.reference;
-      }
-    }
-
-    if (scheduledRef != null) {
-      batch.set(
-        scheduledRef,
-        <String, Object?>{
-          'entryType': EntryType.scheduledService.name,
-          'scheduledHours': scheduledHours,
-          'updatedAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
-    } else {
-      final scheduledEntry = CalendarEntry(
-        id: _scheduledEntryId(normalized),
+    if (query.docs.isEmpty) {
+      final entry = CalendarEntry(
+        id: _documentId(normalized),
         date: normalized,
-        entryType: EntryType.scheduledService,
         scheduledHours: scheduledHours,
       );
       batch.set(
-        collection.doc(scheduledEntry.id),
-        CalendarEntryDto.fromDomain(scheduledEntry).toFirestore(includeSentinels: false),
+        collection.doc(entry.id),
+        CalendarEntryDto.fromDomain(entry).toFirestore(includeSentinels: false),
       );
+    } else {
+      for (final doc in query.docs) {
+        batch.update(doc.reference, <String, Object?>{
+          'scheduledHours': scheduledHours,
+          'date': Timestamp.fromDate(normalized),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+    }
+
+    await batch.commit();
+  }
+
+  Future<void> removeScheduledService({
+    required String userId,
+    required DateTime day,
+  }) async {
+    final normalized = DateTime(day.year, day.month, day.day);
+    final query = await _dayQuery(userId, normalized).get();
+    if (query.docs.isEmpty) {
+      return;
+    }
+
+    final batch = _firestore.batch();
+
+    for (final doc in query.docs) {
+      final entry = CalendarEntryDto.fromFirestore(doc).toDomain();
+      final updated = entry.copyWith(scheduledHours: 0);
+      if (_isEntryEmpty(updated)) {
+        batch.delete(doc.reference);
+      } else {
+        batch.update(doc.reference, <String, Object?>{
+          'scheduledHours': 0,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
     }
 
     await batch.commit();
@@ -151,12 +165,8 @@ class CalendarEntryRepository {
     required String note,
   }) async {
     final normalized = DateTime(day.year, day.month, day.day);
-    final next = normalized.add(const Duration(days: 1));
     final collection = _userEntriesCollection(userId);
-    final query = await collection
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(normalized))
-        .where('date', isLessThan: Timestamp.fromDate(next))
-        .get();
+    final query = await _dayQuery(userId, normalized).get();
 
     final trimmedNote = note.trim();
 
@@ -165,11 +175,10 @@ class CalendarEntryRepository {
         return;
       }
       final entry = CalendarEntry(
-        id: _noteEntryId(normalized),
+        id: _documentId(normalized),
         date: normalized,
-        entryType: EntryType.custom,
         scheduledHours: 0,
-        notes: trimmedNote,
+        generalNote: trimmedNote,
       );
       await collection.doc(entry.id).set(
         CalendarEntryDto.fromDomain(entry).toFirestore(includeSentinels: false),
@@ -184,40 +193,28 @@ class CalendarEntryRepository {
     };
 
     for (final doc in query.docs) {
-      batch.update(doc.reference, updateData);
+      final entry = CalendarEntryDto.fromFirestore(doc).toDomain();
+      if (trimmedNote.isEmpty && _isEntryEmpty(entry.copyWith(generalNote: null))) {
+        batch.delete(doc.reference);
+      } else {
+        batch.update(doc.reference, updateData);
+      }
     }
     await batch.commit();
   }
 
-  String _noteEntryId(DateTime date) {
+  String _documentId(DateTime date) {
     final month = date.month.toString().padLeft(2, '0');
     final day = date.day.toString().padLeft(2, '0');
-    return '${date.year}-$month-$day-note';
+    return '${date.year}-$month-$day';
   }
 
-  String _scheduledEntryId(DateTime date) {
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
-    return '${date.year}-$month-$day-scheduled';
-  }
-
-  bool _requiresScheduleHoursUpdate(CalendarEntry entry) {
-    switch (entry.entryType) {
-      case EntryType.scheduledService:
-      case EntryType.worked:
-      case EntryType.vacationStandard:
-      case EntryType.vacationAdditional:
-      case EntryType.sickLeave80:
-      case EntryType.sickLeave100:
-      case EntryType.delegation:
-      case EntryType.bloodDonation:
-      case EntryType.dayOff:
-        return true;
-      case EntryType.custom:
-        return entry.customDetails != null || entry.scheduledHours > 0;
-      case EntryType.overtimeOffDay:
-        return false;
-    }
+  bool _isEntryEmpty(CalendarEntry entry) {
+    final hasSchedule = entry.scheduledHours > 0;
+    final hasEvents = entry.events.isNotEmpty;
+    final hasIncidents = entry.incidents.isNotEmpty;
+    final hasNote = entry.generalNote != null && entry.generalNote!.trim().isNotEmpty;
+    return !hasSchedule && !hasEvents && !hasIncidents && !hasNote;
   }
 }
 

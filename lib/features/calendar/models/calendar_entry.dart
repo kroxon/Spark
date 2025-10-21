@@ -1,25 +1,20 @@
-enum EntryType {
-  // 1. Typy definiujące harmonogram
-  scheduledService,
+import 'package:iskra/features/calendar/models/incident_entry.dart';
 
-  // 2. Typy zastępujące harmonogram (nieobecności)
+const Object _undefined = Object();
+
+enum EventType {
+  worked,
+  delegation,
+  bloodDonation,
   vacationStandard,
   vacationAdditional,
   sickLeave80,
   sickLeave100,
-  delegation,
-  bloodDonation,
   dayOff,
   custom,
-
-  // 3. Typy modyfikujące harmonogram
-  worked,
-
-  // 4. Typy dodatkowe (w dni bez harmonogramu)
   overtimeOffDay,
 }
 
-// Snapshot danych dla wpisów niestandardowych.
 class CustomAbsenceDetails {
   CustomAbsenceDetails({required this.name, required this.payoutPercentage});
 
@@ -27,108 +22,121 @@ class CustomAbsenceDetails {
   final int payoutPercentage;
 }
 
+class DayEvent {
+  const DayEvent({
+    required this.type,
+    required this.hours,
+    this.customDetails,
+    this.note,
+  }) : assert(hours >= 0, 'hours must be non-negative');
+
+  final EventType type;
+  final double hours;
+  final CustomAbsenceDetails? customDetails;
+  final String? note;
+
+  DayEvent copyWith({
+    EventType? type,
+    double? hours,
+    Object? customDetails = _undefined,
+    Object? note = _undefined,
+  }) {
+    return DayEvent(
+      type: type ?? this.type,
+      hours: hours ?? this.hours,
+      customDetails: customDetails == _undefined
+          ? this.customDetails
+          : customDetails as CustomAbsenceDetails?,
+      note: note == _undefined ? this.note : note as String?,
+    );
+  }
+}
+
 class CalendarEntry {
   CalendarEntry({
     required this.id,
     required this.date,
-    required this.entryType,
     required this.scheduledHours,
-    this.actualHours,
-    this.vacationHoursDeducted,
-    this.customDetails,
-    this.notes,
-  }) : assert(scheduledHours >= 0, 'scheduledHours must be non-negative');
-
-  static const Object _undefined = Object();
+    List<DayEvent> events = const [],
+    List<IncidentEntry> incidents = const [],
+    this.generalNote,
+  })  : assert(scheduledHours >= 0, 'scheduledHours must be non-negative'),
+        events = List.unmodifiable(events),
+        incidents = List.unmodifiable(incidents);
 
   final String id;
   final DateTime date;
-  final EntryType entryType;
-
-  /// Liczba godzin zaplanowanych na ten dzień.
   final double scheduledHours;
-
-  /// Faktycznie przepracowane godziny (gdy wpis je raportuje).
-  final double? actualHours;
-
-  /// Godziny potrącane z puli urlopowej.
-  final double? vacationHoursDeducted;
-
-  final CustomAbsenceDetails? customDetails;
-  final String? notes;
+  final List<DayEvent> events;
+  final List<IncidentEntry> incidents;
+  final String? generalNote;
 
   CalendarEntry copyWith({
     String? id,
     DateTime? date,
-    EntryType? entryType,
     double? scheduledHours,
-    Object? actualHours = _undefined,
-    Object? vacationHoursDeducted = _undefined,
-    Object? customDetails = _undefined,
-    Object? notes = _undefined,
+    List<DayEvent>? events,
+    List<IncidentEntry>? incidents,
+    Object? generalNote = _undefined,
   }) {
     return CalendarEntry(
       id: id ?? this.id,
       date: date ?? this.date,
-      entryType: entryType ?? this.entryType,
       scheduledHours: scheduledHours ?? this.scheduledHours,
-      actualHours:
-          actualHours == _undefined ? this.actualHours : actualHours as double?,
-      vacationHoursDeducted: vacationHoursDeducted == _undefined
-          ? this.vacationHoursDeducted
-          : vacationHoursDeducted as double?,
-      customDetails: customDetails == _undefined
-          ? this.customDetails
-          : customDetails as CustomAbsenceDetails?,
-      notes: notes == _undefined ? this.notes : notes as String?,
+      events: events == null ? this.events : List.unmodifiable(events),
+      incidents: incidents == null ? this.incidents : List.unmodifiable(incidents),
+      generalNote:
+          generalNote == _undefined ? this.generalNote : generalNote as String?,
     );
   }
 
+  bool get hasScheduledHours => scheduledHours > 0;
+
   double get baseHoursWorked {
-    switch (entryType) {
-      case EntryType.scheduledService:
-        return scheduledHours;
-      case EntryType.worked:
-        final actual = actualHours ?? 0;
-        return actual > scheduledHours ? scheduledHours : actual;
-      case EntryType.delegation:
-      case EntryType.bloodDonation:
-        return 8;
-      default:
-        return 0;
+    final worked = _sumHours({EventType.worked, EventType.delegation, EventType.bloodDonation});
+    if (!hasScheduledHours) {
+      return worked;
     }
+    return worked > scheduledHours ? scheduledHours : worked;
   }
 
   double get overtimeHours {
-    switch (entryType) {
-      case EntryType.worked:
-        final actual = actualHours ?? 0;
-        return actual > scheduledHours ? actual - scheduledHours : 0;
-      case EntryType.overtimeOffDay:
-        return actualHours ?? 0;
-      default:
-        return 0;
+    final workedHours = _sumHours({EventType.worked});
+    final overtimeOffDayHours = _sumHours({EventType.overtimeOffDay});
+    if (hasScheduledHours) {
+      return workedHours > scheduledHours ? workedHours - scheduledHours : 0;
     }
+    return workedHours + overtimeOffDayHours;
   }
 
   double get undertimeHours {
-    switch (entryType) {
-      case EntryType.delegation:
-      case EntryType.bloodDonation:
-        final deficit = scheduledHours - 8;
-        return deficit > 0 ? deficit : 0;
-      case EntryType.worked:
-        final actual = actualHours ?? 0;
-        return actual < scheduledHours ? scheduledHours - actual : 0;
-      case EntryType.dayOff:
-      case EntryType.sickLeave80:
-      case EntryType.sickLeave100:
-      case EntryType.vacationStandard:
-      case EntryType.vacationAdditional:
-      case EntryType.custom:
-        return scheduledHours;
-      default:
-        return 0;
+    if (!hasScheduledHours) {
+      return 0;
     }
+    final covered = _sumHours({
+      EventType.worked,
+      EventType.delegation,
+      EventType.bloodDonation,
+      EventType.vacationStandard,
+      EventType.vacationAdditional,
+      EventType.sickLeave80,
+      EventType.sickLeave100,
+      EventType.dayOff,
+      EventType.custom,
+    });
+    final deficit = scheduledHours - covered;
+    return deficit > 0 ? deficit : 0;
+  }
+
+  int get totalIncidents => incidents.length;
+
+  int incidentsByCategory(IncidentCategory category) {
+    return incidents.where((incident) => incident.category == category).length;
+  }
+
+  double _sumHours(Set<EventType> types) {
+    return events
+        .where((event) => types.contains(event.type))
+        .fold<double>(0, (sum, event) => sum + event.hours);
   }
 }

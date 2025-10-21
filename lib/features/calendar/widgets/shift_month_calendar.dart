@@ -16,7 +16,7 @@ class ShiftMonthCalendar extends StatefulWidget {
     this.showMonthNavigation = true,
     this.isEditing = false,
     this.onEditModeToggle,
-    this.onAssignScheduledService,
+    this.onToggleScheduledService,
   });
 
   final DateTime initialMonth;
@@ -28,7 +28,7 @@ class ShiftMonthCalendar extends StatefulWidget {
   final bool showMonthNavigation;
   final bool isEditing;
   final VoidCallback? onEditModeToggle;
-  final Future<void> Function(DateTime day)? onAssignScheduledService;
+  final Future<void> Function(DateTime day, bool assign)? onToggleScheduledService;
 
   @override
   State<ShiftMonthCalendar> createState() => _ShiftMonthCalendarState();
@@ -37,7 +37,7 @@ class ShiftMonthCalendar extends StatefulWidget {
 class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
   late DateTime _visibleMonth;
   late List<ShiftAssignment> _sortedShiftHistory;
-  late Map<DateTime, List<CalendarEntry>> _entriesByDate;
+  late Map<DateTime, CalendarEntry> _entriesByDate;
 
   @override
   void initState() {
@@ -72,11 +72,13 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
   }
 
   void _buildEntries() {
-    _entriesByDate = <DateTime, List<CalendarEntry>>{};
+    _entriesByDate = <DateTime, CalendarEntry>{};
     for (final entry in widget.entries) {
       final day = DateUtils.dateOnly(entry.date);
-      final list = _entriesByDate.putIfAbsent(day, () => <CalendarEntry>[]);
-      list.add(entry);
+      final existing = _entriesByDate[day];
+      if (existing == null || entry.date.isAfter(existing.date)) {
+        _entriesByDate[day] = entry;
+      }
     }
   }
 
@@ -195,10 +197,10 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     final isToday = DateUtils.isSameDay(DateTime.now(), dateOnly);
     final onDuty = widget.shiftCycleCalculator.isScheduledDayForUser(dateOnly, _sortedShiftHistory);
     final shiftOnDuty = widget.shiftCycleCalculator.shiftOn(dateOnly);
-    final entries = _entriesByDate[dateOnly] ?? const <CalendarEntry>[];
-    final hasEntry = entries.isNotEmpty;
-    final plannedOff = onDuty && entries.any(_replacesScheduleOnCalendar);
-    final hasScheduledService = entries.any((entry) => entry.entryType == EntryType.scheduledService);
+  final entry = _entriesByDate[dateOnly];
+  final hasEntry = entry != null;
+  final hasScheduledService = entry != null && entry.scheduledHours > 0;
+  final plannedOff = onDuty && _isDayReplacingSchedule(entry);
     final dutyColor = widget.userProfile.shiftColorPalette.colorForShift(shiftOnDuty);
 
     Color backgroundColor;
@@ -249,7 +251,7 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () async {
-            await _handleDayTap(dateOnly, isEditableDay);
+            await _handleDayTap(dateOnly, isEditableDay, hasScheduledService);
           },
           child: Ink(
             decoration: BoxDecoration(
@@ -301,11 +303,13 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
                           Align(
                             alignment: Alignment.bottomRight,
                             child: Icon(
-                              hasScheduledService ? Icons.check_circle : Icons.add_circle_outline,
+                              hasScheduledService
+                                  ? Icons.remove_circle_outline
+                                  : Icons.add_circle_outline,
                               size: 18,
                               color: hasScheduledService
-                                  ? colors.primary
-                                  : colors.primary.withValues(alpha: 0.7),
+                                  ? colors.error.withValues(alpha: 0.85)
+                                  : colors.primary.withValues(alpha: 0.8),
                             ),
                           )
                         else if (hasScheduledService && !plannedOff)
@@ -329,12 +333,13 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     );
   }
 
-  Future<void> _handleDayTap(DateTime day, bool isEditableDay) async {
+  Future<void> _handleDayTap(DateTime day, bool isEditableDay, bool hasScheduledService) async {
     if (widget.isEditing) {
-      if (!isEditableDay || widget.onAssignScheduledService == null) {
+      if (!isEditableDay || widget.onToggleScheduledService == null) {
         return;
       }
-      await widget.onAssignScheduledService!(day);
+      final shouldAssign = !hasScheduledService;
+      await widget.onToggleScheduledService!(day, shouldAssign);
       return;
     }
     widget.onDaySelected?.call(day);
@@ -351,18 +356,30 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     return scheme.onSurface;
   }
 
-  bool _replacesScheduleOnCalendar(CalendarEntry entry) {
-    switch (entry.entryType) {
-      case EntryType.vacationStandard:
-      case EntryType.vacationAdditional:
-      case EntryType.sickLeave80:
-      case EntryType.sickLeave100:
-      case EntryType.delegation:
-      case EntryType.bloodDonation:
-      case EntryType.dayOff:
+  bool _isDayReplacingSchedule(CalendarEntry? entry) {
+    if (entry == null || entry.events.isEmpty) {
+      return false;
+    }
+    for (final event in entry.events) {
+      if (_eventBlocksSchedule(event)) {
         return true;
-      case EntryType.custom:
-        return entry.scheduledHours > 0;
+      }
+    }
+    return false;
+  }
+
+  bool _eventBlocksSchedule(DayEvent event) {
+    switch (event.type) {
+      case EventType.vacationStandard:
+      case EventType.vacationAdditional:
+      case EventType.sickLeave80:
+      case EventType.sickLeave100:
+      case EventType.dayOff:
+      case EventType.delegation:
+      case EventType.bloodDonation:
+        return true;
+      case EventType.custom:
+        return event.hours > 0;
       default:
         return false;
     }

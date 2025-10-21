@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/incident_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
 
 class DayDetailDialog extends StatefulWidget {
   const DayDetailDialog({
     super.key,
     required this.day,
-    required this.entries,
+    required this.entry,
     required this.shiftColor,
     required this.shiftId,
     required this.isScheduled,
   });
 
   final DateTime day;
-  final List<CalendarEntry> entries;
+  final CalendarEntry? entry;
   final Color shiftColor;
   final int shiftId;
   final bool isScheduled;
@@ -28,10 +29,14 @@ class DayDetailDialog extends StatefulWidget {
     required List<CalendarEntry> allEntries,
   }) {
     final normalizedDay = DateUtils.dateOnly(day);
-    final entriesForDay = allEntries
-        .where((entry) => DateUtils.isSameDay(entry.date, normalizedDay))
-        .toList()
-      ..sort((a, b) => a.entryType.index.compareTo(b.entryType.index));
+    CalendarEntry? entryForDay;
+    for (final entry in allEntries) {
+      if (DateUtils.isSameDay(entry.date, normalizedDay)) {
+        if (entryForDay == null || entry.date.isAfter(entryForDay.date)) {
+          entryForDay = entry;
+        }
+      }
+    }
 
     final sortedHistory = List<ShiftAssignment>.from(userProfile.shiftHistory)
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
@@ -45,7 +50,7 @@ class DayDetailDialog extends StatefulWidget {
       context: context,
       builder: (dialogContext) => DayDetailDialog(
         day: normalizedDay,
-        entries: entriesForDay,
+        entry: entryForDay,
         shiftColor: shiftColor,
         shiftId: shiftId,
         isScheduled: isScheduled,
@@ -64,7 +69,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
   @override
   void initState() {
     super.initState();
-    _initialNote = _findInitialNote();
+    _initialNote = widget.entry?.generalNote?.trim() ?? '';
     _noteController = TextEditingController(text: _initialNote);
   }
 
@@ -72,16 +77,6 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
   void dispose() {
     _noteController.dispose();
     super.dispose();
-  }
-
-  String _findInitialNote() {
-    for (final entry in widget.entries) {
-      final note = entry.notes;
-      if (note != null && note.trim().isNotEmpty) {
-        return note;
-      }
-    }
-    return '';
   }
 
   @override
@@ -96,7 +91,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 460),
+        constraints: const BoxConstraints(maxWidth: 480),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: SingleChildScrollView(
@@ -134,18 +129,32 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                       backgroundColor: theme.colorScheme.secondaryContainer,
                     ),
                     Chip(
-                      label: Text('Wpisów: ${widget.entries.length}'),
+                      label: Text('Zdarzeń: ${widget.entry?.events.length ?? 0}'),
                       backgroundColor: theme.colorScheme.surfaceContainerHighest,
                     ),
+                    if ((widget.entry?.scheduledHours ?? 0) > 0)
+                      Chip(
+                        label: Text('Plan: ${_formatHours(widget.entry!.scheduledHours)}'),
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                      ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Wpisy',
+                  'Zdarzenia',
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
-                _buildEntriesSection(theme, onShiftColor),
+                _buildEventsSection(theme, onShiftColor),
+                if ((widget.entry?.incidents.length ?? 0) > 0) ...[
+                  const SizedBox(height: 24),
+                  Text(
+                    'Wyjazdy',
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildIncidentsSection(theme),
+                ],
                 const SizedBox(height: 24),
                 TextField(
                   controller: _noteController,
@@ -169,7 +178,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                     FilledButton.icon(
                       onPressed: () {
                         final trimmed = _noteController.text.trim();
-                        if (trimmed == _initialNote.trim()) {
+                        if (trimmed == _initialNote) {
                           Navigator.of(context).pop(null);
                         } else {
                           Navigator.of(context).pop(trimmed);
@@ -188,8 +197,9 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     );
   }
 
-  Widget _buildEntriesSection(ThemeData theme, Color onShiftColor) {
-    if (widget.entries.isEmpty) {
+  Widget _buildEventsSection(ThemeData theme, Color onShiftColor) {
+    final entry = widget.entry;
+    if (entry == null || entry.events.isEmpty) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 32),
@@ -199,7 +209,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
         ),
         child: Center(
           child: Text(
-            'Brak wpisów dla tego dnia.',
+            'Brak zdarzeń dla tego dnia.',
             style: theme.textTheme.bodyMedium,
           ),
         ),
@@ -207,15 +217,15 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     }
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 240),
+      constraints: const BoxConstraints(maxHeight: 260),
       child: ListView.separated(
         shrinkWrap: true,
-        itemCount: widget.entries.length,
+        itemCount: entry.events.length,
         itemBuilder: (context, index) {
-          final entry = widget.entries[index];
-          final label = _entryTypeLabel(entry);
-          final note = entry.notes?.trim();
-          final info = _entryInfoLines(entry);
+          final event = entry.events[index];
+          final label = _eventLabel(event);
+          final detailLines = _eventInfoLines(event, entry);
+          final note = event.note?.trim();
 
           return ListTile(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -232,11 +242,11 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (info.isNotEmpty)
+                if (detailLines.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      info.join(' • '),
+                      detailLines.join(' • '),
                       style: theme.textTheme.bodySmall,
                     ),
                   ),
@@ -257,54 +267,79 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     );
   }
 
-  String _entryTypeLabel(CalendarEntry entry) {
-    switch (entry.entryType) {
-      case EntryType.scheduledService:
-        return 'Zaplanowana służba';
-      case EntryType.vacationStandard:
-        return 'Urlop wypoczynkowy';
-      case EntryType.vacationAdditional:
-        return 'Urlop dodatkowy';
-      case EntryType.sickLeave80:
-        return 'Zwolnienie lekarskie 80%';
-      case EntryType.sickLeave100:
-        return 'Zwolnienie lekarskie 100%';
-      case EntryType.delegation:
-        return 'Delegacja';
-      case EntryType.bloodDonation:
-        return 'Oddanie krwi';
-      case EntryType.dayOff:
-        return 'Dzień wolny za służbę';
-      case EntryType.custom:
-        return entry.customDetails?.name ?? 'Zdarzenie niestandardowe';
-      case EntryType.worked:
+  Widget _buildIncidentsSection(ThemeData theme) {
+    final entry = widget.entry;
+    if (entry == null || entry.incidents.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 220),
+      child: ListView.separated(
+        shrinkWrap: true,
+        itemCount: entry.incidents.length,
+        itemBuilder: (context, index) {
+          final incident = entry.incidents[index];
+          final label = _incidentLabel(incident.category);
+          final timeLabel = DateFormat.Hm('pl_PL').format(incident.timestamp);
+          final note = incident.note?.trim();
+
+          return ListTile(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            tileColor: theme.colorScheme.surfaceContainerHighest,
+            leading: const Icon(Icons.fire_truck, size: 20),
+            title: Text(label, style: theme.textTheme.titleSmall),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Godzina: $timeLabel', style: theme.textTheme.bodySmall),
+                if (note != null && note.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(note, style: theme.textTheme.bodySmall),
+                  ),
+              ],
+            ),
+          );
+        },
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+      ),
+    );
+  }
+
+  String _eventLabel(DayEvent event) {
+    switch (event.type) {
+      case EventType.worked:
         return 'Przepracowana służba';
-      case EntryType.overtimeOffDay:
+      case EventType.delegation:
+        return 'Delegacja';
+      case EventType.bloodDonation:
+        return 'Oddanie krwi';
+      case EventType.vacationStandard:
+        return 'Urlop wypoczynkowy';
+      case EventType.vacationAdditional:
+        return 'Urlop dodatkowy';
+      case EventType.sickLeave80:
+        return 'Zwolnienie lekarskie 80%';
+      case EventType.sickLeave100:
+        return 'Zwolnienie lekarskie 100%';
+      case EventType.dayOff:
+        return 'Dzień wolny za służbę';
+      case EventType.custom:
+        return event.customDetails?.name ?? 'Zdarzenie niestandardowe';
+      case EventType.overtimeOffDay:
         return 'Praca w dniu wolnym';
     }
   }
 
-  List<String> _entryInfoLines(CalendarEntry entry) {
+  List<String> _eventInfoLines(DayEvent event, CalendarEntry entry) {
     final info = <String>[];
 
     if (entry.scheduledHours > 0) {
       info.add('Plan: ${_formatHours(entry.scheduledHours)}');
     }
 
-    if (entry.actualHours != null && entry.actualHours! >= 0) {
-      info.add('Rzeczywiste: ${_formatHours(entry.actualHours!)}');
-    }
-
-    if (entry.vacationHoursDeducted != null && entry.vacationHoursDeducted! > 0) {
-      info.add('Urlop: ${_formatHours(entry.vacationHoursDeducted!)}');
-    }
-
-    final base = entry.baseHoursWorked;
-    final showBase = base > 0 &&
-        !(entry.entryType == EntryType.scheduledService && base == entry.scheduledHours);
-    if (showBase) {
-      info.add('Norma: ${_formatHours(base)}');
-    }
+    info.add('Zdarzenie: ${_formatHours(event.hours)}');
 
     final overtime = entry.overtimeHours;
     if (overtime > 0) {
@@ -316,31 +351,42 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
       info.add('Niewyrobione: ${_formatHours(undertime)}');
     }
 
-    if (_replacesSchedule(entry)) {
+    if (_eventBlocksSchedule(event)) {
       info.add('Zastępuje służbę');
-    } else if (entry.entryType == EntryType.scheduledService) {
+    } else if (entry.hasScheduledHours && event.type == EventType.worked) {
       info.add('Służba z grafiku');
-    } else if (entry.entryType == EntryType.overtimeOffDay) {
+    } else if (!entry.hasScheduledHours && event.type == EventType.overtimeOffDay) {
       info.add('Dzień wolny w grafiku');
     }
 
     return info;
   }
 
-  bool _replacesSchedule(CalendarEntry entry) {
-    switch (entry.entryType) {
-      case EntryType.vacationStandard:
-      case EntryType.vacationAdditional:
-      case EntryType.sickLeave80:
-      case EntryType.sickLeave100:
-      case EntryType.delegation:
-      case EntryType.bloodDonation:
-      case EntryType.dayOff:
+  bool _eventBlocksSchedule(DayEvent event) {
+    switch (event.type) {
+      case EventType.vacationStandard:
+      case EventType.vacationAdditional:
+      case EventType.sickLeave80:
+      case EventType.sickLeave100:
+      case EventType.dayOff:
+      case EventType.delegation:
+      case EventType.bloodDonation:
         return true;
-      case EntryType.custom:
-        return entry.scheduledHours > 0;
+      case EventType.custom:
+        return event.hours > 0;
       default:
         return false;
+    }
+  }
+
+  String _incidentLabel(IncidentCategory category) {
+    switch (category) {
+      case IncidentCategory.fire:
+        return 'Pożar';
+      case IncidentCategory.localHazard:
+        return 'Miejscowe zagrożenie';
+      case IncidentCategory.falseAlarm:
+        return 'Alarm fałszywy';
     }
   }
 

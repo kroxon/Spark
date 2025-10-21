@@ -10,8 +10,8 @@ class CalendarEntryDto {
     List<DayEvent> events = const [],
     List<IncidentEntry> incidents = const [],
     this.generalNote,
-  })  : events = List.unmodifiable(events),
-        incidents = List.unmodifiable(incidents);
+  }) : events = List.unmodifiable(events),
+       incidents = List.unmodifiable(incidents);
 
   final String id;
   final DateTime date;
@@ -45,7 +45,9 @@ class CalendarEntryDto {
       scheduledHours: scheduled,
       events: events,
       incidents: incidents,
-      generalNote: (trimmedNote == null || trimmedNote.isEmpty) ? null : trimmedNote,
+      generalNote: (trimmedNote == null || trimmedNote.isEmpty)
+          ? null
+          : trimmedNote,
     );
   }
 
@@ -124,10 +126,16 @@ double _resolveScheduledHours(Map<String, dynamic> data) {
   return legacyEntryType == 'scheduledService' ? 24 : 0;
 }
 
-List<DayEvent> _parseEvents(Object? rawEvents, Map<String, dynamic> data, double scheduledHours) {
+List<DayEvent> _parseEvents(
+  Object? rawEvents,
+  Map<String, dynamic> data,
+  double scheduledHours,
+) {
   if (rawEvents is List) {
     final parsed = rawEvents
-        .map((event) => event is Map<String, dynamic> ? _parseEvent(event) : null)
+        .map(
+          (event) => event is Map<String, dynamic> ? _parseEvent(event) : null,
+        )
         .whereType<DayEvent>()
         .toList();
     if (parsed.isEmpty) {
@@ -147,7 +155,9 @@ List<DayEvent> _parseEvents(Object? rawEvents, Map<String, dynamic> data, double
 
   final hours = _resolveLegacyEventHours(data, scheduledHours);
   final note = (data['notes'] as String?)?.trim();
-  final customDetails = _parseCustomDetails(data['customDetails'] as Map<String, dynamic>?);
+  final customDetails = _parseCustomDetails(
+    data['customDetails'] as Map<String, dynamic>?,
+  );
 
   return List.unmodifiable([
     DayEvent(
@@ -171,7 +181,9 @@ DayEvent? _parseEvent(Map<String, dynamic>? data) {
   final hours = (data['hours'] as num?)?.toDouble() ?? 0;
   final noteRaw = data['note'] as String?;
   final note = noteRaw?.trim();
-  final customDetails = _parseCustomDetails(data['customDetails'] as Map<String, dynamic>?);
+  final customDetails = _parseCustomDetails(
+    data['customDetails'] as Map<String, dynamic>?,
+  );
 
   return DayEvent(
     type: type,
@@ -190,13 +202,13 @@ CustomAbsenceDetails? _parseCustomDetails(Map<String, dynamic>? data) {
   if (name == null || payout == null) {
     return null;
   }
-  return CustomAbsenceDetails(
-    name: name,
-    payoutPercentage: payout.toInt(),
-  );
+  return CustomAbsenceDetails(name: name, payoutPercentage: payout.toInt());
 }
 
-double _resolveLegacyEventHours(Map<String, dynamic> data, double scheduledHours) {
+double _resolveLegacyEventHours(
+  Map<String, dynamic> data,
+  double scheduledHours,
+) {
   final actual = (data['actualHours'] as num?)?.toDouble();
   if (actual != null) {
     return actual;
@@ -257,7 +269,8 @@ Map<String, dynamic> _serializeEvent(DayEvent event) {
   return {
     'type': event.type.name,
     'hours': event.hours,
-    if (event.note != null && event.note!.trim().isNotEmpty) 'note': event.note!.trim(),
+    if (event.note != null && event.note!.trim().isNotEmpty)
+      'note': event.note!.trim(),
     if (event.customDetails != null)
       'customDetails': {
         'name': event.customDetails!.name,
@@ -271,7 +284,8 @@ Map<String, dynamic> _serializeIncident(IncidentEntry incident) {
     'id': incident.id,
     'category': incident.category.name,
     'timestamp': Timestamp.fromDate(incident.timestamp),
-    if (incident.note != null && incident.note!.trim().isNotEmpty) 'note': incident.note!.trim(),
+    if (incident.note != null && incident.note!.trim().isNotEmpty)
+      'note': incident.note!.trim(),
   };
 }
 
@@ -289,8 +303,6 @@ EventType? _parseEventType(String? raw) {
 
 EventType? _parseLegacyEventType(String raw) {
   switch (raw) {
-    case 'worked':
-      return EventType.worked;
     case 'delegation':
       return EventType.delegation;
     case 'bloodDonation':
@@ -303,8 +315,6 @@ EventType? _parseLegacyEventType(String raw) {
       return EventType.sickLeave80;
     case 'sickLeave100':
       return EventType.sickLeave100;
-    case 'dayOff':
-      return EventType.dayOff;
     case 'custom':
       return EventType.custom;
     case 'overtimeOffDay':

@@ -228,7 +228,7 @@ class _EventCardState extends State<_EventCard> {
             children: [
               Expanded(
                 child: DropdownButtonFormField<EventType>(
-                  value: _event.type,
+                  initialValue: _event.type,
                   decoration: const InputDecoration(
                     labelText: 'Rodzaj zdarzenia',
                   ),

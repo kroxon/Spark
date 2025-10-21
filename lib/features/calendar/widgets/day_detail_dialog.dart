@@ -6,6 +6,7 @@ import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_detail_header.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_event_editor.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_note_section.dart';
+import 'package:iskra/features/calendar/widgets/day_detail/day_quick_status_section.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_schedule_hours_picker.dart';
 
 class DayDetailDialogResult {
@@ -77,7 +78,19 @@ class DayDetailDialog extends StatefulWidget {
 class _DayDetailDialogState extends State<DayDetailDialog> {
   late final TextEditingController _noteController;
   late List<EditableDayEvent> _events;
+  late Map<EventType, double> _quickSelections;
   double? _scheduledHours;
+
+  static const Set<EventType> _quickEventTypes = {
+    EventType.delegation,
+    EventType.bloodDonation,
+    EventType.vacationStandard,
+    EventType.vacationAdditional,
+    EventType.sickLeave80,
+    EventType.sickLeave100,
+    EventType.custom,
+    EventType.overtimeOffDay,
+  };
 
   @override
   void initState() {
@@ -85,9 +98,19 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     _noteController = TextEditingController(
       text: widget.entry?.generalNote ?? '',
     );
-    _events = (widget.entry?.events ?? const <DayEvent>[])
-        .map(EditableDayEvent.fromDomain)
-        .toList();
+    _events = <EditableDayEvent>[];
+    _quickSelections = <EventType, double>{};
+
+    for (final event in widget.entry?.events ?? const <DayEvent>[]) {
+      final hasExtraData =
+          event.customDetails != null ||
+          (event.note != null && event.note!.trim().isNotEmpty);
+      if (_quickEventTypes.contains(event.type) && !hasExtraData) {
+        _quickSelections[event.type] = event.hours;
+      } else {
+        _events.add(EditableDayEvent.fromDomain(event));
+      }
+    }
     _scheduledHours = widget.isScheduled
         ? (widget.entry?.scheduledHours ?? 0)
         : null;
@@ -131,6 +154,18 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                         ),
                         const SizedBox(height: 24),
                       ],
+                      DayQuickStatusSection(
+                        selections: _quickSelections,
+                        scheduledHours: widget.isScheduled
+                            ? _scheduledHours
+                            : null,
+                        onChanged: (updated) => setState(
+                          () => _quickSelections = Map<EventType, double>.from(
+                            updated,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
                       DayEventEditor(
                         events: _events,
                         onChanged: (updated) =>
@@ -166,12 +201,17 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
   }
 
   void _submit() {
-    final events = _events.map((event) => event.toDomain()).toList();
+    final combinedEvents = <DayEvent>[
+      ..._events.map((event) => event.toDomain()),
+      ..._quickSelections.entries.map(
+        (entry) => DayEvent(type: entry.key, hours: entry.value),
+      ),
+    ];
     final note = _noteController.text.trim();
     final scheduledHours = widget.isScheduled ? (_scheduledHours ?? 0) : null;
     Navigator.of(context).pop(
       DayDetailDialogResult(
-        events: events,
+        events: combinedEvents,
         generalNote: note,
         scheduledHours: scheduledHours,
       ),

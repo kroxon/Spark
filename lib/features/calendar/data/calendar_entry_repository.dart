@@ -5,10 +5,8 @@ import 'package:iskra/features/calendar/data/calendar_entry_dto.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 
 class CalendarEntriesRequest {
-  CalendarEntriesRequest({
-    required this.userId,
-    required DateTime month,
-  }) : month = DateTime(month.year, month.month);
+  CalendarEntriesRequest({required this.userId, required DateTime month})
+    : month = DateTime(month.year, month.month);
 
   final String userId;
   final DateTime month;
@@ -31,8 +29,13 @@ class CalendarEntryRepository {
 
   final FirebaseFirestore _firestore;
 
-  CollectionReference<Map<String, dynamic>> _userEntriesCollection(String userId) {
-    return _firestore.collection('users').doc(userId).collection('calendarEntries');
+  CollectionReference<Map<String, dynamic>> _userEntriesCollection(
+    String userId,
+  ) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('calendarEntries');
   }
 
   Query<Map<String, dynamic>> _monthQuery(String userId, DateTime month) {
@@ -52,12 +55,13 @@ class CalendarEntryRepository {
   }
 
   Stream<List<CalendarEntry>> watchEntries(CalendarEntriesRequest request) {
-    return _monthQuery(request.userId, request.month)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CalendarEntryDto.fromFirestore(doc).toDomain())
-            .toList()
-          ..sort((a, b) => a.date.compareTo(b.date)));
+    return _monthQuery(request.userId, request.month).snapshots().map(
+      (snapshot) =>
+          snapshot.docs
+              .map((doc) => CalendarEntryDto.fromFirestore(doc).toDomain())
+              .toList()
+            ..sort((a, b) => a.date.compareTo(b.date)),
+    );
   }
 
   Future<void> upsertEntries(String userId, List<CalendarEntry> entries) async {
@@ -180,26 +184,105 @@ class CalendarEntryRepository {
         scheduledHours: 0,
         generalNote: trimmedNote,
       );
-      await collection.doc(entry.id).set(
-        CalendarEntryDto.fromDomain(entry).toFirestore(includeSentinels: false),
-      );
+      await collection
+          .doc(entry.id)
+          .set(
+            CalendarEntryDto.fromDomain(
+              entry,
+            ).toFirestore(includeSentinels: false),
+          );
       return;
     }
 
     final batch = _firestore.batch();
     final updateData = <String, Object?>{
       'updatedAt': FieldValue.serverTimestamp(),
-      if (trimmedNote.isEmpty) 'notes': FieldValue.delete() else 'notes': trimmedNote,
+      if (trimmedNote.isEmpty)
+        'notes': FieldValue.delete()
+      else
+        'notes': trimmedNote,
     };
 
     for (final doc in query.docs) {
       final entry = CalendarEntryDto.fromFirestore(doc).toDomain();
-      if (trimmedNote.isEmpty && _isEntryEmpty(entry.copyWith(generalNote: null))) {
+      if (trimmedNote.isEmpty &&
+          _isEntryEmpty(entry.copyWith(generalNote: null))) {
         batch.delete(doc.reference);
       } else {
         batch.update(doc.reference, updateData);
       }
     }
+    await batch.commit();
+  }
+
+  Future<void> saveDayDetails({
+    required String userId,
+    required DateTime day,
+    required List<DayEvent> events,
+    required String note,
+    double? scheduledHours,
+  }) async {
+    final normalized = DateTime(day.year, day.month, day.day);
+    final collection = _userEntriesCollection(userId);
+    final query = await _dayQuery(userId, normalized).get();
+
+    final sanitizedEvents = _sanitizeEvents(events);
+    final trimmedNote = note.trim();
+    final normalizedNote = trimmedNote.isEmpty ? null : trimmedNote;
+    final sanitizedSchedule = scheduledHours == null
+        ? null
+        : _normalizeScheduleHours(scheduledHours);
+    final shouldPersistSchedule =
+        sanitizedSchedule != null && sanitizedSchedule > 0;
+
+    if (query.docs.isEmpty) {
+      final shouldCreateEntry =
+          sanitizedEvents.isNotEmpty ||
+          normalizedNote != null ||
+          shouldPersistSchedule;
+      if (!shouldCreateEntry) {
+        return;
+      }
+      final entry = CalendarEntry(
+        id: _documentId(normalized),
+        date: normalized,
+        scheduledHours: sanitizedSchedule ?? 0,
+        events: sanitizedEvents,
+        generalNote: normalizedNote,
+      );
+      await collection
+          .doc(entry.id)
+          .set(
+            CalendarEntryDto.fromDomain(
+              entry,
+            ).toFirestore(includeSentinels: false),
+          );
+      return;
+    }
+
+    final batch = _firestore.batch();
+
+    for (final doc in query.docs) {
+      final existing = CalendarEntryDto.fromFirestore(doc).toDomain();
+      final updatedSchedule = sanitizedSchedule ?? existing.scheduledHours;
+      final updated = existing.copyWith(
+        events: sanitizedEvents,
+        generalNote: normalizedNote,
+        scheduledHours: updatedSchedule,
+      );
+      if (_isEntryEmpty(updated)) {
+        batch.delete(doc.reference);
+      } else {
+        batch.set(
+          doc.reference,
+          CalendarEntryDto.fromDomain(
+            updated,
+          ).toFirestore(includeSentinels: true),
+          SetOptions(merge: true),
+        );
+      }
+    }
+
     await batch.commit();
   }
 
@@ -213,18 +296,72 @@ class CalendarEntryRepository {
     final hasSchedule = entry.scheduledHours > 0;
     final hasEvents = entry.events.isNotEmpty;
     final hasIncidents = entry.incidents.isNotEmpty;
-    final hasNote = entry.generalNote != null && entry.generalNote!.trim().isNotEmpty;
+    final hasNote =
+        entry.generalNote != null && entry.generalNote!.trim().isNotEmpty;
     return !hasSchedule && !hasEvents && !hasIncidents && !hasNote;
+  }
+
+  List<DayEvent> _sanitizeEvents(List<DayEvent> events) {
+    if (events.isEmpty) {
+      return const <DayEvent>[];
+    }
+    final sanitized = <DayEvent>[];
+    for (final event in events) {
+      final normalizedHours = _normalizeHours(event.hours);
+      final trimmedNote = event.note?.trim();
+      final note = trimmedNote == null || trimmedNote.isEmpty
+          ? null
+          : trimmedNote;
+      final customDetails = event.type == EventType.custom
+          ? event.customDetails
+          : null;
+
+      if (normalizedHours == 0 &&
+          note == null &&
+          customDetails == null &&
+          event.type == EventType.worked) {
+        continue;
+      }
+
+      sanitized.add(
+        event.copyWith(
+          hours: normalizedHours,
+          note: note,
+          customDetails: customDetails,
+        ),
+      );
+    }
+    if (sanitized.isEmpty) {
+      return const <DayEvent>[];
+    }
+    return List.unmodifiable(sanitized);
+  }
+
+  double _normalizeHours(double hours) {
+    if (hours.isNaN || hours.isInfinite) {
+      return 0;
+    }
+    final clamped = hours.clamp(0, 48);
+    return clamped.toDouble();
+  }
+
+  double _normalizeScheduleHours(double hours) {
+    return _normalizeHours(hours);
   }
 }
 
-final calendarEntryRepositoryProvider = Provider<CalendarEntryRepository>((ref) {
+final calendarEntryRepositoryProvider = Provider<CalendarEntryRepository>((
+  ref,
+) {
   final firestore = ref.watch(firebaseFirestoreProvider);
   return CalendarEntryRepository(firestore);
 });
 
 final calendarEntriesStreamProvider =
-    StreamProvider.family<List<CalendarEntry>, CalendarEntriesRequest>((ref, request) {
-  final repository = ref.watch(calendarEntryRepositoryProvider);
-  return repository.watchEntries(request);
-});
+    StreamProvider.family<List<CalendarEntry>, CalendarEntriesRequest>((
+      ref,
+      request,
+    ) {
+      final repository = ref.watch(calendarEntryRepositoryProvider);
+      return repository.watchEntries(request);
+    });

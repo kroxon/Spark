@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iskra/features/calendar/data/calendar_entry_repository.dart';
+import 'package:iskra/features/calendar/models/calendar_entry.dart';
 
 class HomeState {
   const HomeState({
@@ -33,9 +34,7 @@ class HomeController extends Notifier<HomeState> {
   }
 
   void setVisibleMonth(DateTime month) {
-    state = state.copyWith(
-      visibleMonth: DateTime(month.year, month.month),
-    );
+    state = state.copyWith(visibleMonth: DateTime(month.year, month.month));
   }
 
   void toggleScheduleEditing() {
@@ -52,16 +51,20 @@ class HomeController extends Notifier<HomeState> {
     setVisibleMonth(DateTime(current.year, current.month + 1));
   }
 
-  Future<void> saveDayNote({
+  Future<void> saveDayDetails({
     required String userId,
     required DateTime day,
-    required String note,
+    required List<DayEvent> events,
+    required String generalNote,
+    double? scheduledHours,
   }) async {
     final repository = ref.read(calendarEntryRepositoryProvider);
-    await repository.updateDayNote(
+    await repository.saveDayDetails(
       userId: userId,
       day: day,
-      note: note,
+      events: events,
+      note: generalNote,
+      scheduledHours: scheduledHours,
     );
   }
 
@@ -83,12 +86,10 @@ class HomeController extends Notifier<HomeState> {
     required DateTime day,
   }) async {
     final repository = ref.read(calendarEntryRepositoryProvider);
-    await repository.removeScheduledService(
-      userId: userId,
-      day: day,
-    );
+    await repository.removeScheduledService(userId: userId, day: day);
   }
 }
 
-final homeControllerProvider =
-    NotifierProvider<HomeController, HomeState>(HomeController.new);
+final homeControllerProvider = NotifierProvider<HomeController, HomeState>(
+  HomeController.new,
+);

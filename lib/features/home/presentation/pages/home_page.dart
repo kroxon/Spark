@@ -37,14 +37,12 @@ class _HomePageState extends ConsumerState<HomePage> {
       return const SizedBox.shrink();
     }
 
-  final homeState = ref.watch(homeControllerProvider);
-  final visibleMonth = homeState.visibleMonth;
-  final isEditingSchedule = homeState.isEditingSchedule;
+    final homeState = ref.watch(homeControllerProvider);
+    final visibleMonth = homeState.visibleMonth;
+    final isEditingSchedule = homeState.isEditingSchedule;
 
     final profileAsync = ref.watch(
-      userProfileProvider(
-        UserProfileRequest(uid: user.uid, email: user.email),
-      ),
+      userProfileProvider(UserProfileRequest(uid: user.uid, email: user.email)),
     );
 
     return profileAsync.when(
@@ -119,7 +117,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             }
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Nie udało się zaktualizować harmonogramu: $error'),
+                content: Text(
+                  'Nie udało się zaktualizować harmonogramu: $error',
+                ),
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -147,25 +147,34 @@ class _HomePageState extends ConsumerState<HomePage> {
       userProfile: profile,
       shiftCycleCalculator: _cycle,
       allEntries: entries,
-    ).then((note) async {
-      final trimmed = note?.trim();
-      if (trimmed == null) {
+    ).then((result) async {
+      if (result == null) {
         return;
       }
 
       final controller = ref.read(homeControllerProvider.notifier);
       try {
-        await controller.saveDayNote(
+        await controller.saveDayDetails(
           userId: user.uid,
           day: selectedDay,
-          note: trimmed,
+          events: result.events,
+          generalNote: result.generalNote,
+          scheduledHours: result.scheduledHours,
         );
         if (!context.mounted) {
           return;
         }
+        final hasSchedule = result.scheduledHours != null;
+        final hasData =
+            result.events.isNotEmpty ||
+            result.generalNote.trim().isNotEmpty ||
+            (hasSchedule && (result.scheduledHours ?? 0) > 0);
+        final feedback = hasData
+            ? 'Zapisano szczegóły dnia.'
+            : 'Wyczyszczono dane dnia.';
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Notatka zapisana.'),
+          SnackBar(
+            content: Text(feedback),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -175,7 +184,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Nie udało się zapisać notatki: $error'),
+            content: Text('Nie udało się zapisać dnia: $error'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -194,7 +203,7 @@ class _CalendarContent extends StatelessWidget {
     required this.onMonthChanged,
     required this.onDayTap,
     required this.onToggleEditing,
-  required this.onToggleScheduled,
+    required this.onToggleScheduled,
   });
 
   final DateTime month;
@@ -211,12 +220,19 @@ class _CalendarContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 24);
+        final padding = const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 24,
+        );
         double cardHeight;
-        if (constraints.maxHeight.isFinite && constraints.maxHeight > padding.vertical) {
+        if (constraints.maxHeight.isFinite &&
+            constraints.maxHeight > padding.vertical) {
           cardHeight = constraints.maxHeight - padding.vertical;
         } else {
-          final media = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.vertical - padding.vertical;
+          final media =
+              MediaQuery.of(context).size.height -
+              MediaQuery.of(context).padding.vertical -
+              padding.vertical;
           cardHeight = media.isFinite && media > 0 ? media : 600;
         }
 

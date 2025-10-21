@@ -26,31 +26,50 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   late final Map<EventType, TextEditingController> _controllers;
 
   static const List<_QuickStatusOption> _options = <_QuickStatusOption>[
-    _QuickStatusOption(type: EventType.delegation, label: 'Delegacja'),
-    _QuickStatusOption(type: EventType.bloodDonation, label: 'Krwiodawstwo'),
     _QuickStatusOption(
-      type: EventType.vacationStandard,
+      type: EventType.delegation,
+      label: 'Delegacja',
+      isFixedHours: false,
+    ),
+    _QuickStatusOption(
+      type: EventType.bloodDonation,
+      label: 'Krwiodawstwo',
+      isFixedHours: true,
+    ),
+    _QuickStatusOption(
+      type: EventType.vacationRegular,
       label: 'Urlop wypoczynkowy',
+      isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.vacationAdditional,
       label: 'Urlop dodatkowy',
+      isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.sickLeave80,
       label: 'Zwolnienie lekarskie 80%',
+      isFixedHours: true,
     ),
     _QuickStatusOption(
       type: EventType.sickLeave100,
       label: 'Zwolnienie lekarskie 100%',
+      isFixedHours: true,
     ),
     _QuickStatusOption(
-      type: EventType.custom,
-      label: 'Nieobecność niestandardowa',
-    ),
-    _QuickStatusOption(
-      type: EventType.overtimeOffDay,
+      type: EventType.overtimeTimeOff,
       label: 'Odbiór nadgodzin',
+      isFixedHours: false,
+    ),
+    _QuickStatusOption(
+      type: EventType.customAbsence,
+      label: 'Inna nieobecność',
+      isFixedHours: false,
+    ),
+    _QuickStatusOption(
+      type: EventType.overtimeWorked,
+      label: 'Nadgodziny',
+      isFixedHours: false,
     ),
   ];
 
@@ -59,11 +78,12 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     super.initState();
     _selections = Map<EventType, double>.from(widget.selections);
     _controllers = <EventType, TextEditingController>{
-      for (final option in _options)
+      for (final option in _options.where((option) => !option.isFixedHours))
         option.type: TextEditingController(
           text: _formatHours(_selections[option.type]),
         ),
     };
+    _enforceScheduleConstraints(notifyParent: true);
   }
 
   @override
@@ -72,27 +92,15 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     if (!mapEquals(widget.selections, oldWidget.selections)) {
       _selections = Map<EventType, double>.from(widget.selections);
       for (final option in _options) {
-        _controllers[option.type]!.text = _formatHours(
-          _selections[option.type],
-        );
-      }
-    }
-    if (widget.scheduledHours != oldWidget.scheduledHours &&
-        widget.scheduledHours != null) {
-      final oldDefault = oldWidget.scheduledHours;
-      final newDefault = widget.scheduledHours!;
-      var updated = false;
-      for (final entry in _selections.entries.toList()) {
-        final current = entry.value;
-        if (oldDefault != null && (current - oldDefault).abs() < 0.01) {
-          _selections[entry.key] = newDefault;
-          _controllers[entry.key]!.text = _formatHours(newDefault);
-          updated = true;
+        final controller = _controllers[option.type];
+        if (controller != null) {
+          controller.text = _formatHours(_selections[option.type]);
         }
       }
-      if (updated) {
-        _notifyParent();
-      }
+    }
+    final sanitized = _enforceScheduleConstraints(notifyParent: true);
+    if (sanitized && mounted) {
+      setState(() {});
     }
   }
 
@@ -107,20 +115,21 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final visibleOptions = _visibleOptions();
     return LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 8.0;
+        const spacing = 6.0;
         final isSingleColumn = constraints.maxWidth < 280;
         final columnsCount = isSingleColumn ? 1 : 2;
-        final sliceSize = (_options.length / columnsCount).ceil();
+        final sliceSize = (visibleOptions.length / columnsCount).ceil();
 
         List<Widget> buildColumnSlice(int columnIndex) {
           final start = columnIndex * sliceSize;
-          final end = math.min(start + sliceSize, _options.length);
+          final end = math.min(start + sliceSize, visibleOptions.length);
           if (start >= end) {
             return const [];
           }
-          final slice = _options.sublist(start, end);
+          final slice = visibleOptions.sublist(start, end);
           return [
             for (var i = 0; i < slice.length; i++) ...[
               _buildOption(slice[i]),
@@ -152,14 +161,17 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   }
 
   Widget _buildOption(_QuickStatusOption option) {
+    if (!_isOptionVisible(option.type)) {
+      return const SizedBox.shrink();
+    }
     final theme = Theme.of(context);
     final isSelected = _selections.containsKey(option.type);
-    final controller = _controllers[option.type]!;
+    final controller = _controllers[option.type];
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeInOut,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: isSelected
             ? theme.colorScheme.primary.withValues(alpha: 0.08)
@@ -200,25 +212,32 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
               ),
             ],
           ),
-          if (isSelected) ...[
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 40,
-              child: TextField(
-                controller: controller,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                ],
-                decoration: const InputDecoration(
-                  isDense: true,
-                  labelText: 'Godziny',
-                  suffixText: 'h',
-                ),
-                onChanged: (value) => _updateHours(option.type, value),
+          if (isSelected && option.isFixedHours) ...[
+            const SizedBox(height: 4),
+            Text(
+              'Godziny: ${_formatHours(_selections[option.type])} h',
+              style: theme.textTheme.bodySmall,
+            ),
+          ] else if (isSelected && controller != null) ...[
+            const SizedBox(height: 6),
+            TextField(
+              controller: controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+              ],
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 8,
+                ),
+                labelText: 'Godziny',
+                suffixText: 'h',
+              ),
+              onChanged: (value) => _updateHours(option.type, value),
             ),
           ],
         ],
@@ -228,30 +247,50 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
 
   void _toggle(EventType type) {
     setState(() {
+      if (!_isOptionVisible(type)) {
+        return;
+      }
       if (_selections.containsKey(type)) {
         _selections.remove(type);
-        _controllers[type]!.text = '';
+        final controller = _controllers[type];
+        if (controller != null) {
+          controller.text = '';
+        }
       } else {
         final defaultHours = _defaultHours(type);
         _selections[type] = defaultHours;
-        final controller = _controllers[type]!;
-        controller
-          ..text = _formatHours(defaultHours)
-          ..selection = TextSelection.fromPosition(
-            TextPosition(offset: controller.text.length),
-          );
+        final controller = _controllers[type];
+        if (controller != null) {
+          controller
+            ..text = _formatHours(defaultHours)
+            ..selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            );
+        }
       }
+      _enforceScheduleConstraints();
       _notifyParent();
     });
   }
 
   void _updateHours(EventType type, String rawValue) {
+    if (!_controllers.containsKey(type)) {
+      return;
+    }
     final parsed = _parseHours(rawValue);
     if (parsed == null) {
       return;
     }
     setState(() {
-      _selections[type] = parsed;
+      var normalized = parsed;
+      if (type == EventType.overtimeTimeOff) {
+        final schedule = _normalizedSchedule();
+        if (schedule > 0) {
+          normalized = math.min(parsed, schedule);
+        }
+      }
+      _selections[type] = normalized;
+      _enforceScheduleConstraints();
       _notifyParent();
     });
   }
@@ -261,13 +300,17 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   }
 
   double _defaultHours(EventType type) {
-    if (widget.scheduledHours != null && widget.scheduledHours! > 0) {
-      return widget.scheduledHours!;
+    if (type == EventType.delegation) {
+      return 8;
     }
-    if (type == EventType.overtimeOffDay) {
-      return 4;
+    const base = 24.0;
+    if (type == EventType.overtimeTimeOff) {
+      final schedule = _normalizedSchedule();
+      if (schedule > 0) {
+        return math.min(base, schedule);
+      }
     }
-    return 8;
+    return base;
   }
 
   String _formatHours(double? value) {
@@ -282,11 +325,71 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     final sanitized = input.replaceAll(',', '.');
     return double.tryParse(sanitized);
   }
+
+  bool _enforceScheduleConstraints({bool notifyParent = false}) {
+    final schedule = _normalizedSchedule();
+    final hasSchedule = schedule > 0;
+    var changed = false;
+
+    if (hasSchedule) {
+      if (_selections.remove(EventType.overtimeWorked) != null) {
+        _controllers[EventType.overtimeWorked]?.text = '';
+        changed = true;
+      }
+      final currentTimeOff = _selections[EventType.overtimeTimeOff];
+      if (currentTimeOff != null) {
+        final clamped = math.min(currentTimeOff, schedule);
+        if (clamped != currentTimeOff) {
+          _selections[EventType.overtimeTimeOff] = clamped;
+          _controllers[EventType.overtimeTimeOff]?.text = _formatHours(clamped);
+          changed = true;
+        }
+      }
+    } else {
+      if (_selections.remove(EventType.overtimeTimeOff) != null) {
+        _controllers[EventType.overtimeTimeOff]?.text = '';
+        changed = true;
+      }
+    }
+
+    if (changed && notifyParent) {
+      _notifyParent();
+    }
+    return changed;
+  }
+
+  List<_QuickStatusOption> _visibleOptions() {
+    return _options.where((option) => _isOptionVisible(option.type)).toList();
+  }
+
+  bool _isOptionVisible(EventType type) {
+    final hasSchedule = _normalizedSchedule() > 0;
+    if (type == EventType.overtimeWorked) {
+      return !hasSchedule;
+    }
+    if (type == EventType.overtimeTimeOff) {
+      return hasSchedule;
+    }
+    return true;
+  }
+
+  double _normalizedSchedule() {
+    final schedule = widget.scheduledHours ?? 0;
+    if (schedule.isNaN || schedule.isInfinite) {
+      return 0;
+    }
+    return schedule.clamp(0, 48);
+  }
 }
 
 class _QuickStatusOption {
-  const _QuickStatusOption({required this.type, required this.label});
+  const _QuickStatusOption({
+    required this.type,
+    required this.label,
+    this.isFixedHours = false,
+  });
 
   final EventType type;
   final String label;
+  final bool isFixedHours;
 }

@@ -293,6 +293,18 @@ EventType? _parseEventType(String? raw) {
   if (raw == null) {
     return null;
   }
+  switch (raw) {
+    case 'worked':
+      return EventType.overtimeWorked;
+    case 'vacationStandard':
+      return EventType.vacationRegular;
+    case 'custom':
+      return EventType.customAbsence;
+    case 'dayOff':
+      return EventType.otherAbsence;
+    case 'overtimeOffDay':
+      return EventType.overtimeTimeOff;
+  }
   for (final value in EventType.values) {
     if (value.name == raw) {
       return value;
@@ -308,7 +320,7 @@ EventType? _parseLegacyEventType(String raw) {
     case 'bloodDonation':
       return EventType.bloodDonation;
     case 'vacationStandard':
-      return EventType.vacationStandard;
+      return EventType.vacationRegular;
     case 'vacationAdditional':
       return EventType.vacationAdditional;
     case 'sickLeave80':
@@ -316,9 +328,11 @@ EventType? _parseLegacyEventType(String raw) {
     case 'sickLeave100':
       return EventType.sickLeave100;
     case 'custom':
-      return EventType.custom;
+      return EventType.customAbsence;
+    case 'dayOff':
+      return EventType.otherAbsence;
     case 'overtimeOffDay':
-      return EventType.overtimeOffDay;
+      return EventType.overtimeTimeOff;
     default:
       return null;
   }

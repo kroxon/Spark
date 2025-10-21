@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iskra/core/firebase/firebase_providers.dart';
@@ -226,7 +228,6 @@ class CalendarEntryRepository {
     final collection = _userEntriesCollection(userId);
     final query = await _dayQuery(userId, normalized).get();
 
-    final sanitizedEvents = _sanitizeEvents(events);
     final trimmedNote = note.trim();
     final normalizedNote = trimmedNote.isEmpty ? null : trimmedNote;
     final sanitizedSchedule = scheduledHours == null
@@ -236,6 +237,8 @@ class CalendarEntryRepository {
         sanitizedSchedule != null && sanitizedSchedule > 0;
 
     if (query.docs.isEmpty) {
+      final scheduleForNew = sanitizedSchedule ?? 0;
+      final sanitizedEvents = _sanitizeEvents(events, scheduleForNew);
       final shouldCreateEntry =
           sanitizedEvents.isNotEmpty ||
           normalizedNote != null ||
@@ -246,7 +249,7 @@ class CalendarEntryRepository {
       final entry = CalendarEntry(
         id: _documentId(normalized),
         date: normalized,
-        scheduledHours: sanitizedSchedule ?? 0,
+        scheduledHours: scheduleForNew,
         events: sanitizedEvents,
         generalNote: normalizedNote,
       );
@@ -265,8 +268,9 @@ class CalendarEntryRepository {
     for (final doc in query.docs) {
       final existing = CalendarEntryDto.fromFirestore(doc).toDomain();
       final updatedSchedule = sanitizedSchedule ?? existing.scheduledHours;
+      final sanitizedEventsForDoc = _sanitizeEvents(events, updatedSchedule);
       final updated = existing.copyWith(
-        events: sanitizedEvents,
+        events: sanitizedEventsForDoc,
         generalNote: normalizedNote,
         scheduledHours: updatedSchedule,
       );
@@ -301,10 +305,13 @@ class CalendarEntryRepository {
     return !hasSchedule && !hasEvents && !hasIncidents && !hasNote;
   }
 
-  List<DayEvent> _sanitizeEvents(List<DayEvent> events) {
+  List<DayEvent> _sanitizeEvents(List<DayEvent> events, double scheduledHours) {
     if (events.isEmpty) {
       return const <DayEvent>[];
     }
+    final normalizedSchedule = _normalizeHours(scheduledHours);
+    final hasSchedule = normalizedSchedule > 0;
+    var remainingTimeOff = hasSchedule ? normalizedSchedule : 0;
     final sanitized = <DayEvent>[];
     for (final event in events) {
       final normalizedHours = _normalizeHours(event.hours);
@@ -312,14 +319,41 @@ class CalendarEntryRepository {
       final note = trimmedNote == null || trimmedNote.isEmpty
           ? null
           : trimmedNote;
-      final customDetails = event.type == EventType.custom
+      final customDetails = event.type == EventType.customAbsence
           ? event.customDetails
           : null;
+
+      if (hasSchedule && event.type == EventType.overtimeWorked) {
+        continue;
+      }
+
+      if (!hasSchedule && event.type == EventType.overtimeTimeOff) {
+        continue;
+      }
+
+      if (hasSchedule && event.type == EventType.overtimeTimeOff) {
+        if (remainingTimeOff <= 0) {
+          continue;
+        }
+        final clamped = math.min(normalizedHours, remainingTimeOff).toDouble();
+        if (clamped <= 0) {
+          continue;
+        }
+        remainingTimeOff -= clamped;
+        sanitized.add(
+          event.copyWith(
+            hours: clamped,
+            note: note,
+            customDetails: customDetails,
+          ),
+        );
+        continue;
+      }
 
       if (normalizedHours == 0 &&
           note == null &&
           customDetails == null &&
-          event.type == EventType.worked) {
+          event.type == EventType.overtimeWorked) {
         continue;
       }
 

@@ -33,7 +33,7 @@ class _DayScheduleHoursPickerState extends State<DayScheduleHoursPicker> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Godziny z harmonogramu',
+          'Godziny z harmonogramu półrocznego/rocznego',
           style: theme.textTheme.bodySmall?.copyWith(
             color: colors.onSurfaceVariant,
           ),
@@ -154,7 +154,7 @@ class _SchedulePill extends StatelessWidget {
         : colors.surfaceContainerHighest;
     final borderColor = isActive
         ? colors.primary
-        : colors.outlineVariant.withOpacity(0.4);
+        : colors.outlineVariant.withValues(alpha: 0.4);
 
     return Material(
       color: Colors.transparent,

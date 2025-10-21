@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 
@@ -26,7 +28,7 @@ class EditableDayEvent {
       hours: hours,
       note: note?.trim().isEmpty == true ? null : note?.trim(),
       customDetails:
-          type == EventType.custom &&
+          type == EventType.customAbsence &&
               customName != null &&
               customName!.trim().isNotEmpty &&
               customPayout != null
@@ -50,32 +52,32 @@ class DayEventEditor extends StatefulWidget {
     super.key,
     required this.events,
     required this.onChanged,
+    this.scheduledHours,
   });
 
   final List<EditableDayEvent> events;
   final ValueChanged<List<EditableDayEvent>> onChanged;
+  final double? scheduledHours;
 
   @override
   State<DayEventEditor> createState() => _DayEventEditorState();
 }
 
 class _DayEventEditorState extends State<DayEventEditor> {
-  late final List<EditableDayEvent> _events;
+  late List<EditableDayEvent> _events;
 
   @override
   void initState() {
     super.initState();
-    _events = widget.events
-        .map(
-          (event) => EditableDayEvent(
-            type: event.type,
-            hours: event.hours,
-            note: event.note,
-            customName: event.customName,
-            customPayout: event.customPayout,
-          ),
-        )
-        .toList();
+    _events = widget.events.map(_cloneEvent).toList();
+  }
+
+  @override
+  void didUpdateWidget(DayEventEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget.events, oldWidget.events)) {
+      _events = widget.events.map(_cloneEvent).toList();
+    }
   }
 
   @override
@@ -122,6 +124,7 @@ class _DayEventEditorState extends State<DayEventEditor> {
                   ),
                   child: _EventCard(
                     event: _events[index],
+                    scheduledHours: widget.scheduledHours,
                     onChanged: (updated) => _updateEvent(index, updated),
                     onRemove: () => _removeEvent(index),
                   ),
@@ -134,7 +137,9 @@ class _DayEventEditorState extends State<DayEventEditor> {
 
   void _addEvent() {
     setState(() {
-      _events.add(EditableDayEvent(type: EventType.worked, hours: 24));
+      final type = _defaultEventType();
+      final hours = _defaultHours(type);
+      _events.add(EditableDayEvent(type: type, hours: hours));
     });
     widget.onChanged(List<EditableDayEvent>.from(_events));
   }
@@ -152,6 +157,40 @@ class _DayEventEditorState extends State<DayEventEditor> {
     });
     widget.onChanged(List<EditableDayEvent>.from(_events));
   }
+
+  EditableDayEvent _cloneEvent(EditableDayEvent event) {
+    return EditableDayEvent(
+      type: event.type,
+      hours: event.hours,
+      note: event.note,
+      customName: event.customName,
+      customPayout: event.customPayout,
+    );
+  }
+
+  EventType _defaultEventType() {
+    return _hasSchedule ? EventType.overtimeTimeOff : EventType.overtimeWorked;
+  }
+
+  double _defaultHours(EventType type) {
+    if (type == EventType.delegation) {
+      return 8;
+    }
+    if (type == EventType.overtimeTimeOff && _hasSchedule) {
+      return math.min(24, _normalizedSchedule());
+    }
+    return 24;
+  }
+
+  bool get _hasSchedule => _normalizedSchedule() > 0;
+
+  double _normalizedSchedule() {
+    final raw = widget.scheduledHours ?? 0;
+    if (raw.isNaN || raw.isInfinite) {
+      return 0;
+    }
+    return raw.clamp(0, 48);
+  }
 }
 
 class _EventCard extends StatefulWidget {
@@ -159,11 +198,13 @@ class _EventCard extends StatefulWidget {
     required this.event,
     required this.onChanged,
     required this.onRemove,
+    required this.scheduledHours,
   });
 
   final EditableDayEvent event;
   final ValueChanged<EditableDayEvent> onChanged;
   final VoidCallback onRemove;
+  final double? scheduledHours;
 
   @override
   State<_EventCard> createState() => _EventCardState();
@@ -186,11 +227,7 @@ class _EventCardState extends State<_EventCard> {
       customName: widget.event.customName,
       customPayout: widget.event.customPayout,
     );
-    _hoursController = TextEditingController(
-      text: _event.hours.toStringAsFixed(
-        _event.hours.truncateToDouble() == _event.hours ? 0 : 1,
-      ),
-    );
+    _hoursController = TextEditingController(text: _formatHours(_event.hours));
     _noteController = TextEditingController(text: _event.note ?? '');
     _customNameController = TextEditingController(
       text: _event.customName ?? '',
@@ -198,6 +235,30 @@ class _EventCardState extends State<_EventCard> {
     _customPayoutController = TextEditingController(
       text: _event.customPayout?.toString() ?? '',
     );
+    _applyScheduleConstraints(updateHoursController: true);
+  }
+
+  @override
+  void didUpdateWidget(_EventCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget.event, oldWidget.event)) {
+      _event = EditableDayEvent(
+        type: widget.event.type,
+        hours: widget.event.hours,
+        note: widget.event.note,
+        customName: widget.event.customName,
+        customPayout: widget.event.customPayout,
+      );
+      _hoursController.text = _formatHours(_event.hours);
+      _noteController.text = widget.event.note ?? '';
+      _customNameController.text = widget.event.customName ?? '';
+      _customPayoutController.text =
+          widget.event.customPayout?.toString() ?? '';
+    }
+    if ((widget.scheduledHours ?? 0) != (oldWidget.scheduledHours ?? 0) ||
+        !identical(widget.event, oldWidget.event)) {
+      _applyScheduleConstraints(updateHoursController: true);
+    }
   }
 
   @override
@@ -212,6 +273,7 @@ class _EventCardState extends State<_EventCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final allowedTypes = _allowedEventTypes();
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -232,7 +294,7 @@ class _EventCardState extends State<_EventCard> {
                   decoration: const InputDecoration(
                     labelText: 'Rodzaj zdarzenia',
                   ),
-                  items: EventType.values
+                  items: allowedTypes
                       .map(
                         (type) => DropdownMenuItem<EventType>(
                           value: type,
@@ -246,7 +308,8 @@ class _EventCardState extends State<_EventCard> {
                     }
                     setState(() {
                       _event.type = value;
-                      if (value != EventType.custom) {
+                      _applyScheduleConstraints(updateHoursController: true);
+                      if (value != EventType.customAbsence) {
                         _event.customName = null;
                         _event.customPayout = null;
                         _customNameController.clear();
@@ -277,7 +340,21 @@ class _EventCardState extends State<_EventCard> {
                   onChanged: (value) {
                     final parsed = double.tryParse(value.replaceAll(',', '.'));
                     if (parsed != null) {
-                      _event.hours = parsed.clamp(0, 48).toDouble();
+                      var normalized = parsed.clamp(0, 48).toDouble();
+                      final schedule = _normalizedSchedule();
+                      if (_event.type == EventType.overtimeTimeOff &&
+                          schedule > 0) {
+                        normalized = math.min(normalized, schedule);
+                      }
+                      _event.hours = normalized;
+                      final formatted = _formatHours(normalized);
+                      if (_hoursController.text != formatted) {
+                        _hoursController
+                          ..text = formatted
+                          ..selection = TextSelection.fromPosition(
+                            TextPosition(offset: formatted.length),
+                          );
+                      }
                       _emitChange();
                     }
                   },
@@ -296,7 +373,7 @@ class _EventCardState extends State<_EventCard> {
               ),
             ],
           ),
-          if (_event.type == EventType.custom) ...[
+          if (_event.type == EventType.customAbsence) ...[
             const SizedBox(height: 12),
             Row(
               children: [
@@ -349,15 +426,74 @@ class _EventCardState extends State<_EventCard> {
     );
   }
 
+  List<EventType> _allowedEventTypes() {
+    final schedule = _normalizedSchedule();
+    final hasSchedule = schedule > 0;
+    return EventType.values.where((type) {
+      if (type == EventType.overtimeWorked) {
+        return !hasSchedule;
+      }
+      if (type == EventType.overtimeTimeOff) {
+        return hasSchedule;
+      }
+      return true;
+    }).toList();
+  }
+
+  void _applyScheduleConstraints({required bool updateHoursController}) {
+    final allowedTypes = _allowedEventTypes();
+    if (!allowedTypes.contains(_event.type)) {
+      _event.type = allowedTypes.first;
+      if (_event.type != EventType.customAbsence) {
+        _event.customName = null;
+        _event.customPayout = null;
+        if (updateHoursController) {
+          _customNameController.clear();
+          _customPayoutController.clear();
+        }
+      }
+    }
+
+    final schedule = _normalizedSchedule();
+    if (_event.type == EventType.overtimeTimeOff && schedule > 0) {
+      final clamped = math.min(_event.hours, schedule);
+      if (clamped != _event.hours) {
+        _event.hours = clamped;
+      }
+    }
+
+    if (updateHoursController) {
+      final formatted = _formatHours(_event.hours);
+      _hoursController
+        ..text = formatted
+        ..selection = TextSelection.fromPosition(
+          TextPosition(offset: formatted.length),
+        );
+    }
+  }
+
+  double _normalizedSchedule() {
+    final raw = widget.scheduledHours ?? 0;
+    if (raw.isNaN || raw.isInfinite) {
+      return 0;
+    }
+    return raw.clamp(0, 48);
+  }
+
+  String _formatHours(double value) {
+    final isInt = value.truncateToDouble() == value;
+    return isInt ? value.toStringAsFixed(0) : value.toStringAsFixed(1);
+  }
+
   String _eventTypeLabel(EventType type) {
     switch (type) {
-      case EventType.worked:
-        return 'Przepracowana służba';
+      case EventType.overtimeWorked:
+        return 'Nadgodziny';
       case EventType.delegation:
         return 'Delegacja';
       case EventType.bloodDonation:
-        return 'Oddanie krwi';
-      case EventType.vacationStandard:
+        return 'Krwiodawstwo';
+      case EventType.vacationRegular:
         return 'Urlop wypoczynkowy';
       case EventType.vacationAdditional:
         return 'Urlop dodatkowy';
@@ -365,12 +501,12 @@ class _EventCardState extends State<_EventCard> {
         return 'Zwolnienie lekarskie 80%';
       case EventType.sickLeave100:
         return 'Zwolnienie lekarskie 100%';
-      case EventType.dayOff:
-        return 'Dzień wolny za służbę';
-      case EventType.custom:
+      case EventType.otherAbsence:
+        return 'Inna nieobecność';
+      case EventType.customAbsence:
         return 'Zdarzenie niestandardowe';
-      case EventType.overtimeOffDay:
-        return 'Praca w dniu wolnym';
+      case EventType.overtimeTimeOff:
+        return 'Odbiór nadgodzin';
     }
   }
 }

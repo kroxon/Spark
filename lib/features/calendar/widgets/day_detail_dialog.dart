@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
@@ -82,14 +84,15 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
   double? _scheduledHours;
 
   static const Set<EventType> _quickEventTypes = {
+    EventType.overtimeWorked,
     EventType.delegation,
     EventType.bloodDonation,
-    EventType.vacationStandard,
+    EventType.vacationRegular,
     EventType.vacationAdditional,
     EventType.sickLeave80,
     EventType.sickLeave100,
-    EventType.custom,
-    EventType.overtimeOffDay,
+    EventType.customAbsence,
+    EventType.overtimeTimeOff,
   };
 
   @override
@@ -114,6 +117,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     _scheduledHours = widget.isScheduled
         ? (widget.entry?.scheduledHours ?? 0)
         : null;
+    _applyScheduleConstraints();
   }
 
   @override
@@ -149,8 +153,10 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                       if (widget.isScheduled && _scheduledHours != null) ...[
                         DayScheduleHoursPicker(
                           value: _scheduledHours ?? 0,
-                          onChanged: (value) =>
-                              setState(() => _scheduledHours = value),
+                          onChanged: (value) => setState(() {
+                            _scheduledHours = value;
+                            _applyScheduleConstraints();
+                          }),
                         ),
                         const SizedBox(height: 24),
                       ],
@@ -159,17 +165,23 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                         scheduledHours: widget.isScheduled
                             ? _scheduledHours
                             : null,
-                        onChanged: (updated) => setState(
-                          () => _quickSelections = Map<EventType, double>.from(
+                        onChanged: (updated) => setState(() {
+                          _quickSelections = Map<EventType, double>.from(
                             updated,
-                          ),
-                        ),
+                          );
+                          _applyScheduleConstraints();
+                        }),
                       ),
                       const SizedBox(height: 24),
                       DayEventEditor(
                         events: _events,
-                        onChanged: (updated) =>
-                            setState(() => _events = updated),
+                        scheduledHours: widget.isScheduled
+                            ? _scheduledHours
+                            : null,
+                        onChanged: (updated) => setState(() {
+                          _events = updated;
+                          _applyScheduleConstraints();
+                        }),
                       ),
                       const SizedBox(height: 24),
                       DayNoteSection(controller: _noteController),
@@ -198,6 +210,108 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
         ),
       ),
     );
+  }
+
+  void _applyScheduleConstraints() {
+    final schedule = _normalizedSchedule();
+    final hasSchedule = schedule > 0;
+
+    final sanitizedQuick = Map<EventType, double>.from(_quickSelections);
+    var quickChanged = false;
+
+    if (hasSchedule) {
+      if (sanitizedQuick.remove(EventType.overtimeWorked) != null) {
+        quickChanged = true;
+      }
+      final currentTimeOff = sanitizedQuick[EventType.overtimeTimeOff];
+      if (currentTimeOff != null) {
+        final clamped = math.min(currentTimeOff, schedule);
+        if (clamped <= 0) {
+          sanitizedQuick.remove(EventType.overtimeTimeOff);
+          quickChanged = true;
+        } else if (clamped != currentTimeOff) {
+          sanitizedQuick[EventType.overtimeTimeOff] = clamped;
+          quickChanged = true;
+        }
+      }
+    } else {
+      if (sanitizedQuick.remove(EventType.overtimeTimeOff) != null) {
+        quickChanged = true;
+      }
+    }
+
+    if (quickChanged) {
+      _quickSelections = sanitizedQuick;
+    }
+
+    var remainingTimeOff = hasSchedule
+        ? math.max(
+            0,
+            schedule - (sanitizedQuick[EventType.overtimeTimeOff] ?? 0),
+          )
+        : 0.0;
+    final sanitizedEvents = <EditableDayEvent>[];
+    var eventsChanged = false;
+
+    for (final event in _events) {
+      final normalizedHours = event.hours.clamp(0, 48).toDouble();
+      if (hasSchedule && event.type == EventType.overtimeWorked) {
+        eventsChanged = true;
+        continue;
+      }
+      if (!hasSchedule && event.type == EventType.overtimeTimeOff) {
+        eventsChanged = true;
+        continue;
+      }
+      if (hasSchedule && event.type == EventType.overtimeTimeOff) {
+        if (remainingTimeOff <= 0) {
+          eventsChanged = true;
+          continue;
+        }
+        final clamped = math.min(normalizedHours, remainingTimeOff).toDouble();
+        if (clamped <= 0) {
+          eventsChanged = true;
+          continue;
+        }
+        if (clamped != normalizedHours) {
+          eventsChanged = true;
+        }
+        remainingTimeOff -= clamped;
+        sanitizedEvents.add(_cloneEvent(event, hours: clamped));
+        continue;
+      }
+
+      if (normalizedHours != event.hours) {
+        eventsChanged = true;
+      }
+      sanitizedEvents.add(_cloneEvent(event, hours: normalizedHours));
+    }
+
+    if (eventsChanged) {
+      _events = sanitizedEvents;
+    }
+  }
+
+  EditableDayEvent _cloneEvent(
+    EditableDayEvent source, {
+    EventType? type,
+    double? hours,
+  }) {
+    return EditableDayEvent(
+      type: type ?? source.type,
+      hours: hours ?? source.hours,
+      note: source.note,
+      customName: source.customName,
+      customPayout: source.customPayout,
+    );
+  }
+
+  double _normalizedSchedule() {
+    final raw = _scheduledHours ?? 0;
+    if (raw.isNaN || raw.isInfinite) {
+      return 0;
+    }
+    return raw.clamp(0, 48);
   }
 
   void _submit() {

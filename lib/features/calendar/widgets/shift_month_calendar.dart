@@ -28,7 +28,8 @@ class ShiftMonthCalendar extends StatefulWidget {
   final bool showMonthNavigation;
   final bool isEditing;
   final VoidCallback? onEditModeToggle;
-  final Future<void> Function(DateTime day, bool assign)? onToggleScheduledService;
+  final Future<void> Function(DateTime day, bool assign)?
+  onToggleScheduledService;
 
   @override
   State<ShiftMonthCalendar> createState() => _ShiftMonthCalendarState();
@@ -42,7 +43,10 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
   @override
   void initState() {
     super.initState();
-    _visibleMonth = DateTime(widget.initialMonth.year, widget.initialMonth.month);
+    _visibleMonth = DateTime(
+      widget.initialMonth.year,
+      widget.initialMonth.month,
+    );
     _buildShiftHistory();
     _buildEntries();
   }
@@ -52,11 +56,15 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     super.didUpdateWidget(oldWidget);
     if (widget.initialMonth.year != oldWidget.initialMonth.year ||
         widget.initialMonth.month != oldWidget.initialMonth.month) {
-      _visibleMonth = DateTime(widget.initialMonth.year, widget.initialMonth.month);
+      _visibleMonth = DateTime(
+        widget.initialMonth.year,
+        widget.initialMonth.month,
+      );
     }
 
     if (!identical(widget.userProfile, oldWidget.userProfile) ||
-        widget.userProfile.shiftHistory.length != oldWidget.userProfile.shiftHistory.length) {
+        widget.userProfile.shiftHistory.length !=
+            oldWidget.userProfile.shiftHistory.length) {
       _buildShiftHistory();
     }
 
@@ -67,8 +75,9 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
   }
 
   void _buildShiftHistory() {
-    _sortedShiftHistory = List<ShiftAssignment>.from(widget.userProfile.shiftHistory)
-      ..sort((a, b) => a.startDate.compareTo(b.startDate));
+    _sortedShiftHistory = List<ShiftAssignment>.from(
+      widget.userProfile.shiftHistory,
+    )..sort((a, b) => a.startDate.compareTo(b.startDate));
   }
 
   void _buildEntries() {
@@ -96,9 +105,7 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           child: widget.isEditing
-              ? _EditingBanner(
-                  onExit: widget.onEditModeToggle,
-                )
+              ? _EditingBanner(onExit: widget.onEditModeToggle)
               : const SizedBox.shrink(),
         ),
         Padding(
@@ -109,10 +116,7 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
                 .map(
                   (day) => Expanded(
                     child: Center(
-                      child: Text(
-                        day,
-                        style: theme.textTheme.labelSmall,
-                      ),
+                      child: Text(day, style: theme.textTheme.labelSmall),
                     ),
                   ),
                 )
@@ -125,7 +129,8 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
             builder: (context, constraints) {
               final rowCount = (days.length / 7).ceil();
               final cellWidth = constraints.maxWidth / 7;
-              final cellHeight = constraints.maxHeight.isFinite && constraints.maxHeight > 0
+              final cellHeight =
+                  constraints.maxHeight.isFinite && constraints.maxHeight > 0
                   ? constraints.maxHeight / rowCount
                   : 96.0;
               final columnWidths = <int, TableColumnWidth>{
@@ -153,10 +158,7 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     );
 
     if (!widget.showMonthNavigation) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: header,
-      );
+      return Padding(padding: const EdgeInsets.only(bottom: 12), child: header);
     }
 
     return Padding(
@@ -177,44 +179,67 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     );
   }
 
-  List<TableRow> _buildRows(List<DateTime> days, ThemeData theme, double cellWidth, double cellHeight) {
+  List<TableRow> _buildRows(
+    List<DateTime> days,
+    ThemeData theme,
+    double cellWidth,
+    double cellHeight,
+  ) {
     final rows = <TableRow>[];
     for (var i = 0; i < days.length; i += 7) {
       final week = days.sublist(i, i + 7);
       rows.add(
         TableRow(
-          children: week.map((day) => _buildCell(day, theme, cellWidth, cellHeight)).toList(),
+          children: week
+              .map((day) => _buildCell(day, theme, cellWidth, cellHeight))
+              .toList(),
         ),
       );
     }
     return rows;
   }
 
-  Widget _buildCell(DateTime day, ThemeData theme, double cellWidth, double cellHeight) {
+  Widget _buildCell(
+    DateTime day,
+    ThemeData theme,
+    double cellWidth,
+    double cellHeight,
+  ) {
     final colors = theme.colorScheme;
     final dateOnly = DateUtils.dateOnly(day);
-    final isCurrentMonth = dateOnly.year == _visibleMonth.year && dateOnly.month == _visibleMonth.month;
+    final isCurrentMonth =
+        dateOnly.year == _visibleMonth.year &&
+        dateOnly.month == _visibleMonth.month;
     final isToday = DateUtils.isSameDay(DateTime.now(), dateOnly);
-    final onDuty = widget.shiftCycleCalculator.isScheduledDayForUser(dateOnly, _sortedShiftHistory);
+    final onDuty = widget.shiftCycleCalculator.isScheduledDayForUser(
+      dateOnly,
+      _sortedShiftHistory,
+    );
     final shiftOnDuty = widget.shiftCycleCalculator.shiftOn(dateOnly);
-  final entry = _entriesByDate[dateOnly];
-  final hasEntry = entry != null;
-  final hasScheduledService = entry != null && entry.scheduledHours > 0;
-  final plannedOff = onDuty && _isDayReplacingSchedule(entry);
-    final dutyColor = widget.userProfile.shiftColorPalette.colorForShift(shiftOnDuty);
+    final entry = _entriesByDate[dateOnly];
+    final hasEntry = entry != null;
+    final hasScheduledService = entry != null && entry.scheduledHours > 0;
+    final plannedOff = onDuty && _isDayReplacingSchedule(entry);
+    final dutyColor = widget.userProfile.shiftColorPalette.colorForShift(
+      shiftOnDuty,
+    );
 
     Color backgroundColor;
     if (widget.isEditing && onDuty) {
       backgroundColor = dutyColor.withValues(alpha: 0.22);
     } else if (isCurrentMonth) {
-      backgroundColor = onDuty ? dutyColor.withValues(alpha: 0.68) : dutyColor.withValues(alpha: 0.32);
+      backgroundColor = onDuty
+          ? dutyColor.withValues(alpha: 0.68)
+          : dutyColor.withValues(alpha: 0.32);
     } else {
       if (onDuty) {
         backgroundColor = dutyColor.withValues(alpha: 0.12);
       } else if (hasEntry) {
         backgroundColor = colors.secondaryContainer.withValues(alpha: 0.18);
       } else {
-        backgroundColor = colors.surfaceContainerHighest.withValues(alpha: 0.18);
+        backgroundColor = colors.surfaceContainerHighest.withValues(
+          alpha: 0.18,
+        );
       }
     }
 
@@ -333,7 +358,11 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     );
   }
 
-  Future<void> _handleDayTap(DateTime day, bool isEditableDay, bool hasScheduledService) async {
+  Future<void> _handleDayTap(
+    DateTime day,
+    bool isEditableDay,
+    bool hasScheduledService,
+  ) async {
     if (widget.isEditing) {
       if (!isEditableDay || widget.onToggleScheduledService == null) {
         return;
@@ -370,15 +399,15 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
 
   bool _eventBlocksSchedule(DayEvent event) {
     switch (event.type) {
-      case EventType.vacationStandard:
+      case EventType.vacationRegular:
       case EventType.vacationAdditional:
       case EventType.sickLeave80:
       case EventType.sickLeave100:
-      case EventType.dayOff:
+      case EventType.otherAbsence:
       case EventType.delegation:
       case EventType.bloodDonation:
         return true;
-      case EventType.custom:
+      case EventType.customAbsence:
         return event.hours > 0;
       default:
         return false;
@@ -394,7 +423,11 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     final end = last.add(Duration(days: trailing));
 
     final days = <DateTime>[];
-    for (DateTime day = start; !day.isAfter(end); day = day.add(const Duration(days: 1))) {
+    for (
+      DateTime day = start;
+      !day.isAfter(end);
+      day = day.add(const Duration(days: 1))
+    ) {
       days.add(day);
     }
     return days;
@@ -420,7 +453,9 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
       'grudzień',
     ];
     final index = month.month - 1;
-    final monthName = (index >= 0 && index < months.length) ? months[index] : '';
+    final monthName = (index >= 0 && index < months.length)
+        ? months[index]
+        : '';
     return '$monthName ${month.year}';
   }
 
@@ -464,8 +499,12 @@ class _HeaderRow extends StatelessWidget {
         ),
         IconButton.filledTonal(
           onPressed: onEditToggle,
-          tooltip: isEditing ? 'Zakończ edycję harmonogramu' : 'Włącz edycję harmonogramu',
-          icon: Icon(isEditing ? Icons.edit_off_outlined : Icons.edit_calendar_outlined),
+          tooltip: isEditing
+              ? 'Zakończ edycję harmonogramu'
+              : 'Włącz edycję harmonogramu',
+          icon: Icon(
+            isEditing ? Icons.edit_off_outlined : Icons.edit_calendar_outlined,
+          ),
         ),
       ],
     );
@@ -505,7 +544,9 @@ class _EditingBanner extends StatelessWidget {
             ),
             child: Icon(
               Icons.edit_calendar,
-              color: ThemeData.estimateBrightnessForColor(palette.primary) == Brightness.dark
+              color:
+                  ThemeData.estimateBrightnessForColor(palette.primary) ==
+                      Brightness.dark
                   ? Colors.white
                   : Colors.black,
             ),
@@ -518,10 +559,7 @@ class _EditingBanner extends StatelessWidget {
             ),
           ),
           if (onExit != null)
-            FilledButton.tonal(
-              onPressed: onExit,
-              child: const Text('Zakończ'),
-            ),
+            FilledButton.tonal(onPressed: onExit, child: const Text('Zakończ')),
         ],
       ),
     );

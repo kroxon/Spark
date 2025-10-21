@@ -3,16 +3,16 @@ import 'package:iskra/features/calendar/models/incident_entry.dart';
 const Object _undefined = Object();
 
 enum EventType {
-  worked,
+  overtimeWorked,
   delegation,
   bloodDonation,
-  vacationStandard,
+  vacationRegular,
   vacationAdditional,
   sickLeave80,
   sickLeave100,
-  dayOff,
-  custom,
-  overtimeOffDay,
+  otherAbsence,
+  customAbsence,
+  overtimeTimeOff,
 }
 
 class CustomAbsenceDetails {
@@ -60,9 +60,9 @@ class CalendarEntry {
     List<DayEvent> events = const [],
     List<IncidentEntry> incidents = const [],
     this.generalNote,
-  })  : assert(scheduledHours >= 0, 'scheduledHours must be non-negative'),
-        events = List.unmodifiable(events),
-        incidents = List.unmodifiable(incidents);
+  }) : assert(scheduledHours >= 0, 'scheduledHours must be non-negative'),
+       events = List.unmodifiable(events),
+       incidents = List.unmodifiable(incidents);
 
   final String id;
   final DateTime date;
@@ -84,16 +84,23 @@ class CalendarEntry {
       date: date ?? this.date,
       scheduledHours: scheduledHours ?? this.scheduledHours,
       events: events == null ? this.events : List.unmodifiable(events),
-      incidents: incidents == null ? this.incidents : List.unmodifiable(incidents),
-      generalNote:
-          generalNote == _undefined ? this.generalNote : generalNote as String?,
+      incidents: incidents == null
+          ? this.incidents
+          : List.unmodifiable(incidents),
+      generalNote: generalNote == _undefined
+          ? this.generalNote
+          : generalNote as String?,
     );
   }
 
   bool get hasScheduledHours => scheduledHours > 0;
 
   double get baseHoursWorked {
-    final worked = _sumHours({EventType.worked, EventType.delegation, EventType.bloodDonation});
+    final worked = _sumHours({
+      EventType.overtimeWorked,
+      EventType.delegation,
+      EventType.bloodDonation,
+    });
     if (!hasScheduledHours) {
       return worked;
     }
@@ -101,8 +108,8 @@ class CalendarEntry {
   }
 
   double get overtimeHours {
-    final workedHours = _sumHours({EventType.worked});
-    final overtimeOffDayHours = _sumHours({EventType.overtimeOffDay});
+    final workedHours = _sumHours({EventType.overtimeWorked});
+    final overtimeOffDayHours = _sumHours({EventType.overtimeTimeOff});
     if (hasScheduledHours) {
       return workedHours > scheduledHours ? workedHours - scheduledHours : 0;
     }
@@ -114,15 +121,15 @@ class CalendarEntry {
       return 0;
     }
     final covered = _sumHours({
-      EventType.worked,
+      EventType.overtimeWorked,
       EventType.delegation,
       EventType.bloodDonation,
-      EventType.vacationStandard,
+      EventType.vacationRegular,
       EventType.vacationAdditional,
       EventType.sickLeave80,
       EventType.sickLeave100,
-      EventType.dayOff,
-      EventType.custom,
+      EventType.otherAbsence,
+      EventType.customAbsence,
     });
     final deficit = scheduledHours - covered;
     return deficit > 0 ? deficit : 0;

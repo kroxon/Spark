@@ -89,11 +89,11 @@ class _DayEventEditorState extends State<DayEventEditor> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Zdarzenia', style: theme.textTheme.titleMedium),
+            Text('Aktywności', style: theme.textTheme.titleMedium),
             TextButton.icon(
               onPressed: _addEvent,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Dodaj zdarzenie'),
+              label: const Text('Dodaj aktywność'),
             ),
           ],
         ),
@@ -107,7 +107,7 @@ class _DayEventEditorState extends State<DayEventEditor> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
-              'Brak zdarzeń. Dodaj służbę, urlop lub inne zdarzenie aby wypełnić raport.',
+              'Brak aktywności. Dodaj służbę, urlop lub inną zmianę aby wypełnić raport.',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -292,7 +292,7 @@ class _EventCardState extends State<_EventCard> {
                 child: DropdownButtonFormField<EventType>(
                   initialValue: _event.type,
                   decoration: const InputDecoration(
-                    labelText: 'Rodzaj zdarzenia',
+                    labelText: 'Rodzaj aktywności',
                   ),
                   items: allowedTypes
                       .map(
@@ -323,7 +323,7 @@ class _EventCardState extends State<_EventCard> {
               IconButton(
                 onPressed: widget.onRemove,
                 icon: const Icon(Icons.delete_outline),
-                tooltip: 'Usuń zdarzenie',
+                tooltip: 'Usuń aktywność',
               ),
             ],
           ),
@@ -381,7 +381,7 @@ class _EventCardState extends State<_EventCard> {
                   child: TextFormField(
                     controller: _customNameController,
                     decoration: const InputDecoration(
-                      labelText: 'Nazwa zdarzenia',
+                      labelText: 'Nazwa aktywności',
                     ),
                     onChanged: (value) {
                       _event.customName = value.trim().isEmpty ? null : value;

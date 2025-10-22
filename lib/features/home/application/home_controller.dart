@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iskra/features/calendar/data/calendar_entry_repository.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/incident_entry.dart';
 
 class HomeState {
   const HomeState({
@@ -55,6 +56,7 @@ class HomeController extends Notifier<HomeState> {
     required String userId,
     required DateTime day,
     required List<DayEvent> events,
+    required List<IncidentEntry> incidents,
     required String generalNote,
     double? scheduledHours,
   }) async {
@@ -63,6 +65,7 @@ class HomeController extends Notifier<HomeState> {
       userId: userId,
       day: day,
       events: events,
+      incidents: incidents,
       note: generalNote,
       scheduledHours: scheduledHours,
     );

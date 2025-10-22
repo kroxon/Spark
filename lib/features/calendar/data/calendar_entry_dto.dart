@@ -248,7 +248,7 @@ IncidentEntry? _parseIncident(Map<String, dynamic> data) {
   final id = data['id'] as String?;
   final categoryRaw = data['category'] as String?;
   final timestampRaw = data['timestamp'];
-  if (id == null || categoryRaw == null || timestampRaw is! Timestamp) {
+  if (id == null || categoryRaw == null) {
     return null;
   }
   final category = _parseIncidentCategory(categoryRaw);
@@ -257,10 +257,14 @@ IncidentEntry? _parseIncident(Map<String, dynamic> data) {
   }
   final noteRaw = data['note'] as String?;
   final note = noteRaw?.trim();
+  DateTime? timestamp;
+  if (timestampRaw is Timestamp) {
+    timestamp = timestampRaw.toDate();
+  }
   return IncidentEntry(
     id: id,
     category: category,
-    timestamp: timestampRaw.toDate(),
+    timestamp: timestamp,
     note: (note == null || note.isEmpty) ? null : note,
   );
 }
@@ -283,7 +287,8 @@ Map<String, dynamic> _serializeIncident(IncidentEntry incident) {
   return {
     'id': incident.id,
     'category': incident.category.name,
-    'timestamp': Timestamp.fromDate(incident.timestamp),
+    if (incident.timestamp != null)
+      'timestamp': Timestamp.fromDate(incident.timestamp!),
     if (incident.note != null && incident.note!.trim().isNotEmpty)
       'note': incident.note!.trim(),
   };

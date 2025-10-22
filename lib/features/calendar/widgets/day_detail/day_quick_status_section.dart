@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -24,6 +25,8 @@ class DayQuickStatusSection extends StatefulWidget {
 class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   late Map<EventType, double> _selections;
   late final Map<EventType, TextEditingController> _controllers;
+  Timer? _messageTimer;
+  String? _blockedMessage;
 
   static const List<_QuickStatusOption> _options = <_QuickStatusOption>[
     _QuickStatusOption(
@@ -109,6 +112,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     for (final controller in _controllers.values) {
       controller.dispose();
     }
+    _messageTimer?.cancel();
     super.dispose();
   }
 
@@ -143,6 +147,44 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
           children: [
             Text('Szybkie statusy', style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: _blockedMessage == null
+                  ? const SizedBox.shrink()
+                  : Container(
+                      key: const ValueKey('blocked-message'),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceVariant,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _blockedMessage!,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
             if (isSingleColumn)
               Column(children: buildColumnSlice(0))
             else
@@ -167,6 +209,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     final theme = Theme.of(context);
     final isSelected = _selections.containsKey(option.type);
     final controller = _controllers[option.type];
+    final isInteractionBlocked = _isInteractionBlocked(option.type);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
@@ -175,11 +218,15 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       decoration: BoxDecoration(
         color: isSelected
             ? theme.colorScheme.primary.withValues(alpha: 0.08)
+            : isInteractionBlocked
+            ? theme.colorScheme.surfaceVariant.withValues(alpha: 0.4)
             : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isSelected
               ? theme.colorScheme.primary
+              : isInteractionBlocked
+              ? theme.colorScheme.outlineVariant.withValues(alpha: 0.5)
               : theme.colorScheme.outlineVariant,
         ),
       ),
@@ -193,17 +240,20 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
               Checkbox(
                 value: isSelected,
                 visualDensity: VisualDensity.compact,
-                onChanged: (_) => _toggle(option.type),
+                onChanged: (_) => _handleOptionPressed(option.type),
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: GestureDetector(
-                  onTap: () => _toggle(option.type),
+                  onTap: () => _handleOptionPressed(option.type),
                   behavior: HitTestBehavior.translucent,
                   child: Text(
                     option.label,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: isInteractionBlocked && !isSelected
+                          ? theme.colorScheme.onSurface.withOpacity(0.6)
+                          : null,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -250,6 +300,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       if (!_isOptionVisible(type)) {
         return;
       }
+      final isSickLeave = _isSickLeave(type);
       if (_selections.containsKey(type)) {
         _selections.remove(type);
         final controller = _controllers[type];
@@ -257,6 +308,9 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
           controller.text = '';
         }
       } else {
+        if (isSickLeave) {
+          _clearSelections();
+        }
         final defaultHours = _defaultHours(type);
         _selections[type] = defaultHours;
         final controller = _controllers[type];
@@ -275,6 +329,14 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
 
   void _updateHours(EventType type, String rawValue) {
     if (!_controllers.containsKey(type)) {
+      return;
+    }
+    if (_shouldBlockSelection(type)) {
+      _showSelectionBlockedMessage(type);
+      final controller = _controllers[type];
+      if (controller != null) {
+        controller.text = _formatHours(_selections[type]);
+      }
       return;
     }
     final parsed = _parseHours(rawValue);
@@ -352,6 +414,10 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       }
     }
 
+    if (_enforceSickExclusivity()) {
+      changed = true;
+    }
+
     if (changed && notifyParent) {
       _notifyParent();
     }
@@ -379,6 +445,119 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       return 0;
     }
     return schedule.clamp(0, 48);
+  }
+
+  void _handleOptionPressed(EventType type) {
+    if (_shouldBlockSelection(type)) {
+      _showSelectionBlockedMessage(type);
+      return;
+    }
+    _toggle(type);
+  }
+
+  bool _shouldBlockSelection(EventType type) {
+    final activeSick = _activeSickLeaveType();
+    if (activeSick == null) {
+      return false;
+    }
+    final isSickLeave = _isSickLeave(type);
+    final isSelected = _selections.containsKey(type);
+    if (!isSickLeave && isSelected) {
+      return false;
+    }
+    if (isSickLeave) {
+      return !isSelected;
+    }
+    return true;
+  }
+
+  bool _isInteractionBlocked(EventType type) {
+    final activeSick = _activeSickLeaveType();
+    if (activeSick == null) {
+      return false;
+    }
+    if (!_isSickLeave(type) && _selections.containsKey(type)) {
+      return false;
+    }
+    if (_isSickLeave(type)) {
+      return type != activeSick;
+    }
+    return true;
+  }
+
+  EventType? _activeSickLeaveType() {
+    for (final type in _selections.keys) {
+      if (_isSickLeave(type)) {
+        return type;
+      }
+    }
+    return null;
+  }
+
+  bool _isSickLeave(EventType type) {
+    return type == EventType.sickLeave80 || type == EventType.sickLeave100;
+  }
+
+  void _clearSelections({EventType? except}) {
+    final typesToRemove = _selections.keys
+        .where((type) => except == null || type != except)
+        .toList(growable: false);
+    for (final type in typesToRemove) {
+      _selections.remove(type);
+      final controller = _controllers[type];
+      if (controller != null) {
+        controller.text = '';
+      }
+    }
+  }
+
+  bool _enforceSickExclusivity() {
+    EventType? preservedSick;
+    for (final type in _selections.keys) {
+      if (_isSickLeave(type)) {
+        preservedSick ??= type;
+      }
+    }
+    if (preservedSick == null) {
+      return false;
+    }
+    final typesToRemove = _selections.keys
+        .where((type) => type != preservedSick)
+        .toList(growable: false);
+    if (typesToRemove.isEmpty) {
+      return false;
+    }
+    for (final type in typesToRemove) {
+      _selections.remove(type);
+      final controller = _controllers[type];
+      if (controller != null) {
+        controller.text = '';
+      }
+    }
+    return true;
+  }
+
+  void _showSelectionBlockedMessage(EventType attemptedType) {
+    if (!mounted) {
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    final isSickAttempt = _isSickLeave(attemptedType);
+    final message = isSickAttempt
+        ? 'Możesz aktywować tylko jedno zwolnienie lekarskie naraz. Odznacz bieżące, aby kontynuować.'
+        : 'Aktywne zwolnienie lekarskie blokuje inne statusy. Odznacz je, aby kontynuować.';
+    _messageTimer?.cancel();
+    setState(() {
+      _blockedMessage = message;
+    });
+    _messageTimer = Timer(const Duration(seconds: 3), () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _blockedMessage = null;
+      });
+    });
   }
 }
 

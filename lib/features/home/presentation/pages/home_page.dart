@@ -158,6 +158,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           userId: user.uid,
           day: selectedDay,
           events: result.events,
+          incidents: result.incidents,
           generalNote: result.generalNote,
           scheduledHours: result.scheduledHours,
         );
@@ -165,10 +166,11 @@ class _HomePageState extends ConsumerState<HomePage> {
           return;
         }
         final hasSchedule = result.scheduledHours != null;
-        final hasData =
-            result.events.isNotEmpty ||
-            result.generalNote.trim().isNotEmpty ||
-            (hasSchedule && (result.scheduledHours ?? 0) > 0);
+    final hasData =
+      result.events.isNotEmpty ||
+      result.incidents.isNotEmpty ||
+      result.generalNote.trim().isNotEmpty ||
+      (hasSchedule && (result.scheduledHours ?? 0) > 0);
         final feedback = hasData
             ? 'Zapisano szczegóły dnia.'
             : 'Wyczyszczono dane dnia.';

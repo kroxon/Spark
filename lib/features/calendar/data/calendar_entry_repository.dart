@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iskra/core/firebase/firebase_providers.dart';
 import 'package:iskra/features/calendar/data/calendar_entry_dto.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/incident_entry.dart';
 
 class CalendarEntriesRequest {
   CalendarEntriesRequest({required this.userId, required DateTime month})
@@ -221,6 +222,7 @@ class CalendarEntryRepository {
     required String userId,
     required DateTime day,
     required List<DayEvent> events,
+    required List<IncidentEntry> incidents,
     required String note,
     double? scheduledHours,
   }) async {
@@ -239,8 +241,10 @@ class CalendarEntryRepository {
     if (query.docs.isEmpty) {
       final scheduleForNew = sanitizedSchedule ?? 0;
       final sanitizedEvents = _sanitizeEvents(events, scheduleForNew);
+      final sanitizedIncidents = _sanitizeIncidents(incidents, normalized);
       final shouldCreateEntry =
           sanitizedEvents.isNotEmpty ||
+          sanitizedIncidents.isNotEmpty ||
           normalizedNote != null ||
           shouldPersistSchedule;
       if (!shouldCreateEntry) {
@@ -251,6 +255,7 @@ class CalendarEntryRepository {
         date: normalized,
         scheduledHours: scheduleForNew,
         events: sanitizedEvents,
+        incidents: sanitizedIncidents,
         generalNote: normalizedNote,
       );
       await collection
@@ -269,8 +274,11 @@ class CalendarEntryRepository {
       final existing = CalendarEntryDto.fromFirestore(doc).toDomain();
       final updatedSchedule = sanitizedSchedule ?? existing.scheduledHours;
       final sanitizedEventsForDoc = _sanitizeEvents(events, updatedSchedule);
+      final sanitizedIncidentsForDoc =
+          _sanitizeIncidents(incidents, normalized);
       final updated = existing.copyWith(
         events: sanitizedEventsForDoc,
+        incidents: sanitizedIncidentsForDoc,
         generalNote: normalizedNote,
         scheduledHours: updatedSchedule,
       );
@@ -381,6 +389,77 @@ class CalendarEntryRepository {
 
   double _normalizeScheduleHours(double hours) {
     return _normalizeHours(hours);
+  }
+
+  List<IncidentEntry> _sanitizeIncidents(
+    List<IncidentEntry> incidents,
+    DateTime day,
+  ) {
+    if (incidents.isEmpty) {
+      return const <IncidentEntry>[];
+    }
+
+    final normalizedDay = DateTime(day.year, day.month, day.day);
+    final sanitized = <IncidentEntry>[];
+    final seenIds = <String>{};
+
+    for (final incident in incidents) {
+      final trimmedId = incident.id.trim();
+      if (trimmedId.isEmpty || !seenIds.add(trimmedId)) {
+        continue;
+      }
+      final trimmedNote = incident.note?.trim();
+      final sanitizedNote =
+          trimmedNote == null || trimmedNote.isEmpty ? null : trimmedNote;
+      final sanitizedTimestamp = incident.timestamp == null
+          ? null
+          : _normalizeIncidentTimestamp(
+              normalizedDay,
+              incident.timestamp!,
+            );
+
+      sanitized.add(
+        incident.copyWith(
+          id: trimmedId,
+          timestamp: sanitizedTimestamp,
+          note: sanitizedNote,
+        ),
+      );
+    }
+
+    if (sanitized.isEmpty) {
+      return const <IncidentEntry>[];
+    }
+
+    sanitized.sort((a, b) {
+      final aTime = a.timestamp;
+      final bTime = b.timestamp;
+      if (aTime == null && bTime == null) {
+        return 0;
+      }
+      if (aTime == null) {
+        return 1;
+      }
+      if (bTime == null) {
+        return -1;
+      }
+      return aTime.compareTo(bTime);
+    });
+    return List.unmodifiable(sanitized);
+  }
+
+  DateTime _normalizeIncidentTimestamp(DateTime day, DateTime timestamp) {
+    final local = timestamp.toLocal();
+    return DateTime(
+      day.year,
+      day.month,
+      day.day,
+      local.hour,
+      local.minute,
+      local.second,
+      local.millisecond,
+      local.microsecond,
+    );
   }
 }
 

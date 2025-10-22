@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/incident_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_detail_header.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_event_editor.dart';
+import 'package:iskra/features/calendar/widgets/day_detail/day_incidents_section.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_note_section.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_quick_status_section.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_schedule_hours_picker.dart';
@@ -14,11 +16,13 @@ import 'package:iskra/features/calendar/widgets/day_detail/day_schedule_hours_pi
 class DayDetailDialogResult {
   const DayDetailDialogResult({
     required this.events,
+    required this.incidents,
     required this.generalNote,
     this.scheduledHours,
   });
 
   final List<DayEvent> events;
+  final List<IncidentEntry> incidents;
   final String generalNote;
   final double? scheduledHours;
 }
@@ -80,6 +84,7 @@ class DayDetailDialog extends StatefulWidget {
 class _DayDetailDialogState extends State<DayDetailDialog> {
   late final TextEditingController _noteController;
   late List<EditableDayEvent> _events;
+  late List<IncidentEntry> _incidents;
   late Map<EventType, double> _quickSelections;
   double? _scheduledHours;
 
@@ -102,6 +107,10 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
       text: widget.entry?.generalNote ?? '',
     );
     _events = <EditableDayEvent>[];
+    _incidents = List<IncidentEntry>.from(
+      widget.entry?.incidents ?? const <IncidentEntry>[],
+    )
+      ..sort(_compareIncidents);
     _quickSelections = <EventType, double>{};
 
     for (final event in widget.entry?.events ?? const <DayEvent>[]) {
@@ -184,6 +193,15 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                         }),
                       ),
                       const SizedBox(height: 24),
+                      DayIncidentsSection(
+                        day: widget.day,
+                        incidents: _incidents,
+                        onChanged: (updated) => setState(() {
+                          _incidents = List<IncidentEntry>.from(updated)
+                            ..sort(_compareIncidents);
+                        }),
+                      ),
+                      const SizedBox(height: 24),
                       DayNoteSection(controller: _noteController),
                     ],
                   ),
@@ -216,7 +234,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     final schedule = _normalizedSchedule();
     final hasSchedule = schedule > 0;
 
-    final sanitizedQuick = Map<EventType, double>.from(_quickSelections);
+    var sanitizedQuick = Map<EventType, double>.from(_quickSelections);
     var quickChanged = false;
 
     if (hasSchedule) {
@@ -238,6 +256,24 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
       if (sanitizedQuick.remove(EventType.overtimeTimeOff) != null) {
         quickChanged = true;
       }
+    }
+
+    MapEntry<EventType, double>? selectedSickEntry;
+    for (final entry in sanitizedQuick.entries) {
+      if (_isSickLeave(entry.key)) {
+        selectedSickEntry = entry;
+        break;
+      }
+    }
+    if (selectedSickEntry != null) {
+      final preserved = <EventType, double>{
+        selectedSickEntry.key: selectedSickEntry.value,
+      };
+      if (sanitizedQuick.length != preserved.length ||
+          sanitizedQuick[selectedSickEntry.key] != selectedSickEntry.value) {
+        quickChanged = true;
+      }
+      sanitizedQuick = preserved;
     }
 
     if (quickChanged) {
@@ -314,6 +350,25 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     return raw.clamp(0, 48);
   }
 
+  bool _isSickLeave(EventType type) {
+    return type == EventType.sickLeave80 || type == EventType.sickLeave100;
+  }
+
+  int _compareIncidents(IncidentEntry a, IncidentEntry b) {
+    final aTime = a.timestamp;
+    final bTime = b.timestamp;
+    if (aTime == null && bTime == null) {
+      return 0;
+    }
+    if (aTime == null) {
+      return 1;
+    }
+    if (bTime == null) {
+      return -1;
+    }
+    return aTime.compareTo(bTime);
+  }
+
   void _submit() {
     final combinedEvents = <DayEvent>[
       ..._events.map((event) => event.toDomain()),
@@ -326,6 +381,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     Navigator.of(context).pop(
       DayDetailDialogResult(
         events: combinedEvents,
+        incidents: List<IncidentEntry>.from(_incidents),
         generalNote: note,
         scheduledHours: scheduledHours,
       ),

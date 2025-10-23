@@ -159,7 +159,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant,
+                        color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: theme.colorScheme.outlineVariant,
@@ -219,7 +219,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
         color: isSelected
             ? theme.colorScheme.primary.withValues(alpha: 0.08)
             : isInteractionBlocked
-            ? theme.colorScheme.surfaceVariant.withValues(alpha: 0.4)
+            ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
             : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(

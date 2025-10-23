@@ -54,6 +54,8 @@ class UserProfileRepository {
       standardVacationHours: 208,
       additionalVacationHours: 104,
       themeMode: ThemeMode.light,
+      overtimeIndicatorThresholdHours:
+          UserProfile.defaultOvertimeIndicatorThresholdHours,
     );
 
     await docRef.set(_UserProfileDto.fromDomain(defaultProfile).toFirestore());
@@ -74,6 +76,16 @@ class UserProfileRepository {
   }) {
     return _doc(uid).set({
       'themeMode': _themeModeToString(themeMode),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> updateOvertimeIndicatorThreshold({
+    required String uid,
+    required double hours,
+  }) {
+    return _doc(uid).set({
+      'overtimeIndicatorThresholdHours': hours,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
@@ -127,6 +139,7 @@ class _UserProfileDto {
     required this.additionalVacationHours,
     required this.shiftColorPalette,
     required this.themeMode,
+    required this.overtimeIndicatorThresholdHours,
   });
 
   final String email;
@@ -136,6 +149,7 @@ class _UserProfileDto {
   final double additionalVacationHours;
   final ShiftColorPalette shiftColorPalette;
   final ThemeMode themeMode;
+  final double overtimeIndicatorThresholdHours;
 
   factory _UserProfileDto.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -189,6 +203,9 @@ class _UserProfileDto {
           (data['additionalVacationHours'] as num?)?.toDouble() ?? 0,
       shiftColorPalette: palette,
       themeMode: _themeModeFromString(data['themeMode'] as String?),
+      overtimeIndicatorThresholdHours:
+          (data['overtimeIndicatorThresholdHours'] as num?)?.toDouble() ??
+          UserProfile.defaultOvertimeIndicatorThresholdHours,
     );
   }
 
@@ -201,6 +218,7 @@ class _UserProfileDto {
       additionalVacationHours: profile.additionalVacationHours,
       shiftColorPalette: profile.shiftColorPalette,
       themeMode: profile.themeMode,
+      overtimeIndicatorThresholdHours: profile.overtimeIndicatorThresholdHours,
     );
   }
 
@@ -214,6 +232,7 @@ class _UserProfileDto {
       additionalVacationHours: additionalVacationHours,
       shiftColorPalette: shiftColorPalette,
       themeMode: themeMode,
+      overtimeIndicatorThresholdHours: overtimeIndicatorThresholdHours,
     );
   }
 
@@ -237,6 +256,7 @@ class _UserProfileDto {
         'shift3': shiftColorPalette.shift3.toARGB32(),
       },
       'themeMode': _themeModeToString(themeMode),
+      'overtimeIndicatorThresholdHours': overtimeIndicatorThresholdHours,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }

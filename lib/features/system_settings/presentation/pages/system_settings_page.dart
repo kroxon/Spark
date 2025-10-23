@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iskra/core/firebase/firebase_providers.dart';
 import 'package:iskra/core/theme/theme_mode_controller.dart';
+import 'package:iskra/features/auth/data/user_profile_repository.dart';
+import 'package:iskra/features/auth/domain/models/user_profile.dart';
+import 'package:iskra/features/calendar/application/calendar_indicator_settings_controller.dart';
+import 'package:iskra/features/system_settings/presentation/widgets/overtime_indicator_settings_card.dart';
+import 'package:iskra/features/system_settings/presentation/widgets/theme_mode_switch_card.dart';
 
 class SystemSettingsPage extends ConsumerStatefulWidget {
   const SystemSettingsPage({super.key});
@@ -11,6 +17,8 @@ class SystemSettingsPage extends ConsumerStatefulWidget {
 
 class _SystemSettingsPageState extends ConsumerState<SystemSettingsPage> {
   bool _isUpdatingTheme = false;
+  bool _isSavingOvertimeThreshold = false;
+  double? _overtimeThresholdDraft;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +26,18 @@ class _SystemSettingsPageState extends ConsumerState<SystemSettingsPage> {
     final themeMode = ref.watch(themeModeProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
     final isUpdating = _isUpdatingTheme;
+
+    final currentUser = ref.watch(firebaseAuthProvider).currentUser;
+    final AsyncValue<UserProfile>? profileAsync = currentUser == null
+        ? null
+        : ref.watch(
+            userProfileProvider(
+              UserProfileRequest(
+                uid: currentUser.uid,
+                email: currentUser.email,
+              ),
+            ),
+          );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -38,28 +58,69 @@ class _SystemSettingsPageState extends ConsumerState<SystemSettingsPage> {
             ),
           ),
           const SizedBox(height: 24),
-          Card(
-            elevation: 1,
-            child: SwitchListTile.adaptive(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 8,
-              ),
-              title: Text('Motyw ciemny', style: theme.textTheme.titleMedium),
-              subtitle: Text(
-                isUpdating
-                    ? 'Zapisywanie preferencji...'
-                    : 'Synchronizuj wygląd aplikacji między urządzeniami.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+          ThemeModeSwitchCard(
+            isDarkMode: isDarkMode,
+            isUpdating: isUpdating,
+            onChanged: (isEnabled) => _onThemeChanged(context, isEnabled),
+          ),
+          if (profileAsync != null) ...[
+            const SizedBox(height: 24),
+            profileAsync.when(
+              data: (profile) {
+                final storedThreshold =
+                    profile.overtimeIndicatorThresholdHours;
+
+                if (_overtimeThresholdDraft != null &&
+                    (_overtimeThresholdDraft! - storedThreshold).abs() < 0.5) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() => _overtimeThresholdDraft = null);
+                    }
+                  });
+                }
+
+                return OvertimeIndicatorSettingsCard(
+                  currentThreshold: storedThreshold,
+                  draftThreshold: _overtimeThresholdDraft,
+                  isSaving: _isSavingOvertimeThreshold,
+                  onDraftChanged: (value) {
+                    setState(() => _overtimeThresholdDraft = value);
+                  },
+                  onSavePressed: (hours) =>
+                      _onSaveOvertimeThreshold(context, hours),
+                );
+              },
+              loading: () => const Card(
+                elevation: 1,
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Center(child: CircularProgressIndicator()),
                 ),
               ),
-              value: isDarkMode,
-              onChanged: isUpdating
-                  ? null
-                  : (isEnabled) => _onThemeChanged(context, isEnabled),
+              error: (error, _) => Card(
+                elevation: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Nie udało się załadować ustawień wskaźnika.',
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '$error',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 24),
           Card(
             elevation: 1,
@@ -110,6 +171,47 @@ class _SystemSettingsPageState extends ConsumerState<SystemSettingsPage> {
     } finally {
       if (mounted) {
         setState(() => _isUpdatingTheme = false);
+      }
+    }
+  }
+
+  Future<void> _onSaveOvertimeThreshold(
+    BuildContext context,
+    double hours,
+  ) async {
+    if (_isSavingOvertimeThreshold) {
+      return;
+    }
+
+    setState(() => _isSavingOvertimeThreshold = true);
+    try {
+      final controller = ref.read(calendarIndicatorSettingsControllerProvider);
+      await controller.setOvertimeIndicatorThreshold(hours);
+      if (mounted) {
+        setState(() => _overtimeThresholdDraft = hours);
+      }
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Zapisano próg dla wskaźnika służby.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Nie udało się zapisać progu: $error'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSavingOvertimeThreshold = false);
       }
     }
   }

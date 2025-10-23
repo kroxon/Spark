@@ -130,18 +130,21 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
             builder: (context, constraints) {
               final rowCount = (days.length / 7).ceil();
               final cellWidth = constraints.maxWidth / 7;
-              final cellHeight =
-                  constraints.maxHeight.isFinite && constraints.maxHeight > 0
-                  ? constraints.maxHeight / rowCount
-                  : 96.0;
+              final cellHeight = cellWidth * 1.4;
+              final tableHeight = cellHeight * rowCount;
               final columnWidths = <int, TableColumnWidth>{
                 for (var i = 0; i < 7; i++) i: FixedColumnWidth(cellWidth),
               };
-              return SizedBox.expand(
-                child: Table(
-                  columnWidths: columnWidths,
-                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  children: _buildRows(days, cellWidth, cellHeight),
+              return Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: constraints.maxWidth,
+                  height: tableHeight,
+                  child: Table(
+                    columnWidths: columnWidths,
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: _buildRows(days, cellWidth, cellHeight),
+                  ),
                 ),
               );
             },
@@ -201,6 +204,8 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
               shiftCycleCalculator: widget.shiftCycleCalculator,
               shiftHistory: _sortedShiftHistory,
               shiftColorPalette: widget.userProfile.shiftColorPalette,
+              overtimeIndicatorThresholdHours:
+                  widget.userProfile.overtimeIndicatorThresholdHours,
               entry: _entriesByDate[dateOnly],
               onDaySelected: widget.onDaySelected,
               onToggleScheduledService: widget.onToggleScheduledService,

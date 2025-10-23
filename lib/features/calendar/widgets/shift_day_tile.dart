@@ -3,6 +3,7 @@ import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/models/shift_color_palette.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
+import 'package:iskra/features/calendar/widgets/on_duty_indicator.dart';
 
 /// Represents a single day cell within the monthly calendar grid.
 class ShiftDayTile extends StatelessWidget {
@@ -16,6 +17,7 @@ class ShiftDayTile extends StatelessWidget {
     required this.shiftCycleCalculator,
     required this.shiftHistory,
     required this.shiftColorPalette,
+    required this.overtimeIndicatorThresholdHours,
     this.entry,
     this.onDaySelected,
     this.onToggleScheduledService,
@@ -29,6 +31,7 @@ class ShiftDayTile extends StatelessWidget {
   final ShiftCycleCalculator shiftCycleCalculator;
   final List<ShiftAssignment> shiftHistory;
   final ShiftColorPalette shiftColorPalette;
+  final double overtimeIndicatorThresholdHours;
   final CalendarEntry? entry;
   final ValueChanged<DateTime>? onDaySelected;
   final Future<void> Function(DateTime day, bool assign)?
@@ -52,6 +55,14 @@ class ShiftDayTile extends StatelessWidget {
     final hasScheduledService = (entry?.scheduledHours ?? 0) > 0;
     final plannedOff = onDuty && _isDayReplacingSchedule(entry);
     final dutyColor = shiftColorPalette.colorForShift(shiftOnDuty);
+    final hasPureScheduledService =
+        hasScheduledService && (entry?.events.isEmpty ?? true);
+    final meetsOvertimeThreshold =
+        (entry?.overtimeHours ?? 0) >= overtimeIndicatorThresholdHours;
+    final showOnDutyIndicator =
+        !isEditing &&
+        !plannedOff &&
+        (hasPureScheduledService || meetsOvertimeThreshold);
 
     Color backgroundColor;
     if (isEditing && onDuty) {
@@ -101,7 +112,7 @@ class ShiftDayTile extends StatelessWidget {
       width: cellWidth,
       height: cellHeight,
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(2),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () async {
@@ -110,11 +121,11 @@ class ShiftDayTile extends StatelessWidget {
           child: Ink(
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(color: borderColor, width: borderWidth),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(4),
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -152,7 +163,12 @@ class ShiftDayTile extends StatelessWidget {
                               ),
                             ),
                           ),
-                        const Spacer(),
+                        if (showOnDutyIndicator)
+                          const Expanded(
+                            child: Center(child: OnDutyIndicator()),
+                          )
+                        else
+                          const Spacer(),
                         if (isEditing && onDuty)
                           Align(
                             alignment: Alignment.bottomRight,
@@ -166,7 +182,9 @@ class ShiftDayTile extends StatelessWidget {
                                   : colors.primary.withValues(alpha: 0.8),
                             ),
                           )
-                        else if (hasScheduledService && !plannedOff)
+                        else if (!showOnDutyIndicator &&
+                            hasScheduledService &&
+                            !plannedOff)
                           Align(
                             alignment: Alignment.bottomRight,
                             child: Icon(

@@ -223,7 +223,7 @@ class _CalendarContent extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final padding = const EdgeInsets.symmetric(
-          horizontal: 16,
+          horizontal: 8,
           vertical: 24,
         );
         double cardHeight;

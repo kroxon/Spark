@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/editable_day_event.dart';
 import 'package:iskra/features/calendar/models/incident_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_detail_header.dart';
-import 'package:iskra/features/calendar/widgets/day_detail/day_event_editor.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_incidents_section.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_note_section.dart';
 import 'package:iskra/features/calendar/widgets/day_detail/day_quick_status_section.dart';
@@ -178,17 +178,6 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                           _quickSelections = Map<EventType, double>.from(
                             updated,
                           );
-                          _applyScheduleConstraints();
-                        }),
-                      ),
-                      const SizedBox(height: 24),
-                      DayEventEditor(
-                        events: _events,
-                        scheduledHours: widget.isScheduled
-                            ? _scheduledHours
-                            : null,
-                        onChanged: (updated) => setState(() {
-                          _events = updated;
                           _applyScheduleConstraints();
                         }),
                       ),

@@ -29,9 +29,9 @@ class CalendarEntryDto {
     }
 
     final timestamp = data['date'] as Timestamp?;
-    if (timestamp == null) {
-      throw StateError('Calendar entry ${snapshot.id} is missing "date"');
-    }
+    final resolvedDate = timestamp != null
+        ? _normalizeDate(timestamp.toDate())
+        : _parseDocumentDate(snapshot.id);
 
     final scheduled = _resolveScheduledHours(data);
     final events = _parseEvents(data['events'], data, scheduled);
@@ -40,8 +40,8 @@ class CalendarEntryDto {
     final trimmedNote = rawNote?.trim();
 
     return CalendarEntryDto(
-      id: _resolveDocumentId(snapshot.id, timestamp.toDate()),
-      date: timestamp.toDate(),
+      id: _resolveDocumentId(snapshot.id, resolvedDate),
+      date: resolvedDate,
       scheduledHours: scheduled,
       events: events,
       incidents: incidents,
@@ -76,10 +76,13 @@ class CalendarEntryDto {
 
   Map<String, dynamic> toFirestore({bool includeSentinels = true}) {
     final data = <String, dynamic>{
-      'date': Timestamp.fromDate(date),
       'scheduledHours': scheduledHours,
       'updatedAt': FieldValue.serverTimestamp(),
     };
+
+    if (includeSentinels) {
+      data['date'] = FieldValue.delete();
+    }
 
     if (events.isNotEmpty) {
       data['events'] = events.map(_serializeEvent).toList();
@@ -229,11 +232,12 @@ List<IncidentEntry> _parseIncidents(Object? raw) {
     return const [];
   }
   final incidents = <IncidentEntry>[];
-  for (final item in raw) {
+  for (var index = 0; index < raw.length; index++) {
+    final item = raw[index];
     if (item is! Map<String, dynamic>) {
       continue;
     }
-    final incident = _parseIncident(item);
+    final incident = _parseIncident(item, index);
     if (incident != null) {
       incidents.add(incident);
     }
@@ -244,11 +248,10 @@ List<IncidentEntry> _parseIncidents(Object? raw) {
   return List.unmodifiable(incidents);
 }
 
-IncidentEntry? _parseIncident(Map<String, dynamic> data) {
-  final id = data['id'] as String?;
+IncidentEntry? _parseIncident(Map<String, dynamic> data, int index) {
   final categoryRaw = data['category'] as String?;
   final timestampRaw = data['timestamp'];
-  if (id == null || categoryRaw == null) {
+  if (categoryRaw == null) {
     return null;
   }
   final category = _parseIncidentCategory(categoryRaw);
@@ -262,7 +265,7 @@ IncidentEntry? _parseIncident(Map<String, dynamic> data) {
     timestamp = timestampRaw.toDate();
   }
   return IncidentEntry(
-    id: id,
+    id: _resolveIncidentId(data, index),
     category: category,
     timestamp: timestamp,
     note: (note == null || note.isEmpty) ? null : note,
@@ -285,7 +288,6 @@ Map<String, dynamic> _serializeEvent(DayEvent event) {
 
 Map<String, dynamic> _serializeIncident(IncidentEntry incident) {
   return {
-    'id': incident.id,
     'category': incident.category.name,
     if (incident.timestamp != null)
       'timestamp': Timestamp.fromDate(incident.timestamp!),
@@ -362,6 +364,39 @@ String _resolveDocumentId(String rawId, DateTime date) {
     return match.group(1)!;
   }
   return normalized;
+}
+
+DateTime _parseDocumentDate(String documentId) {
+  final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})').firstMatch(documentId);
+  if (match == null) {
+    throw StateError(
+      'Calendar entry $documentId is missing "date" information',
+    );
+  }
+  final year = int.parse(match.group(1)!);
+  final month = int.parse(match.group(2)!);
+  final day = int.parse(match.group(3)!);
+  return DateTime(year, month, day);
+}
+
+DateTime _normalizeDate(DateTime date) {
+  return DateTime(date.year, date.month, date.day);
+}
+
+String _resolveIncidentId(Map<String, dynamic> data, int index) {
+  final rawId = data['id'];
+  if (rawId is String) {
+    final trimmed = rawId.trim();
+    if (trimmed.isNotEmpty) {
+      return trimmed;
+    }
+  }
+  final timestamp = data['timestamp'];
+  if (timestamp is Timestamp) {
+    final millis = timestamp.toDate().millisecondsSinceEpoch;
+    return 'incident_${millis}_$index';
+  }
+  return 'incident_$index';
 }
 
 String _formatDateId(DateTime date) {

@@ -43,18 +43,19 @@ class CalendarEntryRepository {
 
   Query<Map<String, dynamic>> _monthQuery(String userId, DateTime month) {
     final start = DateTime(month.year, month.month, 1);
-    final end = DateTime(month.year, month.month + 1, 1);
-    return _userEntriesCollection(userId)
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-        .where('date', isLessThan: Timestamp.fromDate(end));
+  final end = DateTime(month.year, month.month + 1, 1);
+  final startId = _documentId(start);
+  final endId = _documentId(end);
+  return _userEntriesCollection(userId)
+    .orderBy(FieldPath.documentId)
+    .where(FieldPath.documentId, isGreaterThanOrEqualTo: startId)
+    .where(FieldPath.documentId, isLessThan: endId);
   }
 
   Query<Map<String, dynamic>> _dayQuery(String userId, DateTime day) {
     final normalized = DateTime(day.year, day.month, day.day);
-    final next = normalized.add(const Duration(days: 1));
-    return _userEntriesCollection(userId)
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(normalized))
-        .where('date', isLessThan: Timestamp.fromDate(next));
+  return _userEntriesCollection(userId)
+    .where(FieldPath.documentId, isEqualTo: _documentId(normalized));
   }
 
   Stream<List<CalendarEntry>> watchEntries(CalendarEntriesRequest request) {
@@ -129,8 +130,8 @@ class CalendarEntryRepository {
       for (final doc in query.docs) {
         batch.update(doc.reference, <String, Object?>{
           'scheduledHours': scheduledHours,
-          'date': Timestamp.fromDate(normalized),
           'updatedAt': FieldValue.serverTimestamp(),
+          'date': FieldValue.delete(),
         });
       }
     }
@@ -159,6 +160,7 @@ class CalendarEntryRepository {
         batch.update(doc.reference, <String, Object?>{
           'scheduledHours': 0,
           'updatedAt': FieldValue.serverTimestamp(),
+          'date': FieldValue.delete(),
         });
       }
     }
@@ -200,6 +202,7 @@ class CalendarEntryRepository {
     final batch = _firestore.batch();
     final updateData = <String, Object?>{
       'updatedAt': FieldValue.serverTimestamp(),
+      'date': FieldValue.delete(),
       if (trimmedNote.isEmpty)
         'notes': FieldValue.delete()
       else

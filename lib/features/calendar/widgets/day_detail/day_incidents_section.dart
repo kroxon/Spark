@@ -82,7 +82,7 @@ class _DayIncidentsSectionState extends State<DayIncidentsSection> {
   Widget _buildEmptyState(ThemeData theme) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(16),
@@ -98,7 +98,7 @@ class _DayIncidentsSectionState extends State<DayIncidentsSection> {
             size: 28,
             color: theme.colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
           Text('Nie dodano żadnych zdarzeń dla tej służby.',
            style: theme.textTheme.titleSmall),
         ],

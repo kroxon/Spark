@@ -14,7 +14,7 @@ class DayNoteSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Notatka służbowa',
+          'Notatka',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
@@ -23,7 +23,7 @@ class DayNoteSection extends StatelessWidget {
           minLines: 3,
           maxLines: 6,
           decoration: const InputDecoration(
-            hintText: 'Zapisz decyzje dowódcy, przekazania służby lub inne ustalenia.',
+            hintText: 'Dodaj notatkę dotyczącą tej służby.',
             border: OutlineInputBorder(),
           ),
         ),

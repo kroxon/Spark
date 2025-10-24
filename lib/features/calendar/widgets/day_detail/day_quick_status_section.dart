@@ -65,13 +65,23 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       isFixedHours: false,
     ),
     _QuickStatusOption(
-      type: EventType.customAbsence,
-      label: 'Inna nieobecność',
+      type: EventType.paidAbsence,
+      label: 'Inna płatna nieobecność',
+      isFixedHours: false,
+    ),
+    _QuickStatusOption(
+      type: EventType.unpaidAbsence,
+      label: 'Inna bezpłatna nieobecność',
       isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.overtimeWorked,
       label: 'Nadgodziny',
+      isFixedHours: false,
+    ),
+    _QuickStatusOption(
+      type: EventType.homeDuty,
+      label: 'Dyżur domowy',
       isFixedHours: false,
     ),
   ];
@@ -345,12 +355,6 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     }
     setState(() {
       var normalized = parsed;
-      if (type == EventType.overtimeTimeOff) {
-        final schedule = _normalizedSchedule();
-        if (schedule > 0) {
-          normalized = math.min(parsed, schedule);
-        }
-      }
       _selections[type] = normalized;
       _enforceScheduleConstraints();
       _notifyParent();
@@ -366,12 +370,6 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       return 8;
     }
     const base = 24.0;
-    if (type == EventType.overtimeTimeOff) {
-      final schedule = _normalizedSchedule();
-      if (schedule > 0) {
-        return math.min(base, schedule);
-      }
-    }
     return base;
   }
 
@@ -389,30 +387,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   }
 
   bool _enforceScheduleConstraints({bool notifyParent = false}) {
-    final schedule = _normalizedSchedule();
-    final hasSchedule = schedule > 0;
     var changed = false;
-
-    if (hasSchedule) {
-      if (_selections.remove(EventType.overtimeWorked) != null) {
-        _controllers[EventType.overtimeWorked]?.text = '';
-        changed = true;
-      }
-      final currentTimeOff = _selections[EventType.overtimeTimeOff];
-      if (currentTimeOff != null) {
-        final clamped = math.min(currentTimeOff, schedule);
-        if (clamped != currentTimeOff) {
-          _selections[EventType.overtimeTimeOff] = clamped;
-          _controllers[EventType.overtimeTimeOff]?.text = _formatHours(clamped);
-          changed = true;
-        }
-      }
-    } else {
-      if (_selections.remove(EventType.overtimeTimeOff) != null) {
-        _controllers[EventType.overtimeTimeOff]?.text = '';
-        changed = true;
-      }
-    }
 
     if (_enforceSickExclusivity()) {
       changed = true;
@@ -429,22 +404,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   }
 
   bool _isOptionVisible(EventType type) {
-    final hasSchedule = _normalizedSchedule() > 0;
-    if (type == EventType.overtimeWorked) {
-      return !hasSchedule;
-    }
-    if (type == EventType.overtimeTimeOff) {
-      return hasSchedule;
-    }
     return true;
-  }
-
-  double _normalizedSchedule() {
-    final schedule = widget.scheduledHours ?? 0;
-    if (schedule.isNaN || schedule.isInfinite) {
-      return 0;
-    }
-    return schedule.clamp(0, 48);
   }
 
   void _handleOptionPressed(EventType type) {

@@ -307,11 +307,11 @@ class ShiftDayTile extends StatelessWidget {
       case EventType.vacationAdditional:
       case EventType.sickLeave80:
       case EventType.sickLeave100:
-      case EventType.otherAbsence:
       case EventType.delegation:
       case EventType.bloodDonation:
+      case EventType.homeDuty:
         return true;
-      case EventType.customAbsence:
+      case EventType.paidAbsence:
         return event.hours > 0;
       default:
         return false;

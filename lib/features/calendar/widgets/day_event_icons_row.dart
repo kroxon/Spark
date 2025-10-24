@@ -127,12 +127,14 @@ class DayEventIconsRow extends StatelessWidget {
       case EventType.sickLeave80:
       case EventType.sickLeave100:
         return Icons.medical_services_outlined;
-      case EventType.otherAbsence:
-        return Icons.event_busy;
-      case EventType.customAbsence:
+      case EventType.paidAbsence:
         return Icons.person_off_outlined;
       case EventType.overtimeTimeOff:
         return Icons.timelapse;
+      case EventType.homeDuty:
+        return Icons.home_outlined;
+      case EventType.unpaidAbsence:
+        return Icons.person_remove_outlined;
     }
   }
 }

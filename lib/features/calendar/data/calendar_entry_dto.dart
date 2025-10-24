@@ -158,15 +158,11 @@ List<DayEvent> _parseEvents(
 
   final hours = _resolveLegacyEventHours(data, scheduledHours);
   final note = (data['notes'] as String?)?.trim();
-  final customDetails = _parseCustomDetails(
-    data['customDetails'] as Map<String, dynamic>?,
-  );
 
   return List.unmodifiable([
     DayEvent(
       type: legacyType,
       hours: hours,
-      customDetails: customDetails,
       note: (note == null || note.isEmpty) ? null : note,
     ),
   ]);
@@ -184,28 +180,11 @@ DayEvent? _parseEvent(Map<String, dynamic>? data) {
   final hours = (data['hours'] as num?)?.toDouble() ?? 0;
   final noteRaw = data['note'] as String?;
   final note = noteRaw?.trim();
-  final customDetails = _parseCustomDetails(
-    data['customDetails'] as Map<String, dynamic>?,
-  );
-
   return DayEvent(
     type: type,
     hours: hours < 0 ? 0 : hours,
-    customDetails: customDetails,
     note: (note == null || note.isEmpty) ? null : note,
   );
-}
-
-CustomAbsenceDetails? _parseCustomDetails(Map<String, dynamic>? data) {
-  if (data == null) {
-    return null;
-  }
-  final name = data['name'] as String?;
-  final payout = data['payoutPercentage'] as num?;
-  if (name == null || payout == null) {
-    return null;
-  }
-  return CustomAbsenceDetails(name: name, payoutPercentage: payout.toInt());
 }
 
 double _resolveLegacyEventHours(
@@ -278,11 +257,6 @@ Map<String, dynamic> _serializeEvent(DayEvent event) {
     'hours': event.hours,
     if (event.note != null && event.note!.trim().isNotEmpty)
       'note': event.note!.trim(),
-    if (event.customDetails != null)
-      'customDetails': {
-        'name': event.customDetails!.name,
-        'payoutPercentage': event.customDetails!.payoutPercentage,
-      },
   };
 }
 
@@ -305,10 +279,12 @@ EventType? _parseEventType(String? raw) {
       return EventType.overtimeWorked;
     case 'vacationStandard':
       return EventType.vacationRegular;
+    case 'otherAbsence':
+    case 'customAbsence':
     case 'custom':
-      return EventType.customAbsence;
+      return EventType.paidAbsence;
     case 'dayOff':
-      return EventType.otherAbsence;
+      return EventType.paidAbsence;
     case 'overtimeOffDay':
       return EventType.overtimeTimeOff;
   }
@@ -335,9 +311,9 @@ EventType? _parseLegacyEventType(String raw) {
     case 'sickLeave100':
       return EventType.sickLeave100;
     case 'custom':
-      return EventType.customAbsence;
+      return EventType.paidAbsence;
     case 'dayOff':
-      return EventType.otherAbsence;
+      return EventType.paidAbsence;
     case 'overtimeOffDay':
       return EventType.overtimeTimeOff;
     default:

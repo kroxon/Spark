@@ -10,43 +10,31 @@ enum EventType {
   vacationAdditional,
   sickLeave80,
   sickLeave100,
-  otherAbsence,
-  customAbsence,
+  paidAbsence,
   overtimeTimeOff,
-}
-
-class CustomAbsenceDetails {
-  CustomAbsenceDetails({required this.name, required this.payoutPercentage});
-
-  final String name;
-  final int payoutPercentage;
+  homeDuty,
+  unpaidAbsence,
 }
 
 class DayEvent {
   const DayEvent({
     required this.type,
     required this.hours,
-    this.customDetails,
     this.note,
   }) : assert(hours >= 0, 'hours must be non-negative');
 
   final EventType type;
   final double hours;
-  final CustomAbsenceDetails? customDetails;
   final String? note;
 
   DayEvent copyWith({
     EventType? type,
     double? hours,
-    Object? customDetails = _undefined,
     Object? note = _undefined,
   }) {
     return DayEvent(
       type: type ?? this.type,
       hours: hours ?? this.hours,
-      customDetails: customDetails == _undefined
-          ? this.customDetails
-          : customDetails as CustomAbsenceDetails?,
       note: note == _undefined ? this.note : note as String?,
     );
   }
@@ -128,8 +116,7 @@ class CalendarEntry {
       EventType.vacationAdditional,
       EventType.sickLeave80,
       EventType.sickLeave100,
-      EventType.otherAbsence,
-      EventType.customAbsence,
+      EventType.paidAbsence,
     });
     final deficit = scheduledHours - covered;
     return deficit > 0 ? deficit : 0;

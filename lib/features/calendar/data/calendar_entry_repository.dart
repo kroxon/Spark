@@ -330,9 +330,6 @@ class CalendarEntryRepository {
       final note = trimmedNote == null || trimmedNote.isEmpty
           ? null
           : trimmedNote;
-      final customDetails = event.type == EventType.customAbsence
-          ? event.customDetails
-          : null;
 
       if (hasSchedule && event.type == EventType.overtimeWorked) {
         continue;
@@ -355,7 +352,6 @@ class CalendarEntryRepository {
           event.copyWith(
             hours: clamped,
             note: note,
-            customDetails: customDetails,
           ),
         );
         continue;
@@ -363,7 +359,6 @@ class CalendarEntryRepository {
 
       if (normalizedHours == 0 &&
           note == null &&
-          customDetails == null &&
           event.type == EventType.overtimeWorked) {
         continue;
       }
@@ -372,7 +367,6 @@ class CalendarEntryRepository {
         event.copyWith(
           hours: normalizedHours,
           note: note,
-          customDetails: customDetails,
         ),
       );
     }

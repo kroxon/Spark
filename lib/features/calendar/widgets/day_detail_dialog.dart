@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
@@ -96,8 +94,10 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     EventType.vacationAdditional,
     EventType.sickLeave80,
     EventType.sickLeave100,
-    EventType.customAbsence,
+    EventType.paidAbsence,
     EventType.overtimeTimeOff,
+    EventType.homeDuty,
+    EventType.unpaidAbsence,
   };
 
   @override
@@ -115,8 +115,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
 
     for (final event in widget.entry?.events ?? const <DayEvent>[]) {
       final hasExtraData =
-          event.customDetails != null ||
-          (event.note != null && event.note!.trim().isNotEmpty);
+          event.note != null && event.note!.trim().isNotEmpty;
       if (_quickEventTypes.contains(event.type) && !hasExtraData) {
         _quickSelections[event.type] = event.hours;
       } else {
@@ -220,32 +219,8 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
   }
 
   void _applyScheduleConstraints() {
-    final schedule = _normalizedSchedule();
-    final hasSchedule = schedule > 0;
-
     var sanitizedQuick = Map<EventType, double>.from(_quickSelections);
     var quickChanged = false;
-
-    if (hasSchedule) {
-      if (sanitizedQuick.remove(EventType.overtimeWorked) != null) {
-        quickChanged = true;
-      }
-      final currentTimeOff = sanitizedQuick[EventType.overtimeTimeOff];
-      if (currentTimeOff != null) {
-        final clamped = math.min(currentTimeOff, schedule);
-        if (clamped <= 0) {
-          sanitizedQuick.remove(EventType.overtimeTimeOff);
-          quickChanged = true;
-        } else if (clamped != currentTimeOff) {
-          sanitizedQuick[EventType.overtimeTimeOff] = clamped;
-          quickChanged = true;
-        }
-      }
-    } else {
-      if (sanitizedQuick.remove(EventType.overtimeTimeOff) != null) {
-        quickChanged = true;
-      }
-    }
 
     MapEntry<EventType, double>? selectedSickEntry;
     for (final entry in sanitizedQuick.entries) {
@@ -269,42 +244,11 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
       _quickSelections = sanitizedQuick;
     }
 
-    var remainingTimeOff = hasSchedule
-        ? math.max(
-            0,
-            schedule - (sanitizedQuick[EventType.overtimeTimeOff] ?? 0),
-          )
-        : 0.0;
     final sanitizedEvents = <EditableDayEvent>[];
     var eventsChanged = false;
 
     for (final event in _events) {
       final normalizedHours = event.hours.clamp(0, 48).toDouble();
-      if (hasSchedule && event.type == EventType.overtimeWorked) {
-        eventsChanged = true;
-        continue;
-      }
-      if (!hasSchedule && event.type == EventType.overtimeTimeOff) {
-        eventsChanged = true;
-        continue;
-      }
-      if (hasSchedule && event.type == EventType.overtimeTimeOff) {
-        if (remainingTimeOff <= 0) {
-          eventsChanged = true;
-          continue;
-        }
-        final clamped = math.min(normalizedHours, remainingTimeOff).toDouble();
-        if (clamped <= 0) {
-          eventsChanged = true;
-          continue;
-        }
-        if (clamped != normalizedHours) {
-          eventsChanged = true;
-        }
-        remainingTimeOff -= clamped;
-        sanitizedEvents.add(_cloneEvent(event, hours: clamped));
-        continue;
-      }
 
       if (normalizedHours != event.hours) {
         eventsChanged = true;
@@ -326,17 +270,7 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
       type: type ?? source.type,
       hours: hours ?? source.hours,
       note: source.note,
-      customName: source.customName,
-      customPayout: source.customPayout,
     );
-  }
-
-  double _normalizedSchedule() {
-    final raw = _scheduledHours ?? 0;
-    if (raw.isNaN || raw.isInfinite) {
-      return 0;
-    }
-    return raw.clamp(0, 48);
   }
 
   bool _isSickLeave(EventType type) {

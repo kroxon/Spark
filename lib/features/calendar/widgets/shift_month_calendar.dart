@@ -226,12 +226,21 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
     final end = last.add(Duration(days: trailing));
 
     final days = <DateTime>[];
-    for (
-      DateTime day = start;
-      !day.isAfter(end);
-      day = day.add(const Duration(days: 1))
-    ) {
-      days.add(day);
+    DateTime current = DateTime(start.year, start.month, start.day);
+    final endDate = DateTime(end.year, end.month, end.day);
+    while (!current.isAfter(endDate)) {
+      days.add(current);
+      final nextDay = current.day + 1;
+      final daysInCurrentMonth = DateTime(current.year, current.month + 1, 0).day;
+      if (nextDay > daysInCurrentMonth) {
+        if (current.month == 12) {
+          current = DateTime(current.year + 1, 1, 1);
+        } else {
+          current = DateTime(current.year, current.month + 1, 1);
+        }
+      } else {
+        current = DateTime(current.year, current.month, nextDay);
+      }
     }
     return days;
   }

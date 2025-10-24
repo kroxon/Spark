@@ -94,9 +94,14 @@ class ShiftDayTile extends StatelessWidget {
       borderWidth = 2.0;
     }
 
+    final brightness = theme.brightness;
     Color textColor;
     if (isEditing && onDuty) {
-      textColor = colors.primary;
+      textColor = brightness == Brightness.dark
+          ? _contrastingTextColor(backgroundColor, colors)
+          : colors.primary;
+    } else if (brightness == Brightness.dark && isCurrentMonth) {
+      textColor = _contrastingTextColor(backgroundColor, colors);
     } else if (isCurrentMonth && onDuty) {
       textColor = _contrastingTextColor(backgroundColor, colors);
     } else if (isCurrentMonth) {
@@ -107,30 +112,29 @@ class ShiftDayTile extends StatelessWidget {
 
     final isEditableDay = isEditing && onDuty;
     final events = entry?.events ?? const <DayEvent>[];
-  final shouldShowEventIcons = events.isNotEmpty;
+    final shouldShowEventIcons = events.isNotEmpty;
   final double dayNumberFontSize =
-    (theme.textTheme.titleMedium?.fontSize ?? 18) - 2;
-    final baseDayNumberStyle =
-        (theme.textTheme.titleMedium ?? const TextStyle()).copyWith(
-      fontWeight: FontWeight.w600,
-      fontSize: dayNumberFontSize,
-      height: 1.0,
-    );
-    final showScheduleIcon = hasScheduledService;
+    ((cellWidth * 0.3).clamp(12, 20) * 0.75).clamp(9, 15);
+  final baseDayNumberStyle =
+      (theme.textTheme.titleMedium ?? const TextStyle()).copyWith(
+    fontWeight: FontWeight.w600,
+    fontSize: dayNumberFontSize,
+    height: 1.0,
+  );
+  final showScheduleIcon = hasScheduledService && !isEditing;
   final showScheduleGlyph = isEditableDay &&
     !shouldShowEventIcons &&
     !showOnDutyIndicator &&
-    hasScheduledService;
-    final hasBottomContent =
-        shouldShowEventIcons || showScheduleGlyph || isEditableDay;
-    final scheduleGlyphColor = colors.onSurfaceVariant.withValues(
-      alpha: isCurrentMonth ? 0.75 : 0.5,
-    );
+    hasScheduledService &&
+    !isEditing;
+  final hasBottomContent =
+      (shouldShowEventIcons && !isEditing) || showScheduleGlyph;
+  final scheduleGlyphColor = colors.onSurfaceVariant.withValues(
+    alpha: isCurrentMonth ? 0.75 : 0.5,
+  );
 
-    final dayNumberStyle = baseDayNumberStyle.copyWith(color: textColor);
-  final scheduleIconColor = colors.onSurfaceVariant.withValues(alpha: 0.75);
-
-    return SizedBox(
+  final dayNumberStyle = baseDayNumberStyle.copyWith(color: textColor);
+  final scheduleIconColor = colors.onSurfaceVariant.withValues(alpha: 0.75);    return SizedBox(
       width: cellWidth,
       height: cellHeight,
       child: Padding(
@@ -177,12 +181,31 @@ class ShiftDayTile extends StatelessWidget {
                         ),
                         // const SizedBox(height: 4),
                         Expanded(
-                          child: showOnDutyIndicator
-                              ? const Padding(
-                                  padding: EdgeInsets.only(bottom: 2),
-                                  child: Center(child: OnDutyIndicator()),
+                          child: isEditableDay
+                              ? Center(
+                                  child: Icon(
+                                    hasScheduledService
+                                        ? Icons.remove_circle
+                                        : Icons.add_circle,
+                                    size: (cellWidth * 0.5).clamp(20, 40),
+                                    color: hasScheduledService
+                                        ? Colors.red.shade600
+                                        : Colors.green.shade600,
+                                  ),
                                 )
-                              : const SizedBox.shrink(),
+                              : showOnDutyIndicator
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(bottom: 2),
+                                      child: Center(
+                                        child: OnDutyIndicator(
+                                          iconSize: (cellWidth * 0.15).clamp(6, 12),
+                                          glowColor: brightness == Brightness.dark
+                                              ? Colors.yellow.shade400.withOpacity(0.4)
+                                              : null,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
                         ),
                         if (hasBottomContent) const SizedBox(height: 4),
                       ],
@@ -199,7 +222,7 @@ class ShiftDayTile extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
-                              child: shouldShowEventIcons
+                              child: (!isEditing && shouldShowEventIcons)
                                   ? Align(
                                       alignment: Alignment.centerLeft,
                                       child: DayEventIconsRow(
@@ -213,34 +236,17 @@ class ShiftDayTile extends StatelessWidget {
                                     )
                                   : const SizedBox.shrink(),
                             ),
-                            if (showScheduleGlyph)
+                            if (isEditableDay)
+                              const SizedBox.shrink()
+                            else if (showScheduleGlyph)
                               Padding(
                                 padding: EdgeInsets.only(
-                                  left: shouldShowEventIcons ? 6 : 0,
+                                  left: (!isEditing && shouldShowEventIcons) ? 6 : 0,
                                 ),
                                 child: Icon(
                                   Icons.calendar_today,
-                                  size: 14,
+                                  size: (cellWidth * 0.25).clamp(10, 16),
                                   color: scheduleGlyphColor,
-                                ),
-                              ),
-                            if (isEditableDay)
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: (showScheduleGlyph ||
-                                          shouldShowEventIcons)
-                                      ? 8
-                                      : 0,
-                                ),
-                                child: Icon(
-                                  hasScheduledService
-                                      ? Icons.remove_circle_outline
-                                      : Icons.add_circle_outline,
-                                  size: 18,
-                                  color: hasScheduledService
-                                      ? colors.error.withValues(alpha: 0.85)
-                                      : colors.primary
-                                          .withValues(alpha: 0.8),
                                 ),
                               ),
                           ],

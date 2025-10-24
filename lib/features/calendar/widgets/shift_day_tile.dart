@@ -3,6 +3,7 @@ import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/models/shift_color_palette.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
+import 'package:iskra/features/calendar/widgets/day_event_icons_row.dart';
 import 'package:iskra/features/calendar/widgets/on_duty_indicator.dart';
 
 /// Represents a single day cell within the monthly calendar grid.
@@ -86,7 +87,7 @@ class ShiftDayTile extends StatelessWidget {
     Color borderColor = Colors.transparent;
     double borderWidth = 1.2;
     if (isToday) {
-      borderColor = colors.primary;
+      borderColor = colors.primary.withValues(alpha: 0.8);
       borderWidth = 2.2;
     } else if (isEditing && onDuty) {
       borderColor = colors.primary.withValues(alpha: 0.7);
@@ -104,9 +105,30 @@ class ShiftDayTile extends StatelessWidget {
       textColor = colors.onSurfaceVariant.withValues(alpha: 0.55);
     }
 
-    final overlayTextColor = _contrastingTextColor(dutyColor, colors);
-    final overlayHeight = cellHeight * 0.3;
     final isEditableDay = isEditing && onDuty;
+    final events = entry?.events ?? const <DayEvent>[];
+  final shouldShowEventIcons = events.isNotEmpty;
+  final double dayNumberFontSize =
+    (theme.textTheme.titleMedium?.fontSize ?? 18) - 2;
+    final baseDayNumberStyle =
+        (theme.textTheme.titleMedium ?? const TextStyle()).copyWith(
+      fontWeight: FontWeight.w600,
+      fontSize: dayNumberFontSize,
+      height: 1.0,
+    );
+    final showScheduleIcon = hasScheduledService;
+  final showScheduleGlyph = isEditableDay &&
+    !shouldShowEventIcons &&
+    !showOnDutyIndicator &&
+    hasScheduledService;
+    final hasBottomContent =
+        shouldShowEventIcons || showScheduleGlyph || isEditableDay;
+    final scheduleGlyphColor = colors.onSurfaceVariant.withValues(
+      alpha: isCurrentMonth ? 0.75 : 0.5,
+    );
+
+    final dayNumberStyle = baseDayNumberStyle.copyWith(color: textColor);
+  final scheduleIconColor = colors.onSurfaceVariant.withValues(alpha: 0.75);
 
     return SizedBox(
       width: cellWidth,
@@ -127,75 +149,104 @@ class ShiftDayTile extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: Stack(
-                fit: StackFit.expand,
                 children: [
-                  if (plannedOff)
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: overlayHeight,
-                      child: Container(
-                        color: dutyColor,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${dateOnly.day}',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: overlayTextColor,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (!plannedOff)
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
                               '${dateOnly.day}',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: textColor,
-                                fontWeight: FontWeight.w600,
+                              style: dayNumberStyle,
+                            ),
+                            if (showScheduleIcon)
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Icon(
+                                    Icons.calendar_month_rounded,
+                                    size: dayNumberFontSize + 2,
+                                    color: scheduleIconColor,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        if (showOnDutyIndicator)
-                          const Expanded(
-                            child: Center(child: OnDutyIndicator()),
-                          )
-                        else
-                          const Spacer(),
-                        if (isEditing && onDuty)
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Icon(
-                              hasScheduledService
-                                  ? Icons.remove_circle_outline
-                                  : Icons.add_circle_outline,
-                              size: 18,
-                              color: hasScheduledService
-                                  ? colors.error.withValues(alpha: 0.85)
-                                  : colors.primary.withValues(alpha: 0.8),
-                            ),
-                          )
-                        else if (!showOnDutyIndicator &&
-                            hasScheduledService &&
-                            !plannedOff)
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Icon(
-                              Icons.calendar_today,
-                              size: 16,
-                              color: overlayTextColor,
-                            ),
-                          ),
+                          ],
+                        ),
+                        // const SizedBox(height: 4),
+                        Expanded(
+                          child: showOnDutyIndicator
+                              ? const Padding(
+                                  padding: EdgeInsets.only(bottom: 2),
+                                  child: Center(child: OnDutyIndicator()),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        if (hasBottomContent) const SizedBox(height: 4),
                       ],
                     ),
                   ),
+                  if (hasBottomContent)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: shouldShowEventIcons
+                                  ? Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: DayEventIconsRow(
+                                        events: events,
+                                        iconColor: colors.onSurfaceVariant
+                                            .withValues(
+                                          alpha:
+                                              isCurrentMonth ? 0.85 : 0.6,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
+                            ),
+                            if (showScheduleGlyph)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: shouldShowEventIcons ? 6 : 0,
+                                ),
+                                child: Icon(
+                                  Icons.calendar_today,
+                                  size: 14,
+                                  color: scheduleGlyphColor,
+                                ),
+                              ),
+                            if (isEditableDay)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: (showScheduleGlyph ||
+                                          shouldShowEventIcons)
+                                      ? 8
+                                      : 0,
+                                ),
+                                child: Icon(
+                                  hasScheduledService
+                                      ? Icons.remove_circle_outline
+                                      : Icons.add_circle_outline,
+                                  size: 18,
+                                  color: hasScheduledService
+                                      ? colors.error.withValues(alpha: 0.85)
+                                      : colors.primary
+                                          .withValues(alpha: 0.8),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

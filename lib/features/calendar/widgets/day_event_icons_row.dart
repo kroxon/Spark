@@ -133,8 +133,6 @@ class DayEventIconsRow extends StatelessWidget {
         return Icons.timelapse;
       case EventType.homeDuty:
         return Icons.home_outlined;
-      case EventType.unpaidAbsence:
-        return Icons.person_remove_outlined;
     }
   }
 }

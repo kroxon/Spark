@@ -99,7 +99,6 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     EventType.paidAbsence,
     EventType.overtimeTimeOff,
     EventType.homeDuty,
-    EventType.unpaidAbsence,
   };
 
   @override

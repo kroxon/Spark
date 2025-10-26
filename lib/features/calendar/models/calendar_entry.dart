@@ -13,7 +13,6 @@ enum EventType {
   paidAbsence,
   overtimeTimeOff,
   homeDuty,
-  unpaidAbsence,
 }
 
 class DayEvent {

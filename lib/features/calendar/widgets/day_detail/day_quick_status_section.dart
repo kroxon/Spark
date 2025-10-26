@@ -33,56 +33,61 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     _QuickStatusOption(
       type: EventType.delegation,
       label: 'Delegacja',
+      icon: Icons.business_center,
       isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.bloodDonation,
       label: 'Krwiodawstwo',
+      icon: Icons.bloodtype,
       isFixedHours: true,
     ),
     _QuickStatusOption(
       type: EventType.vacationRegular,
       label: 'Urlop wypoczynkowy',
+      icon: Icons.beach_access,
       isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.vacationAdditional,
       label: 'Urlop dodatkowy',
+      icon: Icons.wb_sunny,
       isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.sickLeave80,
       label: 'Zwolnienie lekarskie 80%',
+      icon: Icons.local_hospital,
       isFixedHours: true,
     ),
     _QuickStatusOption(
       type: EventType.sickLeave100,
       label: 'Zwolnienie lekarskie 100%',
+      icon: Icons.healing,
       isFixedHours: true,
     ),
     _QuickStatusOption(
       type: EventType.overtimeTimeOff,
       label: 'Odbiór nadgodzin',
+      icon: Icons.access_time,
       isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.paidAbsence,
       label: 'Inna płatna nieobecność',
-      isFixedHours: false,
-    ),
-    _QuickStatusOption(
-      type: EventType.unpaidAbsence,
-      label: 'Inna bezpłatna nieobecność',
+      icon: Icons.event_busy,
       isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.overtimeWorked,
       label: 'Nadgodziny',
+      icon: Icons.work,
       isFixedHours: false,
     ),
     _QuickStatusOption(
       type: EventType.homeDuty,
       label: 'Dyżur domowy',
+      icon: Icons.home,
       isFixedHours: true,
     ),
   ];
@@ -133,9 +138,8 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     final visibleOptions = _visibleOptions();
     return LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 6.0;
-        final isSingleColumn = constraints.maxWidth < 280;
-        final columnsCount = isSingleColumn ? 1 : 2;
+        const spacing = 4.0;
+        final columnsCount = 2;
         final sliceSize = (visibleOptions.length / columnsCount).ceil();
 
         List<Widget> buildColumnSlice(int columnIndex) {
@@ -157,21 +161,21 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Szybkie statusy', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: _blockedMessage == null
                   ? const SizedBox.shrink()
                   : Container(
                       key: const ValueKey('blocked-message'),
-                      margin: const EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
+                        horizontal: 10,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: theme.colorScheme.outlineVariant,
                         ),
@@ -182,10 +186,10 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
                         children: [
                           Icon(
                             Icons.info_outline,
-                            size: 18,
+                            size: 16,
                             color: theme.colorScheme.primary,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               _blockedMessage!,
@@ -196,17 +200,14 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
                       ),
                     ),
             ),
-            if (isSingleColumn)
-              Column(children: buildColumnSlice(0))
-            else
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: Column(children: buildColumnSlice(0))),
-                  const SizedBox(width: spacing),
-                  Expanded(child: Column(children: buildColumnSlice(1))),
-                ],
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: Column(children: buildColumnSlice(0))),
+                const SizedBox(width: spacing),
+                Expanded(child: Column(children: buildColumnSlice(1))),
+              ],
+            ),
           ],
         );
       },
@@ -223,109 +224,154 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     final isInteractionBlocked = _isInteractionBlocked(option.type);
     final hasConflict = _hasConflict(option.type);
 
-    return AnimatedContainer(
+    return AnimatedSize(
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeInOut,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? hasConflict
-                ? theme.colorScheme.errorContainer.withValues(alpha: 0.1)
-                : theme.colorScheme.primary.withValues(alpha: 0.08)
-            : isInteractionBlocked
-            ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
-            : theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: isSelected
-              ? hasConflict
-                  ? theme.colorScheme.error
-                  : theme.colorScheme.primary
-              : isInteractionBlocked
-              ? theme.colorScheme.outlineVariant.withValues(alpha: 0.5)
-              : theme.colorScheme.outlineVariant,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Checkbox(
-                value: isSelected,
-                visualDensity: VisualDensity.compact,
-                onChanged: isInteractionBlocked ? null : (_) => _handleOptionPressed(option.type),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: GestureDetector(
-                  onTap: isInteractionBlocked ? null : () => _handleOptionPressed(option.type),
-                  behavior: isInteractionBlocked ? HitTestBehavior.opaque : HitTestBehavior.translucent,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          option.label,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: isInteractionBlocked && !isSelected
-                                ? theme.colorScheme.onSurface.withOpacity(0.6)
-                                : hasConflict
-                                ? theme.colorScheme.error
-                                : null,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (hasConflict) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.warning,
-                          size: 16,
-                          color: theme.colorScheme.error,
-                        ),
-                      ],
-                    ],
-                  ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [theme.colorScheme.primary.withValues(alpha: 0.1), theme.colorScheme.primary.withValues(alpha: 0.05)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : LinearGradient(
+                  colors: isInteractionBlocked
+                      ? [theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4), theme.colorScheme.surface]
+                      : [theme.colorScheme.surface, theme.colorScheme.surfaceContainerLowest],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ),
-            ],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : isInteractionBlocked
+                ? theme.colorScheme.outlineVariant.withValues(alpha: 0.5)
+                : theme.colorScheme.outlineVariant,
           ),
-          if (isSelected && option.isFixedHours) ...[
-            const SizedBox(height: 4),
-            Text(
-              'Godziny: ${_formatHours(_selections[option.type])} h',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: hasConflict ? theme.colorScheme.error : null,
-              ),
-            ),
-          ] else if (isSelected && controller != null) ...[
-            const SizedBox(height: 6),
-            TextField(
-              controller: controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-              ],
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
-                ),
-                labelText: 'Godziny',
-                suffixText: 'h',
-                errorText: hasConflict ? ' ' : null, // Reserve space for error
-              ),
-              onChanged: (value) => _updateHours(option.type, value),
+          boxShadow: [
+            BoxShadow(
+              color: theme.shadowColor.withValues(alpha: 0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
           ],
-        ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: isInteractionBlocked ? null : () => _handleOptionPressed(option.type),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: isInteractionBlocked ? null : () => _handleOptionPressed(option.type),
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isSelected
+                                ? theme.colorScheme.primary
+                                : Colors.transparent,
+                            border: Border.all(
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : (isInteractionBlocked ? theme.colorScheme.outlineVariant.withValues(alpha: 0.5) : theme.colorScheme.outlineVariant),
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            option.icon,
+                            size: 16,
+                            color: isSelected
+                                ? theme.colorScheme.onPrimary
+                                : (isInteractionBlocked ? theme.colorScheme.onSurface.withValues(alpha: 0.3) : theme.colorScheme.onSurfaceVariant),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: isInteractionBlocked ? null : () => _handleOptionPressed(option.type),
+                          behavior: HitTestBehavior.translucent,
+                          child: Text(
+                            option.label,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: isInteractionBlocked && !isSelected
+                                  ? theme.colorScheme.onSurface.withValues(alpha: 0.6)
+                                  : null,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (isSelected && option.isFixedHours) ...[
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Godziny: ${_formatHours(_selections[option.type])} h',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ] else if (isSelected && controller != null) ...[
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 120, // Wider input field to prevent text overflow
+                          child: SizedBox(
+                            height: 52, // Increased TextField height for better text accommodation
+                            child: TextField(
+                              controller: controller,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                              ],
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4, // Reduced vertical padding
+                                ),
+                                hintText: '0',
+                                suffixText: 'h',
+                                errorText: hasConflict ? ' ' : null, // Reserve space for error
+                              ),
+                              onChanged: (value) => _updateHours(option.type, value),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -335,7 +381,6 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       if (!_isOptionVisible(type)) {
         return;
       }
-      final isSickLeave = _isSickLeave(type);
       if (_selections.containsKey(type)) {
         _selections.remove(type);
         final controller = _controllers[type];
@@ -343,8 +388,8 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
           controller.text = '';
         }
       } else {
-        if (isSickLeave) {
-          _clearSelections();
+        if (_isExclusiveStatus(type)) {
+          _clearSelections(except: type);
         }
         final defaultHours = _defaultHours(type);
         _selections[type] = defaultHours;
@@ -423,7 +468,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   bool _enforceScheduleConstraints({bool notifyParent = false}) {
     var changed = false;
 
-    if (_enforceSickExclusivity()) {
+    if (_enforceExclusiveStatusExclusivity()) {
       changed = true;
     }
 
@@ -476,37 +521,37 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   }
 
   bool _shouldBlockSelection(EventType type) {
-    final activeSick = _activeSickLeaveType();
-    if (activeSick == null) {
+    final activeExclusive = _activeExclusiveStatusType();
+    if (activeExclusive == null) {
       return false;
     }
-    final isSickLeave = _isSickLeave(type);
+    final isExclusive = _isExclusiveStatus(type);
     final isSelected = _selections.containsKey(type);
-    if (!isSickLeave && isSelected) {
+    if (!isExclusive && isSelected) {
       return false;
     }
-    if (isSickLeave) {
+    if (isExclusive) {
       return !isSelected;
     }
     return true;
   }
 
   bool _isInteractionBlocked(EventType type) {
-    // First check existing sick leave logic
-    final activeSick = _activeSickLeaveType();
-    if (activeSick == null) {
-      // For sick leave types, maintain exclusivity logic
-      if (_isSickLeave(type)) {
-        return false; // Allow interaction with sick leave types
+    // First check existing exclusive status logic
+    final activeExclusive = _activeExclusiveStatusType();
+    if (activeExclusive == null) {
+      // For exclusive types, maintain exclusivity logic
+      if (_isExclusiveStatus(type)) {
+        return false; // Allow interaction with exclusive types
       }
       // For all other types, allow interaction - validation happens only on save
       return false;
     }
-    if (!_isSickLeave(type) && _selections.containsKey(type)) {
+    if (!_isExclusiveStatus(type) && _selections.containsKey(type)) {
       return false;
     }
-    if (_isSickLeave(type)) {
-      return type != activeSick;
+    if (_isExclusiveStatus(type)) {
+      return type != activeExclusive;
     }
     return true;
   }
@@ -529,9 +574,9 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
         .any((c) => c.conflictingTypes.contains(type));
   }
 
-  EventType? _activeSickLeaveType() {
+  EventType? _activeExclusiveStatusType() {
     for (final type in _selections.keys) {
-      if (_isSickLeave(type)) {
+      if (_isExclusiveStatus(type)) {
         return type;
       }
     }
@@ -540,6 +585,10 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
 
   bool _isSickLeave(EventType type) {
     return type == EventType.sickLeave80 || type == EventType.sickLeave100;
+  }
+
+  bool _isExclusiveStatus(EventType type) {
+    return _isSickLeave(type) || type == EventType.bloodDonation;
   }
 
   void _clearSelections({EventType? except}) {
@@ -555,18 +604,18 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     }
   }
 
-  bool _enforceSickExclusivity() {
-    EventType? preservedSick;
+  bool _enforceExclusiveStatusExclusivity() {
+    EventType? preservedExclusive;
     for (final type in _selections.keys) {
-      if (_isSickLeave(type)) {
-        preservedSick ??= type;
+      if (_isExclusiveStatus(type)) {
+        preservedExclusive ??= type;
       }
     }
-    if (preservedSick == null) {
+    if (preservedExclusive == null) {
       return false;
     }
     final typesToRemove = _selections.keys
-        .where((type) => type != preservedSick)
+        .where((type) => type != preservedExclusive)
         .toList(growable: false);
     if (typesToRemove.isEmpty) {
       return false;
@@ -586,10 +635,10 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       return;
     }
     FocusScope.of(context).unfocus();
-    final isSickAttempt = _isSickLeave(attemptedType);
-    final message = isSickAttempt
-        ? 'Możesz aktywować tylko jedno zwolnienie lekarskie naraz. Odznacz bieżące, aby kontynuować.'
-        : 'Aktywne zwolnienie lekarskie blokuje inne statusy. Odznacz je, aby kontynuować.';
+    final isExclusiveAttempt = _isExclusiveStatus(attemptedType);
+    final message = isExclusiveAttempt
+        ? 'Możesz aktywować tylko jeden status zdrowotny naraz. Odznacz bieżący, aby kontynuować.'
+        : 'Aktywny status zdrowotny blokuje inne statusy. Odznacz go, aby kontynuować.';
     _messageTimer?.cancel();
     setState(() {
       _blockedMessage = message;
@@ -656,10 +705,12 @@ class _QuickStatusOption {
   const _QuickStatusOption({
     required this.type,
     required this.label,
+    required this.icon,
     this.isFixedHours = false,
   });
 
   final EventType type;
   final String label;
+  final IconData icon;
   final bool isFixedHours;
 }

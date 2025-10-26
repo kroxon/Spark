@@ -317,7 +317,6 @@ class QuickStatusValidator {
       EventType.vacationRegular,
       EventType.vacationAdditional,
       EventType.overtimeTimeOff,
-      EventType.unpaidAbsence,
     };
 
     final conflictingTypes = selections.keys
@@ -352,7 +351,6 @@ class QuickStatusValidator {
       EventType.vacationAdditional,
       EventType.overtimeTimeOff,
       EventType.paidAbsence,
-      EventType.unpaidAbsence,
       EventType.delegation,
       EventType.overtimeWorked,
     };
@@ -401,8 +399,6 @@ class QuickStatusValidator {
         return 'Odbiór nadgodzin';
       case EventType.homeDuty:
         return 'Dyżur domowy';
-      case EventType.unpaidAbsence:
-        return 'Inna bezpłatna nieobecność';
     }
   }
 }

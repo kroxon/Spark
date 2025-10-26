@@ -1,6 +1,6 @@
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 
-DateTime _dateOnly(DateTime value) => DateTime(value.year, value.month, value.day);
+DateTime _dateOnly(DateTime value) => DateTime.utc(value.year, value.month, value.day);
 
 class ShiftCycleCalculator {
   ShiftCycleCalculator({
@@ -11,7 +11,7 @@ class ShiftCycleCalculator {
   final DateTime anchorDate;
   final int anchorShiftId;
 
-  static final DateTime defaultAnchorDate = DateTime(2025, 11, 1);
+  static final DateTime defaultAnchorDate = DateTime.utc(2025, 11, 1);
 
   int shiftOn(DateTime date) {
     final target = _dateOnly(date);

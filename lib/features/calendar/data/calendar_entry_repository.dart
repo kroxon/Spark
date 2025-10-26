@@ -53,7 +53,7 @@ class CalendarEntryRepository {
   }
 
   Query<Map<String, dynamic>> _dayQuery(String userId, DateTime day) {
-    final normalized = DateTime(day.year, day.month, day.day);
+    final normalized = DateTime.utc(day.year, day.month, day.day);
   return _userEntriesCollection(userId)
     .where(FieldPath.documentId, isEqualTo: _documentId(normalized));
   }
@@ -111,7 +111,7 @@ class CalendarEntryRepository {
     required DateTime day,
     double scheduledHours = 24,
   }) async {
-    final normalized = DateTime(day.year, day.month, day.day);
+    final normalized = DateTime.utc(day.year, day.month, day.day);
     final query = await _dayQuery(userId, normalized).get();
     final collection = _userEntriesCollection(userId);
     final batch = _firestore.batch();
@@ -143,7 +143,7 @@ class CalendarEntryRepository {
     required String userId,
     required DateTime day,
   }) async {
-    final normalized = DateTime(day.year, day.month, day.day);
+    final normalized = DateTime.utc(day.year, day.month, day.day);
     final query = await _dayQuery(userId, normalized).get();
     if (query.docs.isEmpty) {
       return;
@@ -173,7 +173,7 @@ class CalendarEntryRepository {
     required DateTime day,
     required String note,
   }) async {
-    final normalized = DateTime(day.year, day.month, day.day);
+    final normalized = DateTime.utc(day.year, day.month, day.day);
     final collection = _userEntriesCollection(userId);
     final query = await _dayQuery(userId, normalized).get();
 
@@ -229,7 +229,7 @@ class CalendarEntryRepository {
     required String note,
     double? scheduledHours,
   }) async {
-    final normalized = DateTime(day.year, day.month, day.day);
+    final normalized = DateTime.utc(day.year, day.month, day.day);
     final collection = _userEntriesCollection(userId);
     final query = await _dayQuery(userId, normalized).get();
 
@@ -396,7 +396,7 @@ class CalendarEntryRepository {
       return const <IncidentEntry>[];
     }
 
-    final normalizedDay = DateTime(day.year, day.month, day.day);
+    final normalizedDay = DateTime.utc(day.year, day.month, day.day);
     final sanitized = <IncidentEntry>[];
     final seenIds = <String>{};
 
@@ -447,7 +447,7 @@ class CalendarEntryRepository {
 
   DateTime _normalizeIncidentTimestamp(DateTime day, DateTime timestamp) {
     final local = timestamp.toLocal();
-    return DateTime(
+    return DateTime.utc(
       day.year,
       day.month,
       day.day,

@@ -352,11 +352,11 @@ DateTime _parseDocumentDate(String documentId) {
   final year = int.parse(match.group(1)!);
   final month = int.parse(match.group(2)!);
   final day = int.parse(match.group(3)!);
-  return DateTime(year, month, day);
+  return DateTime.utc(year, month, day);
 }
 
 DateTime _normalizeDate(DateTime date) {
-  return DateTime(date.year, date.month, date.day);
+  return DateTime.utc(date.year, date.month, date.day);
 }
 
 String _resolveIncidentId(Map<String, dynamic> data, int index) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/quick_status_validator.dart';
+import 'package:iskra/features/calendar/widgets/validation_conflict_dialog.dart';
 import 'package:iskra/features/calendar/models/editable_day_event.dart';
 import 'package:iskra/features/calendar/models/incident_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
@@ -292,7 +294,18 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
     return aTime.compareTo(bTime);
   }
 
-  void _submit() {
+  void _submit() async {
+    final validator = QuickStatusValidator();
+    final conflicts = validator.validateSelections(
+      selections: _quickSelections,
+      scheduledHours: widget.isScheduled ? _scheduledHours : null,
+    );
+
+    if (conflicts.isNotEmpty) {
+      await ValidationConflictDialog.show(context, conflicts: conflicts);
+      return;
+    }
+
     final combinedEvents = <DayEvent>[
       ..._events.map((event) => event.toDomain()),
       ..._quickSelections.entries.map(

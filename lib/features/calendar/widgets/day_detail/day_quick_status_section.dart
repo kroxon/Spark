@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/quick_status_validator.dart';
 
 class DayQuickStatusSection extends StatefulWidget {
   const DayQuickStatusSection({
@@ -82,7 +83,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     _QuickStatusOption(
       type: EventType.homeDuty,
       label: 'Dyżur domowy',
-      isFixedHours: false,
+      isFixedHours: true,
     ),
   ];
 
@@ -220,6 +221,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     final isSelected = _selections.containsKey(option.type);
     final controller = _controllers[option.type];
     final isInteractionBlocked = _isInteractionBlocked(option.type);
+    final hasConflict = _hasConflict(option.type);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
@@ -227,14 +229,18 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: isSelected
-            ? theme.colorScheme.primary.withValues(alpha: 0.08)
+            ? hasConflict
+                ? theme.colorScheme.errorContainer.withValues(alpha: 0.1)
+                : theme.colorScheme.primary.withValues(alpha: 0.08)
             : isInteractionBlocked
             ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
             : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isSelected
-              ? theme.colorScheme.primary
+              ? hasConflict
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.primary
               : isInteractionBlocked
               ? theme.colorScheme.outlineVariant.withValues(alpha: 0.5)
               : theme.colorScheme.outlineVariant,
@@ -250,23 +256,39 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
               Checkbox(
                 value: isSelected,
                 visualDensity: VisualDensity.compact,
-                onChanged: (_) => _handleOptionPressed(option.type),
+                onChanged: isInteractionBlocked ? null : (_) => _handleOptionPressed(option.type),
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: GestureDetector(
-                  onTap: () => _handleOptionPressed(option.type),
-                  behavior: HitTestBehavior.translucent,
-                  child: Text(
-                    option.label,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: isInteractionBlocked && !isSelected
-                          ? theme.colorScheme.onSurface.withOpacity(0.6)
-                          : null,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  onTap: isInteractionBlocked ? null : () => _handleOptionPressed(option.type),
+                  behavior: isInteractionBlocked ? HitTestBehavior.opaque : HitTestBehavior.translucent,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          option.label,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: isInteractionBlocked && !isSelected
+                                ? theme.colorScheme.onSurface.withOpacity(0.6)
+                                : hasConflict
+                                ? theme.colorScheme.error
+                                : null,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (hasConflict) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.warning,
+                          size: 16,
+                          color: theme.colorScheme.error,
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -276,7 +298,9 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
             const SizedBox(height: 4),
             Text(
               'Godziny: ${_formatHours(_selections[option.type])} h',
-              style: theme.textTheme.bodySmall,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: hasConflict ? theme.colorScheme.error : null,
+              ),
             ),
           ] else if (isSelected && controller != null) ...[
             const SizedBox(height: 6),
@@ -288,14 +312,15 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
               ],
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(
+                contentPadding: const EdgeInsets.symmetric(
                   horizontal: 8,
                   vertical: 8,
                 ),
                 labelText: 'Godziny',
                 suffixText: 'h',
+                errorText: hasConflict ? ' ' : null, // Reserve space for error
               ),
               onChanged: (value) => _updateHours(option.type, value),
             ),
@@ -341,14 +366,6 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     if (!_controllers.containsKey(type)) {
       return;
     }
-    if (_shouldBlockSelection(type)) {
-      _showSelectionBlockedMessage(type);
-      final controller = _controllers[type];
-      if (controller != null) {
-        controller.text = _formatHours(_selections[type]);
-      }
-      return;
-    }
     final parsed = _parseHours(rawValue);
     if (parsed == null) {
       return;
@@ -369,6 +386,23 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     if (type == EventType.delegation) {
       return 8;
     }
+    if (type == EventType.homeDuty) {
+      return 24;
+    }
+
+    // For deducting types (vacations, overtime time-off, paid absence),
+    // default hours should not exceed scheduled hours
+    final deductingTypes = {
+      EventType.vacationRegular,
+      EventType.vacationAdditional,
+      EventType.overtimeTimeOff,
+      EventType.paidAbsence,
+    };
+
+    if (deductingTypes.contains(type) && widget.scheduledHours != null && widget.scheduledHours! > 0) {
+      return math.min(widget.scheduledHours!, 24.0);
+    }
+
     const base = 24.0;
     return base;
   }
@@ -393,6 +427,9 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       changed = true;
     }
 
+    // Validate selections and show conflicts
+    _validateAndShowConflicts();
+
     if (changed && notifyParent) {
       _notifyParent();
     }
@@ -404,7 +441,28 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   }
 
   bool _isOptionVisible(EventType type) {
-    return true;
+    // Health statuses are always available
+    final healthStatuses = {
+      EventType.bloodDonation,
+      EventType.sickLeave80,
+      EventType.sickLeave100,
+    };
+
+    if (healthStatuses.contains(type)) {
+      return true;
+    }
+
+    // For other statuses, availability depends on scheduled hours
+    if (widget.scheduledHours == null || widget.scheduledHours == 0) {
+      // No scheduled hours: all statuses except health and overtime time-off
+      return type != EventType.overtimeTimeOff;
+    } else if (widget.scheduledHours == 24) {
+      // 24h scheduled: all statuses except health and overtime worked
+      return type != EventType.overtimeWorked;
+    } else {
+      // 8h or 16h scheduled: all statuses except health
+      return true;
+    }
   }
 
   void _handleOptionPressed(EventType type) {
@@ -412,6 +470,8 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       _showSelectionBlockedMessage(type);
       return;
     }
+
+    // Allow toggling all available statuses - validation happens only on save
     _toggle(type);
   }
 
@@ -432,8 +492,14 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   }
 
   bool _isInteractionBlocked(EventType type) {
+    // First check existing sick leave logic
     final activeSick = _activeSickLeaveType();
     if (activeSick == null) {
+      // For sick leave types, maintain exclusivity logic
+      if (_isSickLeave(type)) {
+        return false; // Allow interaction with sick leave types
+      }
+      // For all other types, allow interaction - validation happens only on save
       return false;
     }
     if (!_isSickLeave(type) && _selections.containsKey(type)) {
@@ -443,6 +509,24 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       return type != activeSick;
     }
     return true;
+  }
+
+  bool _hasConflict(EventType type) {
+    // Check if currently selected type causes conflicts
+    if (!_selections.containsKey(type)) {
+      return false;
+    }
+
+    final validator = QuickStatusValidator();
+    final conflicts = validator.validateSelections(
+      selections: _selections,
+      scheduledHours: widget.scheduledHours,
+    );
+
+    // Check if this type is mentioned in any error conflicts
+    return conflicts
+        .where((c) => c.severity == ValidationSeverity.error)
+        .any((c) => c.conflictingTypes.contains(type));
   }
 
   EventType? _activeSickLeaveType() {
@@ -517,6 +601,53 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       setState(() {
         _blockedMessage = null;
       });
+    });
+  }
+
+  void _validateAndShowConflicts() {
+    final validator = QuickStatusValidator();
+    final conflicts = validator.validateSelections(
+      selections: _selections,
+      scheduledHours: widget.scheduledHours,
+    );
+
+    if (conflicts.isEmpty) {
+      _clearValidationMessage();
+      return;
+    }
+
+    // Show the first error conflict as a message
+    final errorConflict = conflicts.where((c) => c.severity == ValidationSeverity.error).firstOrNull;
+    if (errorConflict != null) {
+      _showValidationMessage(errorConflict.message);
+    } else {
+      // Show first warning if no errors
+      final warningConflict = conflicts.first;
+      _showValidationMessage(warningConflict.message);
+    }
+  }
+
+  void _showValidationMessage(String message) {
+    if (!mounted) return;
+
+    _messageTimer?.cancel();
+    setState(() {
+      _blockedMessage = message;
+    });
+    _messageTimer = Timer(const Duration(seconds: 4), () {
+      if (!mounted) return;
+      setState(() {
+        _blockedMessage = null;
+      });
+    });
+  }
+
+  void _clearValidationMessage() {
+    if (!mounted) return;
+
+    _messageTimer?.cancel();
+    setState(() {
+      _blockedMessage = null;
     });
   }
 }

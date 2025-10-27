@@ -62,7 +62,6 @@ class AppScaffoldDrawer extends StatelessWidget {
                   return ListTile(
                     leading: Icon(section.icon),
                     title: Text(section.label),
-                    subtitle: Text(section.subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
                     selected: isSelected,
                     selectedColor: theme.colorScheme.primary,
                     selectedTileColor: theme.colorScheme.primary.withOpacity(0.08),

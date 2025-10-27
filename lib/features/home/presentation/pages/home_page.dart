@@ -7,6 +7,7 @@ import 'package:iskra/features/calendar/data/calendar_entry_repository.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
 import 'package:iskra/features/calendar/widgets/day_detail_dialog.dart';
+import 'package:iskra/features/calendar/widgets/schedule_fab.dart';
 import 'package:iskra/features/calendar/widgets/shift_month_calendar.dart';
 import 'package:iskra/features/home/application/home_controller.dart';
 
@@ -238,22 +239,29 @@ class _CalendarContent extends StatelessWidget {
           cardHeight = media.isFinite && media > 0 ? media : 600;
         }
 
-        return Padding(
-          padding: padding,
-          child: SizedBox(
-            height: cardHeight,
-            child: ShiftMonthCalendar(
-              initialMonth: month,
-              userProfile: profile,
-              entries: entries,
-              shiftCycleCalculator: cycle,
-              onDaySelected: onDayTap,
-              onMonthChanged: onMonthChanged,
-              isEditing: isEditing,
-              onEditModeToggle: onToggleEditing,
-              onToggleScheduledService: onToggleScheduled,
+        return Scaffold(
+          body: Padding(
+            padding: padding,
+            child: SizedBox(
+              height: cardHeight,
+              child: ShiftMonthCalendar(
+                initialMonth: month,
+                userProfile: profile,
+                entries: entries,
+                shiftCycleCalculator: cycle,
+                onDaySelected: onDayTap,
+                onMonthChanged: onMonthChanged,
+                isEditing: isEditing,
+                onEditModeToggle: onToggleEditing,
+                onToggleScheduledService: onToggleScheduled,
+              ),
             ),
           ),
+          floatingActionButton: ScheduleFab(
+            onScheduleEditToggle: onToggleEditing,
+            isEditing: isEditing,
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         );
       },
     );

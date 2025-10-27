@@ -49,11 +49,6 @@ class _AppShellState extends ConsumerState<AppShell> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(currentSection.label),
-            const SizedBox(height: 2),
-            Text(
-              currentSection.subtitle,
-              style: textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
           ],
         ),
         actions: [

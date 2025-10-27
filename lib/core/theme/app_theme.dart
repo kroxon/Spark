@@ -24,9 +24,10 @@ class AppTheme {
         foregroundColor: colorScheme.onSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
+          color: colorScheme.onSurface,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -135,9 +136,10 @@ class AppTheme {
         foregroundColor: colorScheme.onSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
+          color: colorScheme.onSurface,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(

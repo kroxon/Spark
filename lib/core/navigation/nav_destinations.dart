@@ -8,7 +8,6 @@ class AppSection {
     required this.name,
     required this.path,
     required this.label,
-    required this.subtitle,
     required this.icon,
     required this.type,
     required this.branchIndex,
@@ -17,7 +16,6 @@ class AppSection {
   final String name;
   final String path;
   final String label;
-  final String subtitle;
   final IconData icon;
   final AppSectionType type;
   final int branchIndex;
@@ -32,7 +30,6 @@ class AppSections {
     name: 'schedule',
     path: '/schedule',
     label: 'Grafik',
-    subtitle: 'Steruj grafikiem dyżurów i wpisami kalendarza',
     icon: Icons.calendar_month_outlined,
     type: AppSectionType.primary,
     branchIndex: 0,
@@ -42,7 +39,6 @@ class AppSections {
     name: 'statistics',
     path: '/statistics',
     label: 'Statystyki',
-    subtitle: 'Podsumowania godzin, urlopów i aktywności',
     icon: Icons.insert_chart_outlined,
     type: AppSectionType.primary,
     branchIndex: 1,
@@ -52,7 +48,6 @@ class AppSections {
     name: 'notes',
     path: '/notes',
     label: 'Notatki',
-    subtitle: 'Organizuj prywatne notatki i checklisty',
     icon: Icons.note_alt_outlined,
     type: AppSectionType.primary,
     branchIndex: 2,
@@ -62,7 +57,6 @@ class AppSections {
     name: 'settings',
     path: '/settings',
     label: 'Ustawienia',
-    subtitle: 'Konfiguracja systemu i integracji',
     icon: Icons.settings_outlined,
     type: AppSectionType.drawer,
     branchIndex: 3,
@@ -72,7 +66,6 @@ class AppSections {
     name: 'reports',
     path: '/reports',
     label: 'Raporty PDF',
-    subtitle: 'Generuj i eksportuj meldunki',
     icon: Icons.picture_as_pdf_outlined,
     type: AppSectionType.drawer,
     branchIndex: 4,
@@ -82,7 +75,6 @@ class AppSections {
     name: 'subscription',
     path: '/subscription',
     label: 'Subskrypcja',
-    subtitle: 'Zarządzaj planem i fakturami',
     icon: Icons.star_outline,
     type: AppSectionType.drawer,
     branchIndex: 5,
@@ -92,7 +84,6 @@ class AppSections {
     name: 'help',
     path: '/help',
     label: 'Pomoc i wsparcie',
-    subtitle: 'Centrum wiedzy i kontakt z zespołem',
     icon: Icons.help_center_outlined,
     type: AppSectionType.drawer,
     branchIndex: 6,

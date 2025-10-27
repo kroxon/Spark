@@ -347,23 +347,6 @@ class _EditingBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: palette.primary,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.edit_calendar,
-              color:
-                  ThemeData.estimateBrightnessForColor(palette.primary) ==
-                      Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-            ),
-          ),
-          const SizedBox(width: 14),
           Expanded(
             child: Text(
               'Tryb edycji: dotknij dzień swojej zmiany, aby dodać 24h służby do harmonogramu.',

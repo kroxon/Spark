@@ -3,7 +3,7 @@ import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/models/shift_color_palette.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';
-import 'package:iskra/features/calendar/widgets/day_event_icons_row.dart';
+import 'package:iskra/features/calendar/widgets/day_detail/day_event_icons_row.dart';
 import 'package:iskra/features/calendar/widgets/on_duty_indicator.dart';
 
 /// Represents a single day cell within the monthly calendar grid.

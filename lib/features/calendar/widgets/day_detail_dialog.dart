@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/models/quick_status_validator.dart';
-import 'package:iskra/features/calendar/widgets/validation_conflict_dialog.dart';
+import 'package:iskra/features/calendar/widgets/day_detail/validation_conflict_dialog.dart';
 import 'package:iskra/features/calendar/models/editable_day_event.dart';
 import 'package:iskra/features/calendar/models/incident_entry.dart';
 import 'package:iskra/features/calendar/utils/shift_cycle_calculator.dart';

@@ -102,7 +102,13 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
           text: _formatHours(_selections[option.type]),
         ),
     };
-    _enforceScheduleConstraints(notifyParent: true);
+    _enforceScheduleConstraints(notifyParent: false);
+    // Delay validation to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _validateAndShowConflicts();
+      }
+    });
   }
 
   @override
@@ -471,9 +477,6 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
     if (_enforceExclusiveStatusExclusivity()) {
       changed = true;
     }
-
-    // Validate selections and show conflicts
-    _validateAndShowConflicts();
 
     if (changed && notifyParent) {
       _notifyParent();

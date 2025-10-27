@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iskra/features/calendar/widgets/vacation_dialog.dart';
 import 'package:iskra/features/calendar/widgets/sick_leave_dialog.dart';
 
-/// Floating Action Button for schedule management with speed dial options.
 class ScheduleFab extends StatefulWidget {
   const ScheduleFab({
     super.key,
@@ -26,7 +25,7 @@ class _ScheduleFabState extends State<ScheduleFab>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800), // Wolniejsza animacja speed dial
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
   }
@@ -34,7 +33,6 @@ class _ScheduleFabState extends State<ScheduleFab>
   @override
   void didUpdateWidget(covariant ScheduleFab oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Reset state when entering schedule page
     if (!widget.isEditing && oldWidget.isEditing) {
       _resetFabState();
     }
@@ -84,7 +82,6 @@ class _ScheduleFabState extends State<ScheduleFab>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    // Hide FAB when editing
     if (widget.isEditing) {
       return const SizedBox.shrink();
     }
@@ -94,7 +91,6 @@ class _ScheduleFabState extends State<ScheduleFab>
       height: double.infinity,
       child: Stack(
         children: [
-          // Overlay to close on tap outside
           if (_isOpen)
             Positioned.fill(
               child: GestureDetector(
@@ -105,7 +101,6 @@ class _ScheduleFabState extends State<ScheduleFab>
               ),
             ),
 
-          // Speed dial options - positioned above main FAB
           Positioned(
             bottom: 80, // 8 (main FAB position) + 72 (FAB height + spacing)
             right: 16,
@@ -113,13 +108,12 @@ class _ScheduleFabState extends State<ScheduleFab>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // Vacation button - shortest, needs most left padding
                 AnimatedOpacity(
-                  duration: const Duration(milliseconds: 800), // Wolniejsza animacja
+                  duration: const Duration(milliseconds: 800),
                   opacity: _isOpen ? 1.0 : 0.0,
                   curve: Curves.easeOut,
                   child: AnimatedScale(
-                    duration: const Duration(milliseconds: 800), // Wolniejsza animacja
+                    duration: const Duration(milliseconds: 800),
                     scale: _isOpen ? 1.0 : 0.0,
                     curve: Curves.easeOut,
                     child: Padding(
@@ -142,13 +136,12 @@ class _ScheduleFabState extends State<ScheduleFab>
                   ),
                 ),
 
-                // Schedule button - longest, no extra padding needed
                 AnimatedOpacity(
-                  duration: const Duration(milliseconds: 800), // Wolniejsza animacja
+                  duration: const Duration(milliseconds: 800),
                   opacity: _isOpen ? 1.0 : 0.0,
                   curve: const Interval(0.1, 1.0, curve: Curves.easeOut),
                   child: AnimatedScale(
-                    duration: const Duration(milliseconds: 800), // Wolniejsza animacja
+                    duration: const Duration(milliseconds: 800),
                     scale: _isOpen ? 1.0 : 0.0,
                     curve: const Interval(0.1, 1.0, curve: Curves.easeOut),
                     child: Padding(
@@ -171,13 +164,12 @@ class _ScheduleFabState extends State<ScheduleFab>
                   ),
                 ),
 
-                // Sick leave button - medium length, needs some left padding
                 AnimatedOpacity(
-                  duration: const Duration(milliseconds: 800), // Wolniejsza animacja
+                  duration: const Duration(milliseconds: 800),
                   opacity: _isOpen ? 1.0 : 0.0,
                   curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
                   child: AnimatedScale(
-                    duration: const Duration(milliseconds: 800), // Wolniejsza animacja
+                    duration: const Duration(milliseconds: 800),
                     scale: _isOpen ? 1.0 : 0.0,
                     curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
                     child: Padding(
@@ -203,7 +195,6 @@ class _ScheduleFabState extends State<ScheduleFab>
             ),
           ),
 
-          // Main FAB
           Positioned(
             bottom: 8, // 8px above bottom navigation
             right: 16,
@@ -213,8 +204,8 @@ class _ScheduleFabState extends State<ScheduleFab>
               foregroundColor: colorScheme.onPrimary,
               elevation: 8,
               child: AnimatedRotation(
-                turns: _isOpen ? 0.125 : 0.0, // 45 degrees only when open
-                duration: const Duration(milliseconds: 1600), // 4x wolniej
+                turns: _isOpen ? 0.125 : 0.0,
+                duration: const Duration(milliseconds: 1600),
                 child: const Icon(Icons.add),
               ),
             ),

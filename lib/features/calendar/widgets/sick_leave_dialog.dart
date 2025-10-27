@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Dialog for adding sick leave periods.
 class SickLeaveDialog extends StatelessWidget {
   const SickLeaveDialog({super.key});
 

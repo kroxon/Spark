@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Dialog for adding vacation periods.
 class VacationDialog extends StatelessWidget {
   const VacationDialog({super.key});
 

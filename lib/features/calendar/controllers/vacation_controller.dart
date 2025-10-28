@@ -32,11 +32,6 @@ class VacationController {
         date.isBefore(endDateTime) || date.isAtSameMomentAs(endDateTime);
         date = date.add(const Duration(days: 1))) {
 
-      // Check if it's a weekend (Saturday = 6, Sunday = 7)
-      if (date.weekday == 6 || date.weekday == 7) {
-        continue; // Skip weekends for vacation
-      }
-
       final existingEntry = await repository.getEntryForDay(user.uid, date);
       if (existingEntry != null && existingEntry.events.isNotEmpty) {
         conflicts.add(ConflictDay(date, existingEntry.events));

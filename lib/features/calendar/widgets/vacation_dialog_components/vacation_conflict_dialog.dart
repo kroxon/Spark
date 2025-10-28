@@ -11,22 +11,26 @@ class ConflictDay {
   String get formattedDate => '${date.day}.${date.month}.${date.year}';
 }
 
+enum ConflictResolution {
+  cancel,
+  clearAndAddVacation,
+}
+
 class VacationConflictDialog extends StatelessWidget {
   const VacationConflictDialog({
     super.key,
     required this.conflicts,
-    required this.onDismiss,
+    required this.onResolution,
   });
 
   final List<ConflictDay> conflicts;
-  final VoidCallback onDismiss;
+  final ValueChanged<ConflictResolution> onResolution;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: const Text('Nie można dodać urlopu'),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 400),
         child: SingleChildScrollView(
@@ -114,24 +118,29 @@ class VacationConflictDialog extends StatelessWidget {
         ),
       ),
       actions: [
+        TextButton(
+          onPressed: () => onResolution(ConflictResolution.cancel),
+          child: const Text('Anuluj'),
+        ),
+        const SizedBox(width: 8),
         FilledButton(
-          onPressed: onDismiss,
-          child: const Text('Rozumiem'),
+          onPressed: () => onResolution(ConflictResolution.clearAndAddVacation),
+          child: const Text('Wyczyść i dodaj urlop'),
         ),
       ],
     );
   }
 
-  static Future<bool> show(
+  static Future<ConflictResolution> show(
     BuildContext context, {
     required List<ConflictDay> conflicts,
   }) {
-    return showDialog<bool>(
+    return showDialog<ConflictResolution>(
       context: context,
       builder: (context) => VacationConflictDialog(
         conflicts: conflicts,
-        onDismiss: () => Navigator.of(context).pop(false),
+        onResolution: (resolution) => Navigator.of(context).pop(resolution),
       ),
-    ).then((value) => value ?? false);
+    ).then((value) => value ?? ConflictResolution.cancel);
   }
 }

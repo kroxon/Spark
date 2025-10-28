@@ -23,7 +23,7 @@ class VacationForm extends StatefulWidget {
   final ValueChanged<DateTime?> onStartDateChanged;
   final ValueChanged<DateTime?> onEndDateChanged;
   final ValueChanged<double> onHoursCalculated;
-  final Future<double> Function(DateTime?, DateTime?) calculatePotentialHours;
+  final Future<double> Function(DateTime?, DateTime?, UserProfile) calculatePotentialHours;
 
   @override
   State<VacationForm> createState() => _VacationFormState();
@@ -46,7 +46,7 @@ class _VacationFormState extends State<VacationForm> {
 
   Future<void> _calculatePotentialConsumedHours() async {
     if (_startDate != null && _endDate != null) {
-      final hours = await widget.calculatePotentialHours(_startDate, _endDate);
+      final hours = await widget.calculatePotentialHours(_startDate, _endDate, widget.userProfile);
       setState(() => _potentialConsumedHours = hours);
       widget.onHoursCalculated(hours);
     } else {

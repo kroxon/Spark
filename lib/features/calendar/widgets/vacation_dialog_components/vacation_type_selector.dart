@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'vacation_dialog_models.dart';
+import 'package:iskra/features/calendar/models/vacation_models.dart';
 
 class VacationTypeSelector extends StatelessWidget {
   const VacationTypeSelector({

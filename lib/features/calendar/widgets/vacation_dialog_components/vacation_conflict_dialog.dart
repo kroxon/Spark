@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:iskra/features/calendar/models/calendar_entry.dart';
+import 'package:iskra/features/calendar/models/vacation_models.dart';
 import 'vacation_dialog_helpers.dart';
-
-class ConflictDay {
-  const ConflictDay(this.date, this.events);
-
-  final DateTime date;
-  final List<DayEvent> events;
-
-  String get formattedDate => '${date.day}.${date.month}.${date.year}';
-}
-
-enum ConflictResolution {
-  cancel,
-  clearAndAddVacation,
-}
 
 class VacationConflictDialog extends StatelessWidget {
   const VacationConflictDialog({

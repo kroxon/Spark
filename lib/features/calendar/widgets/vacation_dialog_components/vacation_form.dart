@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
+import 'package:iskra/features/calendar/models/vacation_models.dart';
 import 'vacation_balance_display.dart';
 import 'vacation_type_selector.dart';
 import 'vacation_calendar_selector.dart';
 import 'vacation_hours_calculator.dart';
 import 'vacation_schedule_info.dart';
-import 'vacation_dialog_models.dart';
 
 class VacationForm extends StatefulWidget {
   const VacationForm({

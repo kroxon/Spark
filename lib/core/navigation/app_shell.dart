@@ -39,8 +39,8 @@ class _AppShellState extends ConsumerState<AppShell> {
       _lastPrimaryIndex = AppSections.primary.indexOf(currentSection);
     }
 
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
+    // final theme = Theme.of(context);
+    // final textTheme = theme.textTheme;
 
     return Scaffold(
       appBar: AppBar(

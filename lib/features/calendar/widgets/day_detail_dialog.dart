@@ -174,21 +174,33 @@ class _DayDetailDialogState extends State<DayDetailDialog> {
                         scheduledHours: widget.isScheduled
                             ? _scheduledHours
                             : null,
-                        onChanged: (updated) => setState(() {
-                          _quickSelections = Map<EventType, double>.from(
-                            updated,
-                          );
-                          _applyScheduleConstraints();
-                        }),
+                        onChanged: (updated) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              setState(() {
+                                _quickSelections = Map<EventType, double>.from(
+                                  updated,
+                                );
+                                _applyScheduleConstraints();
+                              });
+                            }
+                          });
+                        },
                       ),
                       const SizedBox(height: 24),
                       DayIncidentsSection(
                         day: widget.day,
                         incidents: _incidents,
-                        onChanged: (updated) => setState(() {
-                          _incidents = List<IncidentEntry>.from(updated)
-                            ..sort(_compareIncidents);
-                        }),
+                        onChanged: (updated) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              setState(() {
+                                _incidents = List<IncidentEntry>.from(updated)
+                                  ..sort(_compareIncidents);
+                              });
+                            }
+                          });
+                        },
                       ),
                       const SizedBox(height: 24),
                       DayNoteSection(controller: _noteController),

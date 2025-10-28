@@ -114,6 +114,7 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
   @override
   void didUpdateWidget(DayQuickStatusSection oldWidget) {
     super.didUpdateWidget(oldWidget);
+    var selectionsChanged = false;
     if (!mapEquals(widget.selections, oldWidget.selections)) {
       _selections = Map<EventType, double>.from(widget.selections);
       for (final option in _options) {
@@ -122,10 +123,34 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
           controller.text = _formatHours(_selections[option.type]);
         }
       }
+      selectionsChanged = true;
     }
-    final sanitized = _enforceScheduleConstraints(notifyParent: true);
-    if (sanitized && mounted) {
-      setState(() {});
+
+    // Check if scheduled hours changed and adjust vacation hours if needed
+    final scheduledHoursChanged = widget.scheduledHours != oldWidget.scheduledHours;
+    if (scheduledHoursChanged) {
+      final vacationAdjusted = _adjustVacationHoursToSchedule();
+      if (vacationAdjusted) {
+        selectionsChanged = true;
+      }
+    }
+
+    final sanitized = _enforceScheduleConstraints(notifyParent: false);
+    if (sanitized) {
+      selectionsChanged = true;
+    }
+
+    if (selectionsChanged) {
+      _notifyParent();
+    }
+
+    // Re-validate if scheduled hours changed
+    if (scheduledHoursChanged && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _validateAndShowConflicts();
+        }
+      });
     }
   }
 
@@ -427,6 +452,31 @@ class _DayQuickStatusSectionState extends State<DayQuickStatusSection> {
       _enforceScheduleConstraints();
       _notifyParent();
     });
+  }
+
+  bool _adjustVacationHoursToSchedule() {
+    final vacationTypes = {EventType.vacationRegular, EventType.vacationAdditional};
+    var changed = false;
+
+    for (final vacationType in vacationTypes) {
+      final currentHours = _selections[vacationType];
+      if (currentHours == null || currentHours == 0) continue;
+
+      // If scheduled hours exist and are greater than 0, cap vacation hours to scheduled hours
+      if (widget.scheduledHours != null && widget.scheduledHours! > 0) {
+        final cappedHours = math.min(currentHours, widget.scheduledHours!);
+        if (cappedHours != currentHours) {
+          _selections[vacationType] = cappedHours;
+          final controller = _controllers[vacationType];
+          if (controller != null) {
+            controller.text = _formatHours(cappedHours);
+          }
+          changed = true;
+        }
+      }
+    }
+
+    return changed;
   }
 
   void _notifyParent() {

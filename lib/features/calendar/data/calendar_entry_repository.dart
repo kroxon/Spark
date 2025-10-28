@@ -168,6 +168,17 @@ class CalendarEntryRepository {
     await batch.commit();
   }
 
+  Future<CalendarEntry?> getEntryForDay(String userId, DateTime day) async {
+    final normalized = DateTime.utc(day.year, day.month, day.day);
+    final query = await _dayQuery(userId, normalized).get();
+
+    if (query.docs.isEmpty) {
+      return null;
+    }
+
+    return CalendarEntryDto.fromFirestore(query.docs.first).toDomain();
+  }
+
   Future<void> updateDayNote({
     required String userId,
     required DateTime day,

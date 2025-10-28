@@ -89,6 +89,18 @@ class UserProfileRepository {
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
+
+  Future<void> updateVacationHours({
+    required String uid,
+    required double standardVacationHours,
+    required double additionalVacationHours,
+  }) {
+    return _doc(uid).set({
+      'standardVacationHours': standardVacationHours,
+      'additionalVacationHours': additionalVacationHours,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
 }
 
 final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {

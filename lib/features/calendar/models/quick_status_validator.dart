@@ -44,6 +44,9 @@ class QuickStatusValidator {
     // Rule 4: Vacation validation
     conflicts.addAll(_validateVacationRules(selections, scheduledHours));
 
+    // Rule 4.1: Vacation hours limit validation
+    conflicts.addAll(_validateVacationHoursLimit(selections, scheduledHours));
+
     // Rule 5: Paid absence validation
     conflicts.addAll(_validatePaidAbsenceRules(selections, scheduledHours));
 
@@ -207,6 +210,38 @@ class QuickStatusValidator {
           'Urlopy bez harmonogramu są traktowane jako niepłatne nieobecności',
         ],
         severity: ValidationSeverity.warning,
+      ));
+    }
+
+    return conflicts;
+  }
+
+  List<ValidationConflict> _validateVacationHoursLimit(
+    Map<EventType, double> selections,
+    double? scheduledHours,
+  ) {
+    final conflicts = <ValidationConflict>[];
+    final vacationTypes = {EventType.vacationRegular, EventType.vacationAdditional};
+
+    // Calculate total vacation hours
+    final totalVacationHours = selections.entries
+        .where((entry) => vacationTypes.contains(entry.key))
+        .fold<double>(0, (sum, entry) => sum + entry.value);
+
+    if (totalVacationHours == 0) return conflicts;
+
+    // Total vacation hours cannot exceed scheduled hours
+    if (scheduledHours != null && scheduledHours > 0 && totalVacationHours > scheduledHours) {
+      final conflictingTypes = selections.keys.where(vacationTypes.contains).toSet();
+      conflicts.add(ValidationConflict(
+        message: 'Łączne godziny urlopów (${totalVacationHours}h) nie mogą przekraczać godzin harmonogramu (${scheduledHours}h)',
+        suggestions: [
+          'Zmniejsz godziny urlopów łącznie do maksymalnie ${scheduledHours}h',
+          'Zwiększ godziny harmonogramu jeśli urlopy mają obejmować więcej godzin',
+          'Rozłóż urlopy na kilka dni',
+        ],
+        conflictingTypes: conflictingTypes,
+        severity: ValidationSeverity.error,
       ));
     }
 

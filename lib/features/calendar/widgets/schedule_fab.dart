@@ -19,14 +19,38 @@ class ScheduleFab extends StatefulWidget {
 class _ScheduleFabState extends State<ScheduleFab>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  late Animation<double> _fab1Anim;
+  late Animation<double> _fab2Anim;
+  late Animation<double> _fab3Anim;
+  late Animation<double> _rotationAnim;
   bool _isOpen = false;
 
   @override
   void initState() {
     super.initState();
+    // Use a single controller and derive staggered animations for each child FAB.
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
+    );
+
+    // Staggered intervals: slightly offset to create progressive appearance.
+    _fab1Anim = CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+    );
+    _fab2Anim = CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.12, 0.82, curve: Curves.easeOut),
+    );
+    _fab3Anim = CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.24, 0.94, curve: Curves.easeOut),
+    );
+
+    // Rotation for the main FAB: small rotation when open.
+    _rotationAnim = Tween<double>(begin: 0.0, end: 0.125).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
 
@@ -108,14 +132,10 @@ class _ScheduleFabState extends State<ScheduleFab>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                AnimatedOpacity(
-                  duration: const Duration(milliseconds: 800),
-                  opacity: _isOpen ? 1.0 : 0.0,
-                  curve: Curves.easeOut,
-                  child: AnimatedScale(
-                    duration: const Duration(milliseconds: 800),
-                    scale: _isOpen ? 1.0 : 0.0,
-                    curve: Curves.easeOut,
+                FadeTransition(
+                  opacity: _fab1Anim,
+                  child: ScaleTransition(
+                    scale: _fab1Anim,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 12, left: 50), // Align left edge with longest FAB
                       child: FloatingActionButton.extended(
@@ -136,14 +156,10 @@ class _ScheduleFabState extends State<ScheduleFab>
                   ),
                 ),
 
-                AnimatedOpacity(
-                  duration: const Duration(milliseconds: 800),
-                  opacity: _isOpen ? 1.0 : 0.0,
-                  curve: const Interval(0.1, 1.0, curve: Curves.easeOut),
-                  child: AnimatedScale(
-                    duration: const Duration(milliseconds: 800),
-                    scale: _isOpen ? 1.0 : 0.0,
-                    curve: const Interval(0.1, 1.0, curve: Curves.easeOut),
+                FadeTransition(
+                  opacity: _fab2Anim,
+                  child: ScaleTransition(
+                    scale: _fab2Anim,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: FloatingActionButton.extended(
@@ -164,14 +180,10 @@ class _ScheduleFabState extends State<ScheduleFab>
                   ),
                 ),
 
-                AnimatedOpacity(
-                  duration: const Duration(milliseconds: 800),
-                  opacity: _isOpen ? 1.0 : 0.0,
-                  curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
-                  child: AnimatedScale(
-                    duration: const Duration(milliseconds: 800),
-                    scale: _isOpen ? 1.0 : 0.0,
-                    curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
+                FadeTransition(
+                  opacity: _fab3Anim,
+                  child: ScaleTransition(
+                    scale: _fab3Anim,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 12, left: 15), // Align left edge with longest FAB
                       child: FloatingActionButton.extended(
@@ -203,9 +215,8 @@ class _ScheduleFabState extends State<ScheduleFab>
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
               elevation: 8,
-              child: AnimatedRotation(
-                turns: _isOpen ? 0.125 : 0.0,
-                duration: const Duration(milliseconds: 1600),
+              child: RotationTransition(
+                turns: _rotationAnim,
                 child: const Icon(Icons.add),
               ),
             ),

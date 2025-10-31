@@ -262,14 +262,16 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
   final secondaryWillBe = (requiredHours - primaryWillBe).clamp(0.0, double.infinity);
 
     // Prepare human-friendly labels depending on selected vacation type
-  // Human-friendly labels: use fixed phrases to match existing terminology
+  // Jasne, przyjazne etykiety używane w dialogu (bez niejednoznacznych "główny/drugi stan").
+  // Zależnie od wybranego typu, primaryLabel oznacza aktualnie rozliczany rodzaj urlopu,
+  // a secondaryLabel to drugi dostępny rodzaj.
   final primaryLabel = _vacationType == VacationType.regular
-    ? 'Urlop wypoczynkowy '
+    ? 'Urlop wypoczynkowy'
     : 'Urlop dodatkowy';
 
   final secondaryLabel = _vacationType == VacationType.regular
     ? 'Urlop dodatkowy'
-    : 'Urlop wypoczynkowy ';
+    : 'Urlop wypoczynkowy';
 
       if (!mounted) return;
       final useSecond = await showDialog<bool>(
@@ -285,12 +287,12 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
               Text('Dostępne — $primaryLabel: ${effectivePrimaryAvailable.toStringAsFixed(0)} godz.'),
               Text('Dostępne — $secondaryLabel: ${effectiveSecondaryAvailable.toStringAsFixed(0)} godz.'),
               const SizedBox(height: 8),
-              const Text('Proponowane rozliczenie godzin:'),
+              const Text('Proponowane rozliczenie:'),
               const SizedBox(height: 4),
-              Text('- Z głównego stanu: ${primaryWillBe.toStringAsFixed(0)} godz.'),
-              Text('- Z drugiego stanu: ${secondaryWillBe.toStringAsFixed(0)} godz.'),
+              Text('- Z $primaryLabel: ${primaryWillBe.toStringAsFixed(0)} godz.'),
+              Text('- Z $secondaryLabel: ${secondaryWillBe.toStringAsFixed(0)} godz.'),
               const SizedBox(height: 8),
-              const Text('Czy zatwierdzasz użycie drugiego stanu, aby uzupełnić brak?'),
+              Text('Czy potwierdzasz użycie "$secondaryLabel" w celu uzupełnienia brakujących godzin?'),
             ],
           ),
           actions: [

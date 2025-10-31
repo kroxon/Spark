@@ -39,8 +39,8 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
     final screenWidth = MediaQuery.of(context).size.width;
     final dialogWidth = (screenWidth * 0.9).clamp(400.0, 600.0); // 90% ekranu, min 400, max 600
 
-    return WillPopScope(
-      onWillPop: () async => !(_isProcessing || _controller.isLoading),
+    return PopScope(
+      canPop: !(_isProcessing || _controller.isLoading),
       child: Stack(
       alignment: Alignment.topCenter,
       children: [
@@ -163,9 +163,8 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
     final userProfileRepository = ref.read(userProfileRepositoryProvider);
     final userProfile = await userProfileRepository.watchProfile(user.uid).first;
     if (userProfile == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nie udało się pobrać profilu użytkownika')));
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nie udało się pobrać profilu użytkownika')));
       return;
     }
 
@@ -199,7 +198,7 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
     if (effectivePrimaryAvailable < requiredHours && effectiveSecondaryAvailable <= 0.0) {
       final occupiedDays = await _controller.findDaysWithSecondaryVacationEvents(_startDate!, _endDate!, _vacationType);
       if (occupiedDays.isNotEmpty) {
-  if (context.mounted) {
+        if (!mounted) return;
           await showDialog<void>(
             context: context,
             builder: (ctx) => AlertDialog(
@@ -210,7 +209,7 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
               ],
             ),
           );
-        }
+        
         return;
       }
     }
@@ -227,14 +226,12 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
           conflicts: conflicts,
           secondaryToUse: 0.0,
         );
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Urlop został dodany')));
-          Navigator.of(context).pop();
-        }
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Urlop został dodany')));
+        Navigator.of(context).pop();
       } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Wystąpił błąd podczas zapisu.')));
-        }
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Wystąpił błąd podczas zapisu.')));
       } finally {
         if (mounted) setState(() => _isProcessing = false);
       }
@@ -244,18 +241,17 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
     // Not enough primary hours
   if (effectivePrimaryAvailable + effectiveSecondaryAvailable < requiredHours) {
       // Combined insufficient -> show informative dialog and block save
-      if (context.mounted) {
-        await showDialog<void>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Niewystarczające godziny'),
-            content: const Text('Brakuje dostępnych godzin urlopu dla wybranego zakresu. Uzupełnij stan urlopów lub wybierz krótszy zakres.'),
-            actions: [
-              TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('OK')),
-            ],
-          ),
-        );
-      }
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Niewystarczające godziny'),
+          content: const Text('Brakuje dostępnych godzin urlopu dla wybranego zakresu. Uzupełnij stan urlopów lub wybierz krótszy zakres.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('OK')),
+          ],
+        ),
+      );
       return;
     }
 
@@ -275,7 +271,7 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
     ? 'Urlop dodatkowy'
     : 'Urlop wypoczynkowy ';
 
-    if (context.mounted) {
+      if (!mounted) return;
       final useSecond = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -304,7 +300,7 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
         ),
       );
 
-      if (useSecond == true) {
+          if (useSecond == true) {
         debugPrint('[VacationDialog] User confirmed using secondary balance: primaryWillBe=$primaryWillBe, secondaryWillBe=$secondaryWillBe');
         // Show spinner on main dialog's Save button and perform save; close dialog after success.
         setState(() => _isProcessing = true);
@@ -318,21 +314,19 @@ class _VacationDialogState extends ConsumerState<VacationDialog> {
             secondaryToUse: secondaryWillBe,
           );
           // Close the VacationDialog after successful save and show success
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Urlop został dodany')));
-            Navigator.of(context).pop();
-          }
+               if (!mounted) return;
+               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Urlop został dodany')));
+               Navigator.of(context).pop();
         } catch (e) {
           debugPrint('[VacationDialog] Error while saving vacation: $e');
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Wystąpił błąd podczas zapisu. Spróbuj ponownie.')));
-          }
+               if (!mounted) return;
+               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Wystąpił błąd podczas zapisu. Spróbuj ponownie.')));
         } finally {
           if (mounted) setState(() => _isProcessing = false);
         }
       } else {
         debugPrint('[VacationDialog] User cancelled secondary usage');
       }
-    }
+    
   }
 }

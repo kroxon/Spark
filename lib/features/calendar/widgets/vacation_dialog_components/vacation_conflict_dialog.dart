@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-import 'package:iskra/features/calendar/models/calendar_entry.dart';
 import 'package:iskra/features/calendar/models/vacation_models.dart';
 import 'vacation_dialog_helpers.dart';
 

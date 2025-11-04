@@ -1,22 +1,272 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// Keep the Google logo consistent with the login button by reusing the
+// asset from flutter_signin_button without pulling in its widget.
 import 'package:iskra/core/firebase/firebase_providers.dart';
-import 'package:iskra/features/auth/data/user_profile_repository.dart';
-import 'package:iskra/features/auth/domain/models/user_profile.dart';
+import 'package:iskra/features/profile/application/account_service.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
-  Future<void> _signOut(BuildContext context) async {
+  Future<void> _signOut(BuildContext context, WidgetRef ref) async {
     try {
-      await FirebaseAuth.instance.signOut();
+      final auth = ref.read(firebaseAuthProvider);
+      final firestore = ref.read(firebaseFirestoreProvider);
+      await AccountService(auth, firestore).signOut();
       if (!context.mounted) return;
       Navigator.of(context).pop();
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Nie udało się wylogować: $error')),
+      );
+    }
+  }
+
+  Future<void> _confirmAndDeleteAccount(BuildContext context, WidgetRef ref) async {
+    final auth = ref.read(firebaseAuthProvider);
+    final firestore = ref.read(firebaseFirestoreProvider);
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    final isEmailProvider = user.providerData.any((p) => p.providerId == 'password');
+    String? password;
+    final confirmOk = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        final formKey = GlobalKey<FormState>();
+        final confirmController = TextEditingController();
+        final passwordController = TextEditingController();
+        bool isDeleting = false;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            Future<void> doDelete() async {
+              if (isDeleting) return;
+              if (!formKey.currentState!.validate()) return;
+              setState(() => isDeleting = true);
+              try {
+                password = isEmailProvider ? passwordController.text : null;
+                await AccountService(auth, firestore).deleteAccount(emailPassword: password);
+                // Safety: ensure local session is cleared even if backend delete succeeded.
+                await AccountService(auth, firestore).signOut();
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Konto zostało usunięte. Zostałeś wylogowany.')),
+                );
+                Navigator.of(context).pop(true);
+              } on FirebaseAuthException catch (e) {
+                final msg = _mapDeleteError(e);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Nie udało się usunąć konta: $e')),
+                  );
+                }
+              } finally {
+                if (context.mounted) setState(() => isDeleting = false);
+              }
+            }
+
+            return AlertDialog(
+              title: const Text('Usuń konto'),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Ta operacja jest nieodwracalna. Usuniemy wszystkie Twoje dane i konto w Iskrze.',
+                    ),
+                    const SizedBox(height: 12),
+                    if (isEmailProvider) ...[
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Potwierdź hasło',
+                          prefixIcon: Icon(Icons.lock_outline),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return 'Podaj hasło aby potwierdzić.';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    TextFormField(
+                      controller: confirmController,
+                      decoration: const InputDecoration(
+                        labelText: 'Wpisz: USUŃ',
+                        prefixIcon: Icon(Icons.delete_forever_outlined),
+                      ),
+                      validator: (v) {
+                        if ((v ?? '').trim().toUpperCase() != 'USUŃ') {
+                          return 'Aby kontynuować wpisz dokładnie: USUŃ';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isDeleting ? null : () => Navigator.of(context).pop(false),
+                  child: const Text('Anuluj'),
+                ),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    foregroundColor: Theme.of(context).colorScheme.onError,
+                  ),
+                  onPressed: isDeleting ? null : doDelete,
+                  icon: const Icon(Icons.delete_outline),
+                  label: isDeleting
+                      ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Text('Usuń konto'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (confirmOk == true && context.mounted) {
+      // After deletion, navigate out
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
+  Future<void> _confirmAndDeleteDataOnly(BuildContext context, WidgetRef ref) async {
+    final auth = ref.read(firebaseAuthProvider);
+    final firestore = ref.read(firebaseFirestoreProvider);
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    final confirmOk = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        final formKey = GlobalKey<FormState>();
+        final confirmController = TextEditingController();
+        bool isDeleting = false;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            Future<void> doDelete() async {
+              if (isDeleting) return;
+              if (!formKey.currentState!.validate()) return;
+              setState(() => isDeleting = true);
+              try {
+                await AccountService(auth, firestore).deleteUserDataOnly();
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Twoje dane zostały usunięte. Konto pozostało nienaruszone.')),
+                );
+                Navigator.of(context).pop(true);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Nie udało się usunąć danych: $e')),
+                  );
+                }
+              } finally {
+                if (context.mounted) setState(() => isDeleting = false);
+              }
+            }
+
+            return AlertDialog(
+              title: const Text('Usuń wpisy kalendarza'),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Usuniemy wszystkie Twoje wpisy z kalendarza. ' 
+                        'Twoje konto i profil pozostaną bez zmian.'),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: confirmController,
+                      decoration: const InputDecoration(
+                        labelText: 'Wpisz: USUŃ WPISY',
+                        prefixIcon: Icon(Icons.delete_sweep_outlined),
+                      ),
+                      validator: (v) {
+                        if ((v ?? '').trim().toUpperCase() != 'USUŃ WPISY') {
+                          return 'Aby kontynuować wpisz dokładnie: USUŃ WPISY';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isDeleting ? null : () => Navigator.of(context).pop(false),
+                  child: const Text('Anuluj'),
+                ),
+                FilledButton.tonalIcon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                    foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                  ),
+                  onPressed: isDeleting ? null : doDelete,
+                  icon: const Icon(Icons.delete_sweep_outlined),
+                  label: isDeleting
+                      ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Text('Usuń wpisy'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (confirmOk == true && context.mounted) {
+      // Stay on profile; optionally refresh state
+    }
+  }
+
+  String _mapDeleteError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'requires-recent-login':
+        return 'Dla bezpieczeństwa zaloguj się ponownie i spróbuj jeszcze raz.';
+      case 'user-mismatch':
+      case 'user-not-found':
+        return 'Nie znaleziono konta lub nie jesteś zalogowany.';
+      case 'invalid-credential':
+      case 'invalid-password':
+        return 'Nieprawidłowe dane logowania.';
+      default:
+        return 'Nie udało się usunąć konta. Spróbuj ponownie.';
+    }
+  }
+
+  Future<void> _sendPasswordReset(BuildContext context, WidgetRef ref) async {
+    final user = ref.read(firebaseAuthProvider).currentUser;
+    if (user == null || user.email == null) return;
+    try {
+      await FirebaseAuth.instance.setLanguageCode('pl');
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: user.email!);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Wysłaliśmy link do zmiany hasła na Twój e-mail.')),
+      );
+    } on FirebaseAuthException catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nie udało się wysłać linku resetującego.')),
       );
     }
   }
@@ -31,68 +281,46 @@ class ProfilePage extends ConsumerWidget {
         title: const Text('Profil użytkownika'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 32,
-                  backgroundColor: theme.colorScheme.primary,
-                  child: Text(
-                    user?.displayName?.isNotEmpty == true
-                        ? user!.displayName![0].toUpperCase()
-                        : (user?.email?.isNotEmpty == true ? user!.email![0].toUpperCase() : 'U'),
-                    style: theme.textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user?.displayName?.isNotEmpty == true ? user!.displayName! : 'Użytkownik Iskra',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        user?.email ?? 'Brak przypisanego e-maila',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: _buildHeader(context, user),
             ),
             const SizedBox(height: 24),
-            if (user != null) _buildVacationBalance(context, ref, user),
-            const SizedBox(height: 24),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Zarządzanie kontem',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Zmiana hasła oraz konfiguracja logowania dwuskładnikowego pojawi się w kolejnych wydaniach.',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: () => _signOut(context),
-                      icon: const Icon(Icons.logout),
-                      label: const Text('Wyloguj się'),
-                    ),
-                  ],
-                ),
+
+            // Konto
+            _buildSectionTitle(context, 'Zarządzanie kontem'),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Wyloguj się'),
+              onTap: () => _signOut(context, ref),
+            ),
+            if (user?.providerData.any((p) => p.providerId == 'password') ?? false)
+              ListTile(
+                leading: const Icon(Icons.key_outlined),
+                title: const Text('Zmień hasło'),
+                subtitle: const Text('Otrzymasz link resetujący na e‑mail'),
+                onTap: () => _sendPasswordReset(context, ref),
               ),
+
+            const Divider(indent: 16, endIndent: 16, height: 24),
+
+            // Strefa Niebezpieczna
+            _buildSectionTitle(context, 'Strefa Niebezpieczna', color: theme.colorScheme.error),
+            ListTile(
+              leading: Icon(Icons.delete_sweep_outlined, color: theme.colorScheme.error),
+              title: Text('Usuń wpisy kalendarza', style: TextStyle(color: theme.colorScheme.error)),
+              subtitle: const Text('Czyści wszystkie dane kalendarza, konto pozostaje.'),
+              onTap: user == null ? null : () => _confirmAndDeleteDataOnly(context, ref),
+            ),
+            ListTile(
+              leading: Icon(Icons.delete_forever_outlined, color: theme.colorScheme.error),
+              title: Text('Usuń konto', style: TextStyle(color: theme.colorScheme.error)),
+              subtitle: const Text('Trwale usuwa konto i wszystkie dane.'),
+              onTap: user == null ? null : () => _confirmAndDeleteAccount(context, ref),
             ),
           ],
         ),
@@ -100,102 +328,78 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildVacationBalance(BuildContext context, WidgetRef ref, User user) {
-    final userProfile = ref.watch(
-      userProfileProvider(UserProfileRequest(uid: user.uid, email: user.email)),
-    );
-
-    return userProfile.when(
-      data: (profile) => _buildVacationBalanceContent(context, profile),
-      loading: () => const Card(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ),
-      error: (error, stack) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Center(
-            child: Text('Błąd ładowania danych urlopów: $error'),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVacationBalanceContent(BuildContext context, UserProfile profile) {
+  // Small helper to keep section titles consistent with M3
+  Widget _buildSectionTitle(BuildContext context, String title, {Color? color}) {
     final theme = Theme.of(context);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Stan urlopów',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildBalanceItem(
-                    'Wypoczynkowy',
-                    profile.standardVacationHours,
-                    Colors.green,
-                    theme,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildBalanceItem(
-                    'Dodatkowy',
-                    profile.additionalVacationHours,
-                    Colors.blue,
-                    theme,
-                  ),
-                ),
-              ],
-            ),
-          ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+      child: Text(
+        title.toUpperCase(),
+        style: theme.textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: color ?? theme.colorScheme.primary,
+          letterSpacing: 0.5,
         ),
       ),
     );
   }
 
-  Widget _buildBalanceItem(String label, double hours, Color color, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
+  Widget _buildHeader(BuildContext context, User? user) {
+    final theme = Theme.of(context);
+  final isGoogle = user?.providerData.any((p) => p.providerId == 'google.com') ?? false;
+  final title = (isGoogle && (user?.displayName?.isNotEmpty ?? false))
+    ? user!.displayName!
+    : (_primaryEmail(user) ?? 'Użytkownik Iskra');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+      child: Row(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: color,
-              fontWeight: FontWeight.w500,
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: theme.colorScheme.primary,
+            child: Text(
+              (user?.displayName?.isNotEmpty ?? false)
+                  ? user!.displayName![0].toUpperCase()
+                  : (user?.email?.isNotEmpty == true ? user!.email![0].toUpperCase() : 'U'),
+              style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            '${hours.toStringAsFixed(1)}h',
-            style: TextStyle(
-              fontSize: 20,
-              color: color,
-              fontWeight: FontWeight.w700,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _primaryEmail(user) ?? 'Brak przypisanego e-maila',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+
+
+  String? _primaryEmail(User? user) {
+    if (user == null) return null;
+    if (user.email != null && user.email!.trim().isNotEmpty) {
+      return user.email;
+    }
+    for (final info in user.providerData) {
+      final e = info.email;
+      if (e != null && e.trim().isNotEmpty) {
+        return e;
+      }
+    }
+    return null;
   }
 }

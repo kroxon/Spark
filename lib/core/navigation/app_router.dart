@@ -19,6 +19,9 @@ import 'package:iskra/features/reports/presentation/pages/reports_page.dart';
 import 'package:iskra/features/subscription/presentation/pages/subscription_page.dart';
 import 'package:iskra/features/support/presentation/pages/help_center_page.dart';
 import 'package:iskra/features/system_settings/presentation/pages/system_settings_page.dart';
+import 'package:iskra/features/system_settings/presentation/pages/appearance_settings_page.dart';
+import 'package:iskra/features/system_settings/presentation/pages/schedule_settings_page.dart';
+import 'package:iskra/features/system_settings/presentation/pages/balances_settings_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -92,15 +95,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutePath.settings,
-                name: AppRouteName.settings,
-                builder: (context, state) => const SystemSettingsPage(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
                 path: AppRoutePath.reports,
                 name: AppRouteName.reports,
                 builder: (context, state) => const ReportsPage(),
@@ -126,6 +120,96 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      // Full-screen settings hub (opened above the shell)
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.settings,
+        name: AppRouteName.settings,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const SystemSettingsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curve = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            final fade = Tween<double>(begin: 0, end: 1).animate(curve);
+            final slide = Tween<Offset>(begin: const Offset(0, 0.02), end: Offset.zero).animate(curve);
+            return FadeTransition(
+              opacity: fade,
+              child: SlideTransition(position: slide, child: child),
+            );
+          },
+        ),
+      ),
+      // Full-screen settings subpages (opened above the shell)
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.settingsAppearance,
+        name: AppRouteName.settingsAppearance,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const AppearanceSettingsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curve = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            final fade = Tween<double>(begin: 0, end: 1).animate(curve);
+            final slide = Tween<Offset>(begin: const Offset(0.02, 0), end: Offset.zero).animate(curve);
+            return FadeTransition(
+              opacity: fade,
+              child: SlideTransition(position: slide, child: child),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.settingsSchedule,
+        name: AppRouteName.settingsSchedule,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const ScheduleSettingsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curve = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            final fade = Tween<double>(begin: 0, end: 1).animate(curve);
+            final slide = Tween<Offset>(begin: const Offset(0.02, 0), end: Offset.zero).animate(curve);
+            return FadeTransition(
+              opacity: fade,
+              child: SlideTransition(position: slide, child: child),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.settingsBalances,
+        name: AppRouteName.settingsBalances,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const BalancesSettingsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curve = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            final fade = Tween<double>(begin: 0, end: 1).animate(curve);
+            final slide = Tween<Offset>(begin: const Offset(0.02, 0), end: Offset.zero).animate(curve);
+            return FadeTransition(
+              opacity: fade,
+              child: SlideTransition(position: slide, child: child),
+            );
+          },
+        ),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,

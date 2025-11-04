@@ -21,12 +21,17 @@ class AppShell extends ConsumerStatefulWidget {
 class _AppShellState extends ConsumerState<AppShell> {
   int _lastPrimaryIndex = 0;
 
-  void _navigateToSection(AppSection section) {
-    final targetIndex = section.branchIndex;
-    if (targetIndex == widget.navigationShell.currentIndex) {
-      widget.navigationShell.goBranch(targetIndex, initialLocation: true);
+  void _navigateToSection(BuildContext context, AppSection section) {
+    if (section.isPrimary) {
+      final targetIndex = section.branchIndex;
+      if (targetIndex == widget.navigationShell.currentIndex) {
+        widget.navigationShell.goBranch(targetIndex, initialLocation: true);
+      } else {
+        widget.navigationShell.goBranch(targetIndex);
+      }
     } else {
-      widget.navigationShell.goBranch(targetIndex);
+      // Drawer sections navigate by path (may live outside the shell). Use push to preserve back stack.
+      context.push(section.path);
     }
   }
 
@@ -39,44 +44,58 @@ class _AppShellState extends ConsumerState<AppShell> {
       _lastPrimaryIndex = AppSections.primary.indexOf(currentSection);
     }
 
-    // final theme = Theme.of(context);
-    // final textTheme = theme.textTheme;
+    final hideChrome = currentSection == AppSections.settings;
 
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 16,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(currentSection.label),
-          ],
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Profil użytkownika',
-            icon: const Icon(Icons.account_circle_outlined),
-            onPressed: () => context.pushNamed(AppRouteName.profile),
-          ),
-        ],
-      ),
+    return WillPopScope(
+      onWillPop: () async {
+        // When in a drawer section (like Settings), go back to the last primary tab on back press
+        final current = currentSection;
+        if (!current.isPrimary) {
+          _navigateToSection(context, AppSections.primary[_lastPrimaryIndex]);
+          return false; // prevent default pop
+        }
+        return true; // allow default behavior
+      },
+      child: Scaffold(
+      appBar: hideChrome
+          ? null
+          : AppBar(
+              titleSpacing: 16,
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(currentSection.label),
+                ],
+              ),
+              actions: [
+                IconButton(
+                  tooltip: 'Profil użytkownika',
+                  icon: const Icon(Icons.account_circle_outlined),
+                  onPressed: () => context.pushNamed(AppRouteName.profile),
+                ),
+              ],
+            ),
       drawer: AppScaffoldDrawer(
         selectedSection: currentSection,
         onDestinationSelected: (section) {
           Navigator.of(context).pop();
-          _navigateToSection(section);
+          _navigateToSection(context, section);
         },
       ),
       body: widget.navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _lastPrimaryIndex,
-        onDestinationSelected: (index) => _navigateToSection(AppSections.primary[index]),
-        destinations: [
-          for (final section in AppSections.primary)
-            NavigationDestination(
-              icon: Icon(section.icon),
-              label: section.label,
+      bottomNavigationBar: hideChrome
+          ? null
+          : NavigationBar(
+              selectedIndex: _lastPrimaryIndex,
+              onDestinationSelected: (index) => _navigateToSection(context, AppSections.primary[index]),
+              destinations: [
+                for (final section in AppSections.primary)
+                  NavigationDestination(
+                    icon: Icon(section.icon),
+                    label: section.label,
+                  ),
+              ],
             ),
-        ],
       ),
     );
   }

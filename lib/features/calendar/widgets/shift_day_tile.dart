@@ -67,19 +67,22 @@ class ShiftDayTile extends StatelessWidget {
 
     Color backgroundColor;
     if (isEditing && onDuty) {
-      backgroundColor = dutyColor.withValues(alpha: 0.22);
+      // Slightly stronger to emphasize editable on-duty days
+      backgroundColor = dutyColor.withValues(alpha: 0.28);
     } else if (isCurrentMonth) {
+      // Boost intensity while keeping contrast sensible
       backgroundColor = onDuty
-          ? dutyColor.withValues(alpha: 0.68)
-          : dutyColor.withValues(alpha: 0.32);
+          ? dutyColor.withValues(alpha: 0.80)
+          : dutyColor.withValues(alpha: 0.42);
     } else {
+      // Outside of visible month: make tiles more legible with a stronger tint
       if (onDuty) {
-        backgroundColor = dutyColor.withValues(alpha: 0.12);
+        backgroundColor = dutyColor.withValues(alpha: 0.28);
       } else if (hasEntry) {
-        backgroundColor = colors.secondaryContainer.withValues(alpha: 0.18);
+        backgroundColor = colors.secondaryContainer.withValues(alpha: 0.28);
       } else {
         backgroundColor = colors.surfaceContainerHighest.withValues(
-          alpha: 0.18,
+          alpha: 0.24,
         );
       }
     }
@@ -133,25 +136,33 @@ class ShiftDayTile extends StatelessWidget {
     alpha: isCurrentMonth ? 0.75 : 0.5,
   );
 
-  final dayNumberStyle = baseDayNumberStyle.copyWith(color: textColor);
-  final scheduleIconColor = colors.onSurfaceVariant.withValues(alpha: 0.75);    return SizedBox(
+  // Add a very subtle text shadow for darker backgrounds to preserve readability
+  final bool darkBg = backgroundColor.computeLuminance() < 0.35;
+  final dayNumberStyle = baseDayNumberStyle.copyWith(
+    color: textColor,
+    shadows: darkBg
+        ? const [Shadow(color: Colors.black54, blurRadius: 1.5, offset: Offset(0, 0.5))]
+        : null,
+  );
+  final scheduleIconColor = colors.onSurfaceVariant.withValues(alpha: 0.75);
+    return SizedBox(
       width: cellWidth,
       height: cellHeight,
       child: Padding(
         padding: const EdgeInsets.all(2),
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           onTap: () async {
             await _handleTap(dateOnly, isEditableDay, hasScheduledService);
           },
           child: Ink(
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: borderColor, width: borderWidth),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(8),
               child: Stack(
                 children: [
                   Padding(

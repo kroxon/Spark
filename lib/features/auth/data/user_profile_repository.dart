@@ -101,6 +101,34 @@ class UserProfileRepository {
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
+
+  Future<void> updateShiftColorPalette({
+    required String uid,
+    int? shift1,
+    int? shift2,
+    int? shift3,
+  }) async {
+    final update = <String, dynamic>{};
+    final colors = <String, dynamic>{};
+    if (shift1 != null) colors['shift1'] = shift1;
+    if (shift2 != null) colors['shift2'] = shift2;
+    if (shift3 != null) colors['shift3'] = shift3;
+    if (colors.isNotEmpty) update['shiftColorPalette'] = colors;
+    update['updatedAt'] = FieldValue.serverTimestamp();
+    if (colors.isEmpty) return; // nothing to update
+    await _doc(uid).set(update, SetOptions(merge: true));
+  }
+
+  Future<void> resetShiftColorPalette({required String uid}) {
+    return _doc(uid).set({
+      'shiftColorPalette': {
+        'shift1': ShiftColorPalette.defaults.shift1.value,
+        'shift2': ShiftColorPalette.defaults.shift2.value,
+        'shift3': ShiftColorPalette.defaults.shift3.value,
+      },
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
 }
 
 final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {

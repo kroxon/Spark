@@ -9,17 +9,11 @@ class SystemSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Ustawienia')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          Text(
-            'Skonfiguruj wygląd, harmonogram i salda. Wybierz kategorię, aby otworzyć odpowiedni panel ustawień.',
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
           const SizedBox(height: 24),
           SettingsGroupCard(
             icon: Icons.color_lens_outlined,

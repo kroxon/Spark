@@ -5,29 +5,16 @@ class ScheduleSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Mój harmonogram')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          Text(
-            'Zarządzaj ustawieniami harmonogramu pracy, historią i niestandardowymi nieobecnościami.',
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 24),
           _SettingInfoCard(
             icon: Icons.history_toggle_off_rounded,
             title: 'Historia przydziału do zmian',
             description:
                 'Przeglądaj i analizuj historię przydziałów. Moduł w przygotowaniu, wkrótce dostępny.',
-          ),
-          const SizedBox(height: 16),
-          _SettingInfoCard(
-            icon: Icons.event_busy_outlined,
-            title: 'Niestandardowe nieobecności',
-            description:
-                'Definiuj własne typy nieobecności i zasady. Moduł w przygotowaniu, wkrótce dostępny.',
           ),
         ],
       ),

@@ -206,6 +206,7 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
               shiftColorPalette: widget.userProfile.shiftColorPalette,
               overtimeIndicatorThresholdHours:
                   widget.userProfile.overtimeIndicatorThresholdHours,
+              onDutyIndicatorColor: widget.userProfile.onDutyIndicatorColor,
               entry: _entriesByDate[dateOnly],
               onDaySelected: widget.onDaySelected,
               onToggleScheduledService: widget.onToggleScheduledService,

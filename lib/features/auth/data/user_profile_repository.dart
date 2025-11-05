@@ -56,6 +56,7 @@ class UserProfileRepository {
       themeMode: ThemeMode.light,
       overtimeIndicatorThresholdHours:
           UserProfile.defaultOvertimeIndicatorThresholdHours,
+      onDutyIndicatorColor: Colors.yellow.shade400,
     );
 
     await docRef.set(_UserProfileDto.fromDomain(defaultProfile).toFirestore());
@@ -86,6 +87,16 @@ class UserProfileRepository {
   }) {
     return _doc(uid).set({
       'overtimeIndicatorThresholdHours': hours,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> updateOnDutyIndicatorColor({
+    required String uid,
+    required int color,
+  }) {
+    return _doc(uid).set({
+      'onDutyIndicatorColor': color,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
@@ -180,6 +191,7 @@ class _UserProfileDto {
     required this.shiftColorPalette,
     required this.themeMode,
     required this.overtimeIndicatorThresholdHours,
+    required this.onDutyIndicatorColor,
   });
 
   final String email;
@@ -190,6 +202,7 @@ class _UserProfileDto {
   final ShiftColorPalette shiftColorPalette;
   final ThemeMode themeMode;
   final double overtimeIndicatorThresholdHours;
+  final Color onDutyIndicatorColor;
 
   factory _UserProfileDto.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -246,6 +259,9 @@ class _UserProfileDto {
       overtimeIndicatorThresholdHours:
           (data['overtimeIndicatorThresholdHours'] as num?)?.toDouble() ??
           UserProfile.defaultOvertimeIndicatorThresholdHours,
+      onDutyIndicatorColor: Color(
+        (data['onDutyIndicatorColor'] as int?) ?? Colors.yellow.shade400.value,
+      ),
     );
   }
 
@@ -259,6 +275,7 @@ class _UserProfileDto {
       shiftColorPalette: profile.shiftColorPalette,
       themeMode: profile.themeMode,
       overtimeIndicatorThresholdHours: profile.overtimeIndicatorThresholdHours,
+      onDutyIndicatorColor: profile.onDutyIndicatorColor,
     );
   }
 
@@ -273,6 +290,7 @@ class _UserProfileDto {
       shiftColorPalette: shiftColorPalette,
       themeMode: themeMode,
       overtimeIndicatorThresholdHours: overtimeIndicatorThresholdHours,
+      onDutyIndicatorColor: onDutyIndicatorColor,
     );
   }
 
@@ -297,6 +315,7 @@ class _UserProfileDto {
       },
       'themeMode': _themeModeToString(themeMode),
       'overtimeIndicatorThresholdHours': overtimeIndicatorThresholdHours,
+      'onDutyIndicatorColor': onDutyIndicatorColor.value,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }

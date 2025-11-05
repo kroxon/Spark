@@ -6,6 +6,7 @@ import 'package:iskra/core/firebase/firebase_providers.dart';
 import 'package:iskra/core/theme/theme_mode_controller.dart';
 import 'package:iskra/features/auth/data/user_profile_repository.dart';
 import 'package:iskra/features/calendar/application/calendar_indicator_settings_controller.dart';
+import 'package:iskra/features/calendar/widgets/on_duty_indicator.dart';
 import 'package:iskra/features/system_settings/presentation/widgets/overtime_indicator_settings_card.dart';
 import 'package:iskra/features/system_settings/presentation/widgets/theme_mode_switch_card.dart';
 import 'package:iskra/features/calendar/models/shift_color_palette.dart';
@@ -22,6 +23,7 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
   bool _isSavingOvertimeThreshold = false;
   double? _overtimeThresholdDraft;
   int _selectedShift = 1;
+  Color? _indicatorDraft;
 
   Future<void> _onThemeChanged(BuildContext context, bool isEnabled) async {
     if (_isUpdatingTheme) return;
@@ -295,6 +297,121 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
     );
   }
 
+  void _showIndicatorColorStudio(BuildContext context) {
+    final currentUser = ref.read(firebaseAuthProvider).currentUser;
+    if (currentUser == null) return;
+
+    final profile = ref
+        .read(
+          userProfileProvider(
+            UserProfileRequest(uid: currentUser.uid, email: currentUser.email),
+          ),
+        )
+        .value;
+
+    final initial = profile?.onDutyIndicatorColor ?? Colors.yellow.shade400;
+    _indicatorDraft = initial;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        final theme = Theme.of(context);
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            Future<void> saveDraft() async {
+              if (_indicatorDraft == null) return;
+              final uid = currentUser.uid;
+              final repo = ref.read(userProfileRepositoryProvider);
+              await repo.updateOnDutyIndicatorColor(
+                uid: uid,
+                color: _indicatorDraft!.value,
+              );
+              if (mounted) Navigator.of(context).pop();
+            }
+
+            return Dialog(
+              insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Kolor wskaźnika służby',
+                              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Wybierz kolor poświaty wskaźnika na kafelkach kalendarza.',
+                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        ),
+                        const SizedBox(height: 16),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final maxW = constraints.maxWidth;
+                            final innerRadius = maxW < 380 ? 80.0 : 100.0;
+                            final pieceHeight = maxW < 380 ? 18.0 : 22.0;
+                            final buttonSize = maxW < 380 ? 44.0 : 52.0;
+                            return Center(
+                              child: WheelColorPicker(
+                                key: ValueKey('wheel-indicator-${_indicatorDraft?.value}'),
+                                onSelect: (Color newColor) => setModalState(() => _indicatorDraft = newColor),
+                                behaviour: ButtonBehaviour.clickToOpen,
+                                defaultColor: _indicatorDraft ?? initial,
+                                animationConfig: fanLikeAnimationConfig,
+                                colorList: simpleColors,
+                                buttonSize: buttonSize,
+                                pieceHeight: pieceHeight,
+                                innerRadius: innerRadius,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                setModalState(() {
+                                  _indicatorDraft = Colors.yellow.shade400;
+                                });
+                              },
+                              child: const Text('Resetuj'),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Anuluj'),
+                            ),
+                            const Spacer(),
+                            FilledButton(
+                              onPressed: () => saveDraft(),
+                              child: const Text('Zapisz'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -329,12 +446,22 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
                     );
 
                     return profileAsync.when(
-                      data: (profile) => OvertimeIndicatorSettingsCard(
-                        currentThreshold: profile.overtimeIndicatorThresholdHours,
-                        draftThreshold: _overtimeThresholdDraft,
-                        isSaving: _isSavingOvertimeThreshold,
-                        onDraftChanged: (value) => setState(() => _overtimeThresholdDraft = value),
-                        onSavePressed: (hours) => _onSaveOvertimeThreshold(context, hours),
+                      data: (profile) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          OvertimeIndicatorSettingsCard(
+                            currentThreshold: profile.overtimeIndicatorThresholdHours,
+                            draftThreshold: _overtimeThresholdDraft,
+                            isSaving: _isSavingOvertimeThreshold,
+                            onDraftChanged: (value) => setState(() => _overtimeThresholdDraft = value),
+                            onSavePressed: (hours) => _onSaveOvertimeThreshold(context, hours),
+                          ),
+                          const SizedBox(height: 12),
+                          _IndicatorColorSettingsCard(
+                            currentColor: profile.onDutyIndicatorColor,
+                            onEdit: () => _showIndicatorColorStudio(context),
+                          ),
+                        ],
                       ),
                       loading: () => const Card(
                         elevation: 1,
@@ -429,17 +556,7 @@ class _ShiftColorsCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Icon(Icons.palette_outlined, color: theme.colorScheme.primary),
-                ),
-                const SizedBox(width: 12),
-                Text('Kolory zmian', style: theme.textTheme.titleMedium),
-              ],
-            ),
+            Text('Kolory zmian', style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(
               'Personalizuj kolory dla różnych typów zmian w kalendarzu.',
@@ -473,3 +590,47 @@ class _ShiftColorsCard extends ConsumerWidget {
 // Removed legacy HSV sliders in favor of the WheelColorPicker
 
 // Removed preview tile widget per request
+
+class _IndicatorColorSettingsCard extends StatelessWidget {
+  const _IndicatorColorSettingsCard({required this.currentColor, required this.onEdit});
+  final Color currentColor;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Kolor wskaźnika służby', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(
+              'Ustaw kolor poświaty kropki w dniu służby.',
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OnDutyIndicator(
+                  iconSize: 22,
+                  glowColor: currentColor.withValues(
+                    alpha: theme.brightness == Brightness.dark ? 0.4 : 0.75,
+                  ),
+                ),
+                OutlinedButton(
+                  onPressed: onEdit,
+                  child: const Text('Edytuj'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

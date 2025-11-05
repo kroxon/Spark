@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iskra/features/calendar/widgets/on_duty_indicator.dart';
 
 class OvertimeIndicatorSettingsCard extends StatelessWidget {
   const OvertimeIndicatorSettingsCard({
@@ -65,19 +64,8 @@ class OvertimeIndicatorSettingsCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const OnDutyIndicator(iconSize: 24),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Podgląd wskaźnika w kafelku kalendarza.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
+                const Spacer(),
                 FilledButton(
                   onPressed: (!hasChanges || isSaving)
                       ? null

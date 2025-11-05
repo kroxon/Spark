@@ -19,6 +19,7 @@ class ShiftDayTile extends StatelessWidget {
     required this.shiftHistory,
     required this.shiftColorPalette,
     required this.overtimeIndicatorThresholdHours,
+    required this.onDutyIndicatorColor,
     this.entry,
     this.onDaySelected,
     this.onToggleScheduledService,
@@ -33,6 +34,7 @@ class ShiftDayTile extends StatelessWidget {
   final List<ShiftAssignment> shiftHistory;
   final ShiftColorPalette shiftColorPalette;
   final double overtimeIndicatorThresholdHours;
+  final Color onDutyIndicatorColor;
   final CalendarEntry? entry;
   final ValueChanged<DateTime>? onDaySelected;
   final Future<void> Function(DateTime day, bool assign)?
@@ -211,8 +213,8 @@ class ShiftDayTile extends StatelessWidget {
                                         child: OnDutyIndicator(
                                           iconSize: (cellWidth * 0.15).clamp(6, 12),
                                           glowColor: brightness == Brightness.dark
-                                              ? Colors.yellow.shade400.withOpacity(0.4)
-                                              : null,
+                                              ? onDutyIndicatorColor.withOpacity(0.4)
+                                              : onDutyIndicatorColor.withOpacity(0.75),
                                         ),
                                       ),
                                     )

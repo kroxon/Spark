@@ -13,6 +13,7 @@ class UserProfile {
   final ShiftColorPalette shiftColorPalette;
   final ThemeMode themeMode;
   final double overtimeIndicatorThresholdHours;
+  final Color onDutyIndicatorColor;
 
   UserProfile({
     required this.uid,
@@ -25,7 +26,10 @@ class UserProfile {
     this.overtimeIndicatorThresholdHours =
         UserProfile.defaultOvertimeIndicatorThresholdHours,
     this.themeMode = ThemeMode.light,
-  }) : shiftColorPalette = shiftColorPalette ?? ShiftColorPalette.defaults;
+    Color? onDutyIndicatorColor,
+  })  : shiftColorPalette = shiftColorPalette ?? ShiftColorPalette.defaults,
+        onDutyIndicatorColor =
+            onDutyIndicatorColor ?? Colors.yellow.shade400;
 }
 
 class ShiftAssignment {

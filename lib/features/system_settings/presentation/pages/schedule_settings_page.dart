@@ -11,50 +11,11 @@ class ScheduleSettingsPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ShiftHistoryPage()),
-                  );
-                },
-                child: const _SettingInfoCard(
-                  title: 'Historia przydziału do zmian',
-                ),
-              ),
+          // Inline section: Historia przydziału do zmian
+          const ShiftHistorySection(),
         ],
       ),
     );
   }
 }
-
-class _SettingInfoCard extends StatelessWidget {
-  const _SettingInfoCard({
-    required this.title,
-    // required this.description,
-  });
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(title, style: theme.textTheme.titleMedium),
-              ],
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
-}
+ 

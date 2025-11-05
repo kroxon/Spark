@@ -433,9 +433,13 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
                 isUpdating: _isUpdatingTheme,
                 onChanged: (value) => _onThemeChanged(context, value),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
               _ShiftColorsCard(onOpenConfigurator: () => _showShiftColorsStudio(context)),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
               if (user != null)
                 Builder(
                   builder: (context) {
@@ -456,40 +460,36 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
                             onDraftChanged: (value) => setState(() => _overtimeThresholdDraft = value),
                             onSavePressed: (hours) => _onSaveOvertimeThreshold(context, hours),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
+                          const Divider(height: 1),
+                          const SizedBox(height: 8),
                           _IndicatorColorSettingsCard(
                             currentColor: profile.onDutyIndicatorColor,
                             onEdit: () => _showIndicatorColorStudio(context),
                           ),
                         ],
                       ),
-                      loading: () => const Card(
-                        elevation: 1,
-                        child: Padding(
-                          padding: EdgeInsets.all(24),
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
+                      loading: () => const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(child: CircularProgressIndicator()),
                       ),
-                      error: (error, _) => Card(
-                        elevation: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Nie udało się załadować ustawień wskaźnika.',
-                                style: theme.textTheme.titleMedium,
+                      error: (error, _) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Nie udało się załadować ustawień wskaźnika.',
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '$error',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.error,
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '$error',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.error,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -549,39 +549,36 @@ class _ShiftColorsCard extends ConsumerWidget {
       );
     }
 
-    return Card(
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Kolory zmian', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(
-              'Personalizuj kolory dla różnych typów zmian w kalendarzu.',
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _indicator(palette.shift1, '1', theme),
-                    _indicator(palette.shift2, '2', theme),
-                    _indicator(palette.shift3, '3', theme),
-                  ],
-                ),
-                OutlinedButton(
-                  onPressed: onOpenConfigurator,
-                  child: const Text('Otwórz konfigurator'),
-                ),
-              ],
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Kolory zmian', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text(
+            'Personalizuj kolory dla różnych typów zmian w kalendarzu.',
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _indicator(palette.shift1, '1', theme),
+                  _indicator(palette.shift2, '2', theme),
+                  _indicator(palette.shift3, '3', theme),
+                ],
+              ),
+              OutlinedButton(
+                onPressed: onOpenConfigurator,
+                child: const Text('Otwórz konfigurator'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -599,37 +596,34 @@ class _IndicatorColorSettingsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Kolor wskaźnika służby', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(
-              'Ustaw kolor poświaty kropki w dniu służby.',
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                OnDutyIndicator(
-                  iconSize: 22,
-                  glowColor: currentColor.withValues(
-                    alpha: theme.brightness == Brightness.dark ? 0.4 : 0.75,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Kolor wskaźnika służby', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text(
+            'Ustaw kolor poświaty kropki w dniu służby.',
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              OnDutyIndicator(
+                iconSize: 22,
+                glowColor: currentColor.withValues(
+                  alpha: theme.brightness == Brightness.dark ? 0.4 : 0.75,
                 ),
-                OutlinedButton(
-                  onPressed: onEdit,
-                  child: const Text('Edytuj'),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              OutlinedButton(
+                onPressed: onEdit,
+                child: const Text('Edytuj'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

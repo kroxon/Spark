@@ -13,6 +13,170 @@ class ShiftHistoryPage extends ConsumerStatefulWidget {
   ConsumerState<ShiftHistoryPage> createState() => _ShiftHistoryPageState();
 }
 
+/// Embeddable section for rendering the shift assignment history inline
+/// inside the schedule settings page (without its own Scaffold).
+class ShiftHistorySection extends ConsumerStatefulWidget {
+  const ShiftHistorySection({super.key});
+
+  @override
+  ConsumerState<ShiftHistorySection> createState() => _ShiftHistorySectionState();
+}
+
+class _ShiftHistorySectionState extends ConsumerState<ShiftHistorySection> {
+  @override
+  Widget build(BuildContext context) {
+    final user = ref.watch(firebaseAuthProvider).currentUser;
+    final theme = Theme.of(context);
+    if (user == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Historia przydziału do zmian', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          const Text('Brak zalogowanego użytkownika'),
+        ],
+      );
+    }
+
+    final profileAsync = ref.watch(
+      userProfileProvider(UserProfileRequest(uid: user.uid, email: user.email)),
+    );
+
+    return profileAsync.when(
+      data: (profile) {
+        final periods = _computePeriods(profile.shiftHistory);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text('Historia przydziału do zmian', style: theme.textTheme.titleMedium),
+                ),
+                IconButton(
+                  tooltip: 'Dodaj okres',
+                  icon: const Icon(Icons.add),
+                  onPressed: () => _openUpsertPeriodSheet(context, profile),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (periods.isEmpty)
+              Text('Brak okresów. Dodaj pierwszy wpis.', style: theme.textTheme.bodyMedium)
+            else
+              Column(
+                children: [
+                  for (final p in periods) ...[
+                    _HistoryItem(
+                      period: p,
+                      palette: profile.shiftColorPalette,
+                      isCurrent: _containsNow(p),
+                      onEdit: () => _openUpsertPeriodSheet(context, profile, initial: p),
+                      onDelete: () => _confirmDelete(context, profile, p),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ],
+              ),
+          ],
+        );
+      },
+      loading: () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Historia przydziału do zmian', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          const LinearProgressIndicator(minHeight: 2),
+        ],
+      ),
+      error: (e, st) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Historia przydziału do zmian', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text('Błąd wczytywania: $e', style: theme.textTheme.bodyMedium),
+        ],
+      ),
+    );
+  }
+
+  // Helpers duplicated here to keep the section self-contained
+  List<_Period> _computePeriods(List<ShiftAssignment> history) {
+    if (history.isEmpty) return const <_Period>[];
+    final sorted = List<ShiftAssignment>.from(history)
+      ..sort((a, b) => a.startDate.compareTo(b.startDate));
+    final periods = <_Period>[];
+    for (var i = 0; i < sorted.length; i++) {
+      final start = DateTime.utc(sorted[i].startDate.year, sorted[i].startDate.month, 1);
+      final shiftId = sorted[i].shiftId;
+      DateTime? end;
+      if (i + 1 < sorted.length) {
+        final nextStart = DateTime.utc(sorted[i + 1].startDate.year, sorted[i + 1].startDate.month, 1);
+        end = DateTime.utc(nextStart.year, nextStart.month, 1).subtract(const Duration(days: 1));
+      } else {
+        end = null; // current until now
+      }
+      periods.add(_Period(shiftId: shiftId, start: start, end: end));
+    }
+    return periods;
+  }
+
+  bool _containsNow(_Period p) {
+    final now = DateTime.now().toUtc();
+    final today = DateTime.utc(now.year, now.month, now.day);
+    final start = DateTime.utc(p.start.year, p.start.month, p.start.day);
+    if (p.end == null) {
+      return !today.isBefore(start); // start <= today
+    }
+    final end = DateTime.utc(p.end!.year, p.end!.month, p.end!.day);
+    return !today.isBefore(start) && !today.isAfter(end); // start <= today <= end
+  }
+
+  void _openUpsertPeriodSheet(BuildContext context, UserProfile profile, { _Period? initial }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => _UpsertPeriodSheet(profile: profile, initial: initial),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, UserProfile profile, _Period p) async {
+    final theme = Theme.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Usunąć okres?'),
+        content: Text('Zmiana ${p.shiftId}: ${_labelMonth(p.start)} – ${p.end == null ? 'teraz' : _labelMonth(p.end!)}'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Anuluj')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Usuń'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      final controller = ref.read(shiftHistoryControllerProvider.notifier);
+      await controller.deletePeriod(uid: profile.uid, current: profile.shiftHistory, startMonth: p.start);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
+  }
+  String _labelMonth(DateTime date) {
+    const months = <String>['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
+    final m = (date.month - 1).clamp(0, 11);
+    return '${months[m]} ${date.year}';
+  }
+}
+
 class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
   @override
   Widget build(BuildContext context) {
@@ -48,40 +212,13 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
         padding: const EdgeInsets.all(16),
         itemBuilder: (context, index) {
           final p = periods[index];
-          final isCurrent = p.end == null;
-          final color = profile.shiftColorPalette.colorForShift(p.shiftId);
-          return Card(
-            clipBehavior: Clip.antiAlias,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(left: BorderSide(color: color, width: 6)),
-              ),
-              child: ListTile(
-                onTap: () => _openUpsertPeriodSheet(context, profile, initial: p),
-                title: Text('Zmiana ${p.shiftId}'),
-                subtitle: Text('${_labelMonth(p.start)} – ${isCurrent ? 'teraz' : _labelMonth(p.end!)}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (isCurrent) const _NowBadge(),
-                    PopupMenuButton<String>(
-                      tooltip: 'Więcej',
-                      onSelected: (value) {
-                        if (value == 'edit') {
-                          _openUpsertPeriodSheet(context, profile, initial: p);
-                        } else if (value == 'delete') {
-                          _confirmDelete(context, profile, p);
-                        }
-                      },
-                      itemBuilder: (context) => const [
-                        PopupMenuItem(value: 'edit', child: Text('Edytuj')),
-                        PopupMenuItem(value: 'delete', child: Text('Usuń')),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          final isCurrent = _containsNow(p);
+          return _HistoryItem(
+            period: p,
+            palette: profile.shiftColorPalette,
+            isCurrent: isCurrent,
+            onEdit: () => _openUpsertPeriodSheet(context, profile, initial: p),
+            onDelete: () => _confirmDelete(context, profile, p),
           );
         },
         separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -89,6 +226,19 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
       ),
     );
   }
+
+  bool _containsNow(_Period p) {
+    final now = DateTime.now().toUtc();
+    final today = DateTime.utc(now.year, now.month, now.day);
+    final start = DateTime.utc(p.start.year, p.start.month, p.start.day);
+    if (p.end == null) {
+      return !today.isBefore(start); // start <= today
+    }
+    final end = DateTime.utc(p.end!.year, p.end!.month, p.end!.day);
+    return !today.isBefore(start) && !today.isAfter(end); // start <= today <= end
+  }
+
+  // Removed local _endLabel; item computes its own label.
 
   void _openUpsertPeriodSheet(BuildContext context, UserProfile profile, { _Period? initial }) {
     showModalBottomSheet(
@@ -150,6 +300,88 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
   }
 
   String _labelMonth(DateTime date) {
+    const months = <String>['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
+    final m = (date.month - 1).clamp(0, 11);
+    return '${months[m]} ${date.year}';
+  }
+}
+
+/// Lightweight, card-less history item used in both the inline section and the page.
+class _HistoryItem extends StatelessWidget {
+  const _HistoryItem({
+    required this.period,
+    required this.palette,
+    required this.isCurrent,
+    required this.onEdit,
+    required this.onDelete,
+  });
+  final _Period period;
+  final ShiftColorPalette palette;
+  final bool isCurrent;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = palette.colorForShift(period.shiftId);
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surfaceVariant.withOpacity(0.35),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onEdit,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.dividerColor),
+          ),
+          child: Row(
+            children: [
+              Container(width: 6, height: 64, decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), bottomLeft: Radius.circular(12)))),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Zmiana ${period.shiftId}', style: theme.textTheme.titleSmall),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${_labelMonthLocal(period.start)} – ${_endLabelLocal(period, isCurrent)}',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              if (isCurrent) const _NowBadge(),
+              const SizedBox(width: 8),
+              PopupMenuButton<String>(
+                tooltip: 'Więcej',
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    onEdit();
+                  } else if (value == 'delete') {
+                    onDelete();
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(value: 'edit', child: Text('Edytuj')),
+                  PopupMenuItem(value: 'delete', child: Text('Usuń')),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _endLabelLocal(_Period p, bool isCurrent) {
+    if (p.end == null) return isCurrent ? 'teraz' : '—';
+    return _labelMonthLocal(p.end!);
+  }
+
+  String _labelMonthLocal(DateTime date) {
     const months = <String>['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
     final m = (date.month - 1).clamp(0, 11);
     return '${months[m]} ${date.year}';

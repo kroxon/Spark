@@ -15,25 +15,22 @@ class ThemeModeSwitchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 1,
-      child: SwitchListTile.adaptive(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 8,
-        ),
-        title: Text('Motyw ciemny', style: theme.textTheme.titleMedium),
-        subtitle: Text(
-          isUpdating
-              ? 'Zapisywanie preferencji...'
-              : 'Synchronizuj wygląd aplikacji między urządzeniami.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        value: isDarkMode,
-        onChanged: isUpdating ? null : onChanged,
+    return SwitchListTile.adaptive(
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 0,
       ),
+      title: Text('Motyw ciemny', style: theme.textTheme.titleMedium),
+      subtitle: Text(
+        isUpdating
+            ? 'Zapisywanie preferencji...'
+            : 'Synchronizuj wygląd aplikacji między urządzeniami.',
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+      value: isDarkMode,
+      onChanged: isUpdating ? null : onChanged,
     );
   }
 }

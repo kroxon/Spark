@@ -48,9 +48,11 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
         itemBuilder: (context, index) {
           final p = periods[index];
           final isCurrent = p.end == null;
+          final color = profile.shiftColorPalette.colorForShift(p.shiftId);
           return Card(
             clipBehavior: Clip.antiAlias,
             child: ListTile(
+              leading: _ShiftColorDot(color: color),
               onTap: () => _openUpsertPeriodSheet(context, profile, initial: p),
               title: Text('Zmiana ${p.shiftId}'),
               subtitle: Text('${_labelMonth(p.start)} – ${isCurrent ? 'teraz' : _labelMonth(p.end!)}'),
@@ -193,7 +195,6 @@ class _UpsertPeriodSheetState extends ConsumerState<_UpsertPeriodSheet> {
     final insets = MediaQuery.of(context).viewInsets.bottom;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 520;
         final content = Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -242,41 +243,38 @@ class _UpsertPeriodSheetState extends ConsumerState<_UpsertPeriodSheet> {
                       selected: {_shiftId},
                       onSelectionChanged: (s) => setState(() => _shiftId = s.first),
                     ),
-                    const SizedBox(height: 16),
-                    isWide
-                        ? Row(
-                            children: [
-                              Expanded(child: _MonthPickerField(label: 'Początek', value: _start, onTap: () async {
-                                final picked = await _pickMonth(context, initial: _start);
-                                if (picked != null) setState(() => _start = picked);
-                              })),
-                              const SizedBox(width: 12),
-                              Expanded(child: _MonthPickerField(label: 'Koniec', value: _end, hint: 'do teraz', onTap: () async {
-                                final picked = await _pickMonth(context, initial: _end ?? _start);
-                                setState(() => _end = picked);
-                              })),
-                            ],
-                          )
-                        : Column(
-                            children: [
-                              _MonthPickerField(label: 'Początek', value: _start, onTap: () async {
-                                final picked = await _pickMonth(context, initial: _start);
-                                if (picked != null) setState(() => _start = picked);
-                              }),
-                              const SizedBox(height: 12),
-                              _MonthPickerField(label: 'Koniec', value: _end, hint: 'do teraz', onTap: () async {
-                                final picked = await _pickMonth(context, initial: _end ?? _start);
-                                setState(() => _end = picked);
-                              }),
-                            ],
-                          ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Checkbox(value: _end == null, onChanged: (v) => setState(() => _end = v == true ? null : _start)),
-                        const Text('Do teraz'),
+                        _ShiftColorDot(color: widget.profile.shiftColorPalette.colorForShift(_shiftId)),
+                        const SizedBox(width: 8),
+                        Text('Kolor zmiany', style: Theme.of(context).textTheme.labelSmall),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                    Text('Zakres miesięcy', style: Theme.of(context).textTheme.labelLarge),
+                    const SizedBox(height: 8),
+                    _RangeField(
+                      start: _start,
+                      end: _end,
+                      onTap: () async {
+                        final result = await showDialog<_MonthRangeResult>(
+                          context: context,
+                          builder: (_) => _MonthRangeDialog(
+                            initialStart: _start,
+                            initialEnd: _end,
+                          ),
+                        );
+                        if (result != null) {
+                          setState(() {
+                            _start = result.start;
+                            _end = result.end;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Row(children: [Checkbox(value: _end == null, onChanged: (v) => setState(() => _end = v == true ? null : _start)), const Text('Do teraz')]),
                     if (_error != null) ...[
                       const SizedBox(height: 8),
                       Container(
@@ -348,41 +346,48 @@ class _UpsertPeriodSheetState extends ConsumerState<_UpsertPeriodSheet> {
     }
   }
 
-  Future<DateTime?> _pickMonth(BuildContext context, {required DateTime initial}) async {
-    final selected = await showDialog<_YearMonth>(
-      context: context,
-      builder: (_) => _MonthYearDialog(initial: _YearMonth(initial.year, initial.month)),
+}
+ 
+class _ShiftColorDot extends StatelessWidget {
+  const _ShiftColorDot({required this.color});
+  final Color color;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 12,
+      height: 12,
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
-    if (selected == null) return null;
-    return DateTime.utc(selected.year, selected.month, 1);
   }
 }
 
-class _MonthPickerField extends StatelessWidget {
-  const _MonthPickerField({required this.label, required this.value, required this.onTap, this.hint});
-  final String label;
-  final DateTime? value;
-  final String? hint;
+class _RangeField extends StatelessWidget {
+  const _RangeField({required this.start, required this.end, required this.onTap});
+  final DateTime start;
+  final DateTime? end;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final text = value == null ? (hint ?? '—') : _labelMonth(value!);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).dividerColor),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(label, style: Theme.of(context).textTheme.labelSmall),
-            const SizedBox(height: 2),
-            Text(text),
+            const Icon(Icons.date_range_outlined, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text('${_labelMonth(start)} – ${end == null ? 'teraz' : _labelMonth(end!)}'),
+            ),
+            const Icon(Icons.edit_calendar_outlined, size: 20),
           ],
         ),
       ),
@@ -393,6 +398,145 @@ class _MonthPickerField extends StatelessWidget {
     const months = <String>['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
     final m = (date.month - 1).clamp(0, 11);
     return '${months[m]} ${date.year}';
+  }
+}
+
+class _MonthRangeResult {
+  final DateTime start;
+  final DateTime? end;
+  const _MonthRangeResult(this.start, this.end);
+}
+
+class _MonthRangeDialog extends StatefulWidget {
+  const _MonthRangeDialog({required this.initialStart, required this.initialEnd});
+  final DateTime initialStart;
+  final DateTime? initialEnd;
+  @override
+  State<_MonthRangeDialog> createState() => _MonthRangeDialogState();
+}
+
+class _MonthRangeDialogState extends State<_MonthRangeDialog> {
+  late int _startYear;
+  late int _startMonth;
+  late int _endYear;
+  late int _endMonth;
+  bool _toNow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startYear = widget.initialStart.year;
+    _startMonth = widget.initialStart.month;
+    _toNow = widget.initialEnd == null;
+    final end = widget.initialEnd ?? DateTime.now().toUtc();
+    _endYear = end.year;
+    _endMonth = end.month;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isWide = MediaQuery.of(context).size.width >= 560;
+    return AlertDialog(
+      title: const Text('Wybierz zakres miesięcy'),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 840),
+        child: isWide
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: _monthPanel(context, 'Początek', _startYear, _startMonth, onYear: (y) => setState(() => _startYear = y), onMonth: (m) => setState(() => _startMonth = m))),
+                  const SizedBox(width: 16),
+                  Expanded(child: Opacity(
+                    opacity: _toNow ? 0.5 : 1,
+                    child: IgnorePointer(
+                      ignoring: _toNow,
+                      child: _monthPanel(context, 'Koniec', _endYear, _endMonth, onYear: (y) => setState(() => _endYear = y), onMonth: (m) => setState(() => _endMonth = m)),
+                    ),
+                  )),
+                ],
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _monthPanel(context, 'Początek', _startYear, _startMonth, onYear: (y) => setState(() => _startYear = y), onMonth: (m) => setState(() => _startMonth = m)),
+                  const SizedBox(height: 12),
+                  Opacity(
+                    opacity: _toNow ? 0.5 : 1,
+                    child: IgnorePointer(
+                      ignoring: _toNow,
+                      child: _monthPanel(context, 'Koniec', _endYear, _endMonth, onYear: (y) => setState(() => _endYear = y), onMonth: (m) => setState(() => _endMonth = m)),
+                    ),
+                  ),
+                ],
+              ),
+      ),
+      actions: [
+        Row(
+          children: [
+            Checkbox(value: _toNow, onChanged: (v) => setState(() => _toNow = v ?? false)),
+            const Text('Do teraz'),
+            const Spacer(),
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Anuluj')),
+            const SizedBox(width: 8),
+            FilledButton(
+              onPressed: _canSubmit() ? _submit : null,
+              child: const Text('Wybierz'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  bool _canSubmit() {
+    if (_toNow) return true;
+    final start = DateTime.utc(_startYear, _startMonth, 1);
+    final endExclusive = DateTime.utc(_endYear, _endMonth + 1, 1);
+    return endExclusive.isAfter(start);
+  }
+
+  void _submit() {
+    final start = DateTime.utc(_startYear, _startMonth, 1);
+    final DateTime? end = _toNow ? null : DateTime.utc(_endYear, _endMonth, 1);
+    Navigator.of(context).pop(_MonthRangeResult(start, end));
+  }
+
+  Widget _monthPanel(
+    BuildContext context,
+    String title,
+    int year,
+    int month, {
+    required ValueChanged<int> onYear,
+    required ValueChanged<int> onMonth,
+  }) {
+    final months = const <String>['Stycz', 'Luty', 'Mar', 'Kwie', 'Maj', 'Czer', 'Lip', 'Sier', 'Wrze', 'Paź', 'List', 'Grud'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            IconButton(onPressed: () => onYear(year - 1), icon: const Icon(Icons.chevron_left)),
+            Expanded(child: Center(child: Text('$year', style: const TextStyle(fontWeight: FontWeight.w600)))),
+            IconButton(onPressed: () => onYear(year + 1), icon: const Icon(Icons.chevron_right)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: List.generate(12, (i) => i + 1).map((m) {
+            final selected = m == month;
+            return ChoiceChip(
+              label: Text(months[m - 1]),
+              selected: selected,
+              onSelected: (_) => onMonth(m),
+            );
+          }).toList(),
+        ),
+      ],
+    );
   }
 }
 

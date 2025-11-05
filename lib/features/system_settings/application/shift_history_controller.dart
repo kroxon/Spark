@@ -81,6 +81,51 @@ class ShiftHistoryController extends AsyncNotifier<void> {
     await _profileRepo.updateShiftHistory(uid: uid, assignments: updated);
   }
 
+  Future<void> deletePeriod({
+    required String uid,
+    required List<ShiftAssignment> current,
+    required DateTime startMonth,
+  }) async {
+    final start = DateTime.utc(startMonth.year, startMonth.month, 1);
+
+    // Determine the endExclusive of this period (next start or now+1 month)
+    final sorted = List<ShiftAssignment>.from(current)
+      ..sort((a, b) => a.startDate.compareTo(b.startDate));
+    final idx = sorted.indexWhere((a) =>
+        DateTime.utc(a.startDate.year, a.startDate.month, 1)
+            .isAtSameMomentAs(start));
+    if (idx < 0) {
+      throw StateError('Nie znaleziono okresu o wskazanym początku.');
+    }
+
+    DateTime endExclusive;
+    if (idx + 1 < sorted.length) {
+      final next = sorted[idx + 1].startDate;
+      endExclusive = DateTime.utc(next.year, next.month, 1);
+    } else {
+      final now = DateTime.now().toUtc();
+      final currentMonth = DateTime.utc(now.year, now.month, 1);
+      endExclusive = DateTime.utc(currentMonth.year, currentMonth.month + 1, 1);
+    }
+
+    // Check calendar entries collision in [start .. endExclusive)
+    final entriesCollision = await _hasCalendarEntriesInRange(uid, start, endExclusive);
+    if (entriesCollision) {
+      throw StateError('Nie można usunąć: w tym okresie są wpisy w kalendarzu. Usuń je najpierw.');
+    }
+
+    // Remove this start marker; previous assignment will extend to next start automatically
+    final updated = <ShiftAssignment>[];
+    for (var i = 0; i < sorted.length; i++) {
+      final s = DateTime.utc(sorted[i].startDate.year, sorted[i].startDate.month, 1);
+      if (i == idx && s.isAtSameMomentAs(start)) {
+        continue; // skip deletion target
+      }
+      updated.add(ShiftAssignment(shiftId: sorted[i].shiftId, startDate: s));
+    }
+    await _profileRepo.updateShiftHistory(uid: uid, assignments: updated);
+  }
+
   int? _activeShiftIdAt(List<ShiftAssignment> sorted, DateTime date) {
     int? result;
     for (final a in sorted) {

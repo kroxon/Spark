@@ -33,42 +33,93 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
     final periods = _computePeriods(profile.shiftHistory);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Historia przydziału do zmian')),
+      appBar: AppBar(
+        title: const Text('Historia przydziału do zmian'),
+        actions: [
+          IconButton(
+            tooltip: 'Dodaj okres',
+            icon: const Icon(Icons.add),
+            onPressed: () => _openUpsertPeriodSheet(context, profile),
+          ),
+        ],
+      ),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemBuilder: (context, index) {
           final p = periods[index];
           final isCurrent = p.end == null;
           return Card(
+            clipBehavior: Clip.antiAlias,
             child: ListTile(
+              onTap: () => _openUpsertPeriodSheet(context, profile, initial: p),
               title: Text('Zmiana ${p.shiftId}'),
               subtitle: Text('${_labelMonth(p.start)} – ${isCurrent ? 'teraz' : _labelMonth(p.end!)}'),
-              trailing: isCurrent
-                  ? const Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: _NowBadge(),
-                    )
-                  : null,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isCurrent) const _NowBadge(),
+                  PopupMenuButton<String>(
+                    tooltip: 'Więcej',
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        _openUpsertPeriodSheet(context, profile, initial: p);
+                      } else if (value == 'delete') {
+                        _confirmDelete(context, profile, p);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(value: 'edit', child: Text('Edytuj')),
+                      const PopupMenuItem(value: 'delete', child: Text('Usuń')),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         },
         separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemCount: periods.length,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openAddPeriodSheet(context, profile),
-        icon: const Icon(Icons.add),
-        label: const Text('Dodaj okres'),
-      ),
     );
   }
 
-  void _openAddPeriodSheet(BuildContext context, UserProfile profile) {
+  void _openUpsertPeriodSheet(BuildContext context, UserProfile profile, { _Period? initial }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => _AddPeriodSheet(profile: profile),
+      useSafeArea: true,
+      builder: (context) => _UpsertPeriodSheet(profile: profile, initial: initial),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, UserProfile profile, _Period p) async {
+    final theme = Theme.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Usunąć okres?'),
+        content: Text('Zmiana ${p.shiftId}: ${_labelMonth(p.start)} – ${p.end == null ? 'teraz' : _labelMonth(p.end!)}'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Anuluj')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Usuń'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      final controller = ref.read(shiftHistoryControllerProvider.notifier);
+      await controller.deletePeriod(uid: profile.uid, current: profile.shiftHistory, startMonth: p.start);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
   }
 
   List<_Period> _computePeriods(List<ShiftAssignment> history) {
@@ -113,38 +164,57 @@ class _NowBadge extends StatelessWidget {
   }
 }
 
-class _AddPeriodSheet extends ConsumerStatefulWidget {
-  const _AddPeriodSheet({required this.profile});
+class _UpsertPeriodSheet extends ConsumerStatefulWidget {
+  const _UpsertPeriodSheet({required this.profile, this.initial});
   final UserProfile profile;
+  final _Period? initial;
 
   @override
-  ConsumerState<_AddPeriodSheet> createState() => _AddPeriodSheetState();
+  ConsumerState<_UpsertPeriodSheet> createState() => _UpsertPeriodSheetState();
 }
 
-class _AddPeriodSheetState extends ConsumerState<_AddPeriodSheet> {
-  int _shiftId = 1;
-  DateTime _start = DateTime.utc(DateTime.now().year, DateTime.now().month, 1);
+class _UpsertPeriodSheetState extends ConsumerState<_UpsertPeriodSheet> {
+  late int _shiftId;
+  late DateTime _start;
   DateTime? _end; // inclusive month; null => to now
   String? _error;
   bool _submitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    _shiftId = widget.initial?.shiftId ?? 1;
+    _start = widget.initial?.start ?? DateTime.utc(DateTime.now().year, DateTime.now().month, 1);
+    _end = widget.initial?.end == null ? null : DateTime.utc(widget.initial!.end!.year, widget.initial!.end!.month, 1);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final insets = MediaQuery.of(context).viewInsets.bottom;
-    return Padding(
-      padding: EdgeInsets.only(bottom: insets),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 520;
+        final content = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 44,
+              height: 4,
+              margin: const EdgeInsets.only(top: 8, bottom: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).dividerColor,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
                 children: [
-                  const Expanded(
-                    child: Text('Dodaj okres zmian', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+                  Expanded(
+                    child: Text(
+                      widget.initial == null ? 'Dodaj okres zmian' : 'Edytuj okres zmian',
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -152,55 +222,103 @@ class _AddPeriodSheetState extends ConsumerState<_AddPeriodSheet> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Text('Zmiana'),
-              const SizedBox(height: 8),
-              SegmentedButton<int>(
-                segments: const [
-                  ButtonSegment(value: 1, label: Text('1')),
-                  ButtonSegment(value: 2, label: Text('2')),
-                  ButtonSegment(value: 3, label: Text('3')),
-                ],
-                selected: {_shiftId},
-                onSelectionChanged: (s) => setState(() => _shiftId = s.first),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(child: _MonthPickerField(label: 'Początek', value: _start, onTap: () async {
-                    final picked = await _pickMonth(context, initial: _start);
-                    if (picked != null) setState(() => _start = picked);
-                  })),
-                  const SizedBox(width: 12),
-                  Expanded(child: _MonthPickerField(label: 'Koniec', value: _end, hint: 'do teraz', onTap: () async {
-                    final picked = await _pickMonth(context, initial: _end ?? _start);
-                    setState(() => _end = picked);
-                  })),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Checkbox(value: _end == null, onChanged: (v) => setState(() => _end = v == true ? null : _start)),
-                  const Text('Do teraz'),
-                ],
-              ),
-              if (_error != null) ...[
-                const SizedBox(height: 8),
-                Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-              ],
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _submitting ? null : () => _submit(),
-                  child: _submitting ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Zapisz okres'),
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Zmiana', style: Theme.of(context).textTheme.labelLarge),
+                    const SizedBox(height: 8),
+                    SegmentedButton<int>(
+                      segments: const [
+                        ButtonSegment(value: 1, label: Text('1')),
+                        ButtonSegment(value: 2, label: Text('2')),
+                        ButtonSegment(value: 3, label: Text('3')),
+                      ],
+                      selected: {_shiftId},
+                      onSelectionChanged: (s) => setState(() => _shiftId = s.first),
+                    ),
+                    const SizedBox(height: 16),
+                    isWide
+                        ? Row(
+                            children: [
+                              Expanded(child: _MonthPickerField(label: 'Początek', value: _start, onTap: () async {
+                                final picked = await _pickMonth(context, initial: _start);
+                                if (picked != null) setState(() => _start = picked);
+                              })),
+                              const SizedBox(width: 12),
+                              Expanded(child: _MonthPickerField(label: 'Koniec', value: _end, hint: 'do teraz', onTap: () async {
+                                final picked = await _pickMonth(context, initial: _end ?? _start);
+                                setState(() => _end = picked);
+                              })),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              _MonthPickerField(label: 'Początek', value: _start, onTap: () async {
+                                final picked = await _pickMonth(context, initial: _start);
+                                if (picked != null) setState(() => _start = picked);
+                              }),
+                              const SizedBox(height: 12),
+                              _MonthPickerField(label: 'Koniec', value: _end, hint: 'do teraz', onTap: () async {
+                                final picked = await _pickMonth(context, initial: _end ?? _start);
+                                setState(() => _end = picked);
+                              }),
+                            ],
+                          ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Checkbox(value: _end == null, onChanged: (v) => setState(() => _end = v == true ? null : _start)),
+                        const Text('Do teraz'),
+                      ],
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer)),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: _submitting ? null : () => _submit(),
+                            child: _submitting
+                                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                : Text(widget.initial == null ? 'Zapisz okres' : 'Zapisz zmiany'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
-            ],
+            ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 12),
+          ],
+        );
+
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(bottom: insets),
+            child: content,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

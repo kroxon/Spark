@@ -4,6 +4,7 @@ import 'package:iskra/core/firebase/firebase_providers.dart';
 import 'package:iskra/features/auth/data/user_profile_repository.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/system_settings/application/shift_history_controller.dart';
+import 'package:iskra/features/calendar/models/shift_color_palette.dart';
 
 class ShiftHistoryPage extends ConsumerStatefulWidget {
   const ShiftHistoryPage({super.key});
@@ -51,31 +52,37 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
           final color = profile.shiftColorPalette.colorForShift(p.shiftId);
           return Card(
             clipBehavior: Clip.antiAlias,
-            child: ListTile(
-              leading: _ShiftColorDot(color: color),
-              onTap: () => _openUpsertPeriodSheet(context, profile, initial: p),
-              title: Text('Zmiana ${p.shiftId}'),
-              subtitle: Text('${_labelMonth(p.start)} – ${isCurrent ? 'teraz' : _labelMonth(p.end!)}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (isCurrent) const _NowBadge(),
-                  PopupMenuButton<String>(
-                    tooltip: 'Więcej',
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        _openUpsertPeriodSheet(context, profile, initial: p);
-                      } else if (value == 'delete') {
-                        _confirmDelete(context, profile, p);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'edit', child: Text('Edytuj')),
-                      const PopupMenuItem(value: 'delete', child: Text('Usuń')),
-                    ],
+            child: Row(
+              children: [
+                Container(width: 6, height: double.infinity, color: color),
+                Expanded(
+                  child: ListTile(
+                    onTap: () => _openUpsertPeriodSheet(context, profile, initial: p),
+                    title: Text('Zmiana ${p.shiftId}'),
+                    subtitle: Text('${_labelMonth(p.start)} – ${isCurrent ? 'teraz' : _labelMonth(p.end!)}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isCurrent) const _NowBadge(),
+                        PopupMenuButton<String>(
+                          tooltip: 'Więcej',
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              _openUpsertPeriodSheet(context, profile, initial: p);
+                            } else if (value == 'delete') {
+                              _confirmDelete(context, profile, p);
+                            }
+                          },
+                          itemBuilder: (context) => const [
+                            PopupMenuItem(value: 'edit', child: Text('Edytuj')),
+                            PopupMenuItem(value: 'delete', child: Text('Usuń')),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
@@ -234,22 +241,10 @@ class _UpsertPeriodSheetState extends ConsumerState<_UpsertPeriodSheet> {
                   children: [
                     Text('Zmiana', style: Theme.of(context).textTheme.labelLarge),
                     const SizedBox(height: 8),
-                    SegmentedButton<int>(
-                      segments: const [
-                        ButtonSegment(value: 1, label: Text('1')),
-                        ButtonSegment(value: 2, label: Text('2')),
-                        ButtonSegment(value: 3, label: Text('3')),
-                      ],
-                      selected: {_shiftId},
-                      onSelectionChanged: (s) => setState(() => _shiftId = s.first),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _ShiftColorDot(color: widget.profile.shiftColorPalette.colorForShift(_shiftId)),
-                        const SizedBox(width: 8),
-                        Text('Kolor zmiany', style: Theme.of(context).textTheme.labelSmall),
-                      ],
+                    _ShiftSelector(
+                      selected: _shiftId,
+                      palette: widget.profile.shiftColorPalette,
+                      onSelected: (id) => setState(() => _shiftId = id),
                     ),
                     const SizedBox(height: 16),
                     Text('Zakres miesięcy', style: Theme.of(context).textTheme.labelLarge),
@@ -348,17 +343,56 @@ class _UpsertPeriodSheetState extends ConsumerState<_UpsertPeriodSheet> {
 
 }
  
-class _ShiftColorDot extends StatelessWidget {
-  const _ShiftColorDot({required this.color});
-  final Color color;
+class _ShiftSelector extends StatelessWidget {
+  const _ShiftSelector({required this.selected, required this.palette, required this.onSelected});
+  final int selected;
+  final ShiftColorPalette palette;
+  final ValueChanged<int> onSelected;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 12,
-      height: 12,
-      margin: const EdgeInsets.only(right: 8),
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    final items = [1, 2, 3];
+    return Row(
+      children: items.map((id) {
+        final color = palette.colorForShift(id);
+        final sel = id == selected;
+        final bg = sel ? color : color.withOpacity(0.18);
+        final border = color.withOpacity(0.64);
+        final textColor = _bestOnColor(color, sel);
+        final radius = BorderRadius.horizontal(
+          left: id == 1 ? const Radius.circular(12) : Radius.zero,
+          right: id == 3 ? const Radius.circular(12) : Radius.zero,
+        );
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: Material(
+              color: bg,
+              shape: RoundedRectangleBorder(
+                borderRadius: radius,
+                side: BorderSide(color: border, width: sel ? 2 : 1),
+              ),
+              child: InkWell(
+                borderRadius: radius,
+                onTap: () => onSelected(id),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Center(
+                    child: Text('$id', style: TextStyle(fontWeight: FontWeight.w600, color: textColor)),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
+  }
+
+  Color _bestOnColor(Color base, bool selected) {
+    // If selected, ensure strong contrast; otherwise use onSurface
+    if (!selected) return Colors.black87;
+    return base.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
 }
 

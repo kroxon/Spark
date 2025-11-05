@@ -140,43 +140,91 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
                         // Shift selector and current colors
                         LayoutBuilder(
                           builder: (context, constraints) {
-                            final chips = [
-                              for (final id in [1, 2, 3])
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: ChoiceChip(
-                                    selected: selected == id,
-                                    onSelected: (_) => setModalState(() {
-                                      _selectedShift = id;
-                                    }),
-                                    label: Text('Zmiana $id'),
+                            Color textOn(Color bg) =>
+                                bg.computeLuminance() < 0.5 ? Colors.white : Colors.black;
+
+                            // Responsive sizing presets based on available width
+                            final double w = constraints.maxWidth;
+                            final bool compact = w < 340;
+                            final bool spacious = w > 560;
+                            // Further reduce internal paddings
+                            final double padH = compact ? 4 : (spacious ? 8 : 6);
+                            final double padV = compact ? 2 : (spacious ? 4 : 3);
+                            // External spacing only used in scroll (fallback) layout
+                            final double outerGap = compact ? 14 : (spacious ? 22 : 18);
+                            final double borderR = compact ? 10 : 12;
+
+                            Widget chip(int id) {
+                              final isSel = selected == id;
+                              final base = drafts[id]!;
+                              // Same intensity for all chips; selection is expressed by size only
+                              final chipBg = base.withValues(alpha: 0.80);
+                              final txtStyle = theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: textOn(chipBg),
+                              );
+                              final double padHX = (padH - 2).clamp(2, 24).toDouble();
+                              final double padVX = (padV - 2).clamp(1, 16).toDouble();
+                              return AnimatedScale(
+                                // Active is 25% larger than inactive
+                                scale: isSel ? 1.25 : 1.0,
+                                duration: const Duration(milliseconds: 220),
+                                curve: Curves.easeOutCubic,
+                                child: RawChip(
+                                  selected: isSel,
+                                  onSelected: (_) => setModalState(() {
+                                    _selectedShift = id;
+                                  }),
+                                  showCheckmark: false,
+                                  label: Text('Zmiana $id', style: txtStyle),
+                                  backgroundColor: chipBg,
+                                  selectedColor: chipBg,
+                                  padding: EdgeInsets.symmetric(horizontal: padHX, vertical: padVX),
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(borderR),
+                                    side: BorderSide(
+                                      color: isSel
+                                          ? theme.colorScheme.outline
+                                          : theme.colorScheme.outlineVariant,
+                                    ),
                                   ),
                                 ),
-                            ];
+                              );
+                            }
+
+                            // Keep chips side-by-side. If they don't fit, allow horizontal scroll;
+                            // if they do fit, spread them evenly.
+                            const double minChipWidth = 100;
+                            final double minTotal = minChipWidth * 3 + 2 * 8; // including gaps
+                            final bool canFit = w >= minTotal;
+
+                            final Widget chipLine = canFit
+                                ? Row(
+                                    children: [
+                                      Expanded(child: Center(child: chip(1))),
+                                      Expanded(child: Center(child: chip(2))),
+                                      Expanded(child: Center(child: chip(3))),
+                                    ],
+                                  )
+                                : SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        chip(1),
+                                        SizedBox(width: outerGap),
+                                        chip(2),
+                                        SizedBox(width: outerGap),
+                                        chip(3),
+                                      ],
+                                    ),
+                                  );
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(children: chips),
-                                ),
-                                const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(maxWidth: constraints.maxWidth),
-                                    child: Wrap(
-                                      spacing: 8,
-                                      runSpacing: 4,
-                                      alignment: WrapAlignment.end,
-                                      children: [
-                                        for (final id in [1, 2, 3])
-                                          CircleAvatar(radius: 10, backgroundColor: drafts[id]!),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                chipLine,
+                                const SizedBox(height: 4),
                               ],
                             );
                           },
@@ -328,13 +376,52 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
   }
 }
 
-class _ShiftColorsCard extends StatelessWidget {
+class _ShiftColorsCard extends ConsumerWidget {
   const _ShiftColorsCard({required this.onOpenConfigurator});
   final VoidCallback onOpenConfigurator;
 
+  Color _textOn(Color bg) => bg.computeLuminance() < 0.5 ? Colors.white : Colors.black;
+
+  Widget _indicator(Color color, String label, ThemeData theme) {
+    return Container(
+      width: 33, // +50% size
+      height: 33, // +50% size
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: theme.colorScheme.outlineVariant, width: 1.0),
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12, // keep label size unchanged
+            fontWeight: FontWeight.w700,
+            height: 1.0,
+            color: _textOn(color),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final user = ref.watch(firebaseAuthProvider).currentUser;
+
+    ShiftColorPalette palette = ShiftColorPalette.defaults;
+    if (user != null) {
+      final profileAsync = ref.watch(
+        userProfileProvider(UserProfileRequest(uid: user.uid, email: user.email)),
+      );
+      palette = profileAsync.maybeWhen(
+        data: (p) => p.shiftColorPalette,
+        orElse: () => ShiftColorPalette.defaults,
+      );
+    }
+
     return Card(
       elevation: 1,
       child: Padding(
@@ -359,13 +446,22 @@ class _ShiftColorsCard extends StatelessWidget {
               style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: OutlinedButton.icon(
-                onPressed: onOpenConfigurator,
-                icon: const Icon(Icons.open_in_new_rounded),
-                label: const Text('Otwórz konfigurator'),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _indicator(palette.shift1, '1', theme),
+                    _indicator(palette.shift2, '2', theme),
+                    _indicator(palette.shift3, '3', theme),
+                  ],
+                ),
+                OutlinedButton(
+                  onPressed: onOpenConfigurator,
+                  child: const Text('Otwórz konfigurator'),
+                ),
+              ],
             ),
           ],
         ),

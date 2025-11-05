@@ -240,7 +240,10 @@ class _UserProfileDto {
     if (historyData != null) {
       for (final item in historyData) {
         if (item is Map<String, dynamic>) {
-          final shiftId = item['shiftId'] as int?;
+          // Be tolerant to Firestore numeric type (num) and cast safely
+          final raw = item['shiftId'];
+          int? shiftId;
+          if (raw is num) shiftId = raw.toInt();
           final startDate = _parseShiftStart(item);
           if (shiftId != null && startDate != null) {
             history.add(ShiftAssignment(shiftId: shiftId, startDate: startDate));

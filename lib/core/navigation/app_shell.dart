@@ -46,7 +46,9 @@ class _AppShellState extends ConsumerState<AppShell> {
       _lastPrimaryIndex = AppSections.primary.indexOf(currentSection);
     }
 
-    final hideChrome = currentSection == AppSections.settings;
+  // Control visibility of chrome elements per section
+  final hideAppBar = currentSection == AppSections.settings || currentSection == AppSections.statistics;
+  final hideBottomNav = currentSection == AppSections.settings;
 
     return WillPopScope(
       onWillPop: () async {
@@ -58,8 +60,8 @@ class _AppShellState extends ConsumerState<AppShell> {
         }
         return true; // allow default behavior
       },
-      child: Scaffold(
-      appBar: hideChrome
+    child: Scaffold(
+    appBar: hideAppBar
           ? null
           : AppBar(
               titleSpacing: 16,
@@ -85,7 +87,7 @@ class _AppShellState extends ConsumerState<AppShell> {
         },
       ),
       body: widget.navigationShell,
-      bottomNavigationBar: hideChrome
+    bottomNavigationBar: hideBottomNav
           ? null
           : SafeArea(
               top: false,

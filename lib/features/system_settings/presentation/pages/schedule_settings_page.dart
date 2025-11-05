@@ -11,7 +11,6 @@ class ScheduleSettingsPage extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         children: [
           _SettingInfoCard(
-            icon: Icons.history_toggle_off_rounded,
             title: 'Historia przydziału do zmian',
             description:
                 'Przeglądaj i analizuj historię przydziałów. Moduł w przygotowaniu, wkrótce dostępny.',
@@ -24,12 +23,10 @@ class ScheduleSettingsPage extends StatelessWidget {
 
 class _SettingInfoCard extends StatelessWidget {
   const _SettingInfoCard({
-    required this.icon,
     required this.title,
     required this.description,
   });
 
-  final IconData icon;
   final String title;
   final String description;
 
@@ -45,12 +42,6 @@ class _SettingInfoCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: theme.colorScheme.secondaryContainer,
-                  child: Icon(icon, color: theme.colorScheme.onSecondaryContainer),
-                ),
-                const SizedBox(width: 12),
                 Text(title, style: theme.textTheme.titleMedium),
               ],
             ),

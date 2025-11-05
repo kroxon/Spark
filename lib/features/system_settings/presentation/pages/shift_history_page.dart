@@ -52,37 +52,35 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
           final color = profile.shiftColorPalette.colorForShift(p.shiftId);
           return Card(
             clipBehavior: Clip.antiAlias,
-            child: Row(
-              children: [
-                Container(width: 6, height: double.infinity, color: color),
-                Expanded(
-                  child: ListTile(
-                    onTap: () => _openUpsertPeriodSheet(context, profile, initial: p),
-                    title: Text('Zmiana ${p.shiftId}'),
-                    subtitle: Text('${_labelMonth(p.start)} – ${isCurrent ? 'teraz' : _labelMonth(p.end!)}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (isCurrent) const _NowBadge(),
-                        PopupMenuButton<String>(
-                          tooltip: 'Więcej',
-                          onSelected: (value) {
-                            if (value == 'edit') {
-                              _openUpsertPeriodSheet(context, profile, initial: p);
-                            } else if (value == 'delete') {
-                              _confirmDelete(context, profile, p);
-                            }
-                          },
-                          itemBuilder: (context) => const [
-                            PopupMenuItem(value: 'edit', child: Text('Edytuj')),
-                            PopupMenuItem(value: 'delete', child: Text('Usuń')),
-                          ],
-                        ),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(left: BorderSide(color: color, width: 6)),
+              ),
+              child: ListTile(
+                onTap: () => _openUpsertPeriodSheet(context, profile, initial: p),
+                title: Text('Zmiana ${p.shiftId}'),
+                subtitle: Text('${_labelMonth(p.start)} – ${isCurrent ? 'teraz' : _labelMonth(p.end!)}'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isCurrent) const _NowBadge(),
+                    PopupMenuButton<String>(
+                      tooltip: 'Więcej',
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          _openUpsertPeriodSheet(context, profile, initial: p);
+                        } else if (value == 'delete') {
+                          _confirmDelete(context, profile, p);
+                        }
+                      },
+                      itemBuilder: (context) => const [
+                        PopupMenuItem(value: 'edit', child: Text('Edytuj')),
+                        PopupMenuItem(value: 'delete', child: Text('Usuń')),
                       ],
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },

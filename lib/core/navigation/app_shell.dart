@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:iskra/core/theme/app_bottom_nav_theme.dart';
 import 'package:iskra/core/navigation/nav_destinations.dart';
 import 'package:iskra/core/navigation/routes.dart';
 import 'package:iskra/core/navigation/widgets/app_scaffold_drawer.dart';
@@ -85,16 +87,50 @@ class _AppShellState extends ConsumerState<AppShell> {
       body: widget.navigationShell,
       bottomNavigationBar: hideChrome
           ? null
-          : NavigationBar(
-              selectedIndex: _lastPrimaryIndex,
-              onDestinationSelected: (index) => _navigateToSection(context, AppSections.primary[index]),
-              destinations: [
-                for (final section in AppSections.primary)
-                  NavigationDestination(
-                    icon: Icon(section.icon),
-                    label: section.label,
-                  ),
-              ],
+          : SafeArea(
+              top: false,
+              child: Builder(
+                builder: (context) {
+                  final navTheme = Theme.of(context).extension<BottomNavColors>();
+                  final background = navTheme?.background ?? Theme.of(context).colorScheme.surface;
+                  final tabBg = navTheme?.tabBackground ?? Theme.of(context).colorScheme.secondaryContainer;
+                  final active = navTheme?.activeColor ?? Theme.of(context).colorScheme.onSecondaryContainer;
+                  final inactive = navTheme?.inactiveColor ?? Theme.of(context).colorScheme.onSurfaceVariant;
+                  final elevation = navTheme?.elevation ?? 3.0;
+                  final containerRadius = navTheme?.containerRadius ?? 16.0;
+                  final tabRadius = navTheme?.tabRadius ?? 12.0;
+
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+                    child: Material(
+                      elevation: elevation,
+                      borderRadius: BorderRadius.circular(containerRadius),
+                      clipBehavior: Clip.antiAlias,
+                      color: background,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        child: GNav(
+                          selectedIndex: _lastPrimaryIndex,
+                          gap: 6,
+                          onTabChange: (index) => _navigateToSection(context, AppSections.primary[index]),
+                          color: inactive,
+                          activeColor: active,
+                          tabBackgroundColor: tabBg,
+                          tabBorderRadius: tabRadius,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          tabs: [
+                            for (final section in AppSections.primary)
+                              GButton(
+                                icon: section.icon,
+                                text: section.label,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
       ),
     );

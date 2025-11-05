@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iskra/core/theme/app_colors.dart';
+import 'package:iskra/core/theme/app_bottom_nav_theme.dart';
 
 /// Centralised theme configuration for the Iskra application.
 class AppTheme {
@@ -19,6 +20,10 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
+      extensions: <ThemeExtension<dynamic>>[
+        // Keep bottom navigation darker even in light mode
+        BottomNavColors.darkOnLight(),
+      ],
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
@@ -131,6 +136,9 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
+      extensions: <ThemeExtension<dynamic>>[
+        BottomNavColors.darkOnDark(),
+      ],
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,

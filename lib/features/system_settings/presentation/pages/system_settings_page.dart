@@ -32,7 +32,7 @@ class SystemSettingsPage extends ConsumerWidget {
           const SizedBox(height: 8),
           _SettingsRow(
             title: 'Salda i wskaźniki',
-            subtitle: 'Zarządzanie saldem urlopów i nadgodzin',
+            subtitle: 'Zarządzanie saldem urlopów',
             onTap: () => context.pushNamed(AppRouteName.settingsBalances),
           ),
         ],

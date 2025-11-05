@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iskra/features/system_settings/presentation/pages/shift_history_page.dart';
 
 class ScheduleSettingsPage extends StatelessWidget {
   const ScheduleSettingsPage({super.key});
@@ -10,11 +11,17 @@ class ScheduleSettingsPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          _SettingInfoCard(
-            title: 'Historia przydziału do zmian',
-            description:
-                'Przeglądaj i analizuj historię przydziałów. Moduł w przygotowaniu, wkrótce dostępny.',
-          ),
+              InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ShiftHistoryPage()),
+                  );
+                },
+                child: const _SettingInfoCard(
+                  title: 'Historia przydziału do zmian',
+                ),
+              ),
         ],
       ),
     );
@@ -24,11 +31,10 @@ class ScheduleSettingsPage extends StatelessWidget {
 class _SettingInfoCard extends StatelessWidget {
   const _SettingInfoCard({
     required this.title,
-    required this.description,
+    // required this.description,
   });
 
   final String title;
-  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +52,6 @@ class _SettingInfoCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              description,
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
           ],
         ),
       ),

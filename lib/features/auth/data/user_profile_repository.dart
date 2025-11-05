@@ -140,6 +140,29 @@ class UserProfileRepository {
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
+
+  Future<void> updateShiftHistory({
+    required String uid,
+    required List<ShiftAssignment> assignments,
+  }) async {
+    // Ensure normalized month-only UTC dates
+    final payload = assignments
+        .map((a) => {
+              'shiftId': a.shiftId,
+              'startDate': Timestamp.fromDate(
+                DateTime.utc(a.startDate.year, a.startDate.month, 1),
+              ),
+            })
+        .toList()
+      ..sort((a, b) => (a['startDate'] as Timestamp)
+          .toDate()
+          .compareTo((b['startDate'] as Timestamp).toDate()));
+
+    await _doc(uid).set({
+      'shiftHistory': payload,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
 }
 
 final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {

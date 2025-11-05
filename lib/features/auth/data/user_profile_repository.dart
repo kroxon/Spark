@@ -241,11 +241,9 @@ class _UserProfileDto {
       for (final item in historyData) {
         if (item is Map<String, dynamic>) {
           final shiftId = item['shiftId'] as int?;
-          final start = item['startDate'] as Timestamp?;
-          if (shiftId != null && start != null) {
-            history.add(
-              ShiftAssignment(shiftId: shiftId, startDate: start.toDate()),
-            );
+          final startDate = _parseShiftStart(item);
+          if (shiftId != null && startDate != null) {
+            history.add(ShiftAssignment(shiftId: shiftId, startDate: startDate));
           }
         }
       }
@@ -342,4 +340,74 @@ class _UserProfileDto {
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
+}
+
+DateTime? _parseShiftStart(Map<String, dynamic> item) {
+  // Preferred: Firestore Timestamp under 'startDate'
+  final ts = item['startDate'];
+  if (ts is Timestamp) {
+    final d = ts.toDate();
+    return DateTime(d.year, d.month, 1);
+  }
+
+  // Fallback: String year-month under 'startYearMonth' or 'start'
+  String? ym = item['startYearMonth'] as String? ?? item['start'] as String?;
+  if (ym != null) {
+    ym = ym.trim().toLowerCase();
+    // Try formats: YYYY-MM or YYYY/MM
+    final m1 = RegExp(r'^(\d{4})[-/](\d{1,2})$').firstMatch(ym);
+    if (m1 != null) {
+      final year = int.tryParse(m1.group(1)!);
+      final month = int.tryParse(m1.group(2)!);
+      if (year != null && month != null && month >= 1 && month <= 12) {
+        return DateTime(year, month, 1);
+      }
+    }
+    // Try Polish month name formats: "styczeń 2024" or "styczen 2024"
+    final nameToMonth = {
+      'styczen': 1, 'styczeń': 1,
+      'luty': 2,
+      'marzec': 3,
+      'kwiecien': 4, 'kwiecień': 4,
+      'maj': 5,
+      'czerwiec': 6,
+      'lipiec': 7,
+      'sierpien': 8, 'sierpień': 8,
+      'wrzesien': 9, 'wrzesień': 9,
+      'pazdziernik': 10, 'październik': 10,
+      'listopad': 11,
+      'grudzien': 12, 'grudzień': 12,
+    };
+    // Normalize diacritics by replacing common Polish letters
+    String norm(String s) => s
+        .replaceAll('ą', 'a')
+        .replaceAll('ć', 'c')
+        .replaceAll('ę', 'e')
+        .replaceAll('ł', 'l')
+        .replaceAll('ń', 'n')
+        .replaceAll('ó', 'o')
+        .replaceAll('ś', 's')
+        .replaceAll('ź', 'z')
+        .replaceAll('ż', 'z');
+
+    final parts = ym.split(RegExp(r'[\s-_/]+')).where((p) => p.isNotEmpty).toList();
+    if (parts.length == 2) {
+      final a = parts[0];
+      final b = parts[1];
+      // Try "monthName year"
+      final monthByName = nameToMonth[a] ?? nameToMonth[norm(a)];
+      final year = int.tryParse(b);
+      if (monthByName != null && year != null) {
+        return DateTime(year, monthByName, 1);
+      }
+      // Try "year monthName"
+      final year2 = int.tryParse(a);
+      final monthByName2 = nameToMonth[b] ?? nameToMonth[norm(b)];
+      if (year2 != null && monthByName2 != null) {
+        return DateTime(year2, monthByName2, 1);
+      }
+    }
+  }
+
+  return null;
 }

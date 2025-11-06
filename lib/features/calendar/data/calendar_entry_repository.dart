@@ -41,6 +41,36 @@ class CalendarEntryRepository {
         .collection('calendarEntries');
   }
 
+  /// Fetches entries for an arbitrary inclusive date range [start, end].
+  ///
+  /// Uses documentId range filtering for performance and to avoid client-side
+  /// filtering. The [end] boundary is inclusive; query uses `< nextDay(end)`.
+  Future<List<CalendarEntry>> getEntriesInRange({
+    required String userId,
+    required DateTime start,
+    required DateTime end,
+  }) async {
+    // Normalize to UTC midnight
+    final startDay = DateTime.utc(start.year, start.month, start.day);
+    final endDay = DateTime.utc(end.year, end.month, end.day);
+    final nextAfterEnd = endDay.add(const Duration(days: 1));
+
+    final startId = _documentId(startDay);
+    final endExclusiveId = _documentId(nextAfterEnd);
+
+    final snapshot = await _userEntriesCollection(userId)
+        .orderBy(FieldPath.documentId)
+        .where(FieldPath.documentId, isGreaterThanOrEqualTo: startId)
+        .where(FieldPath.documentId, isLessThan: endExclusiveId)
+        .get();
+
+    final items = snapshot.docs
+        .map((doc) => CalendarEntryDto.fromFirestore(doc).toDomain())
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+    return items;
+  }
+
   Query<Map<String, dynamic>> _monthQuery(String userId, DateTime month) {
     final start = DateTime(month.year, month.month, 1);
   final end = DateTime(month.year, month.month + 1, 1);

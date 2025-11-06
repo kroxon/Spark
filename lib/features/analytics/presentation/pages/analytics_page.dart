@@ -102,31 +102,41 @@ class _VacationCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _CircleBadge(icon: Icons.beach_access_rounded, color: theme.colorScheme.primary),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Urlop — stan bieżący', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
-                    children: [
-                      _ChipStat(label: 'Wypoczynkowy', value: balance.standardHours),
-                      _ChipStat(label: 'Dodatkowy', value: balance.additionalHours),
-                      _ChipStat(label: 'Razem', value: total, highlighted: true),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            Text('Urlop — stan bieżący', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 12),
+            _VacationLine(label: 'Wypoczynkowy', hours: balance.standardHours),
+            const SizedBox(height: 6),
+            _VacationLine(label: 'Dodatkowy', hours: balance.additionalHours),
+            const Divider(height: 24),
+            _VacationLine(label: 'Razem', hours: total, emphasized: true),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _VacationLine extends StatelessWidget {
+  const _VacationLine({required this.label, required this.hours, this.emphasized = false});
+  final String label;
+  final double hours;
+  final bool emphasized;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final styleBase = theme.textTheme.bodyMedium;
+    final style = emphasized
+        ? styleBase?.copyWith(fontWeight: FontWeight.w700)
+        : styleBase;
+    return Row(
+      children: [
+        Expanded(child: Text(label, style: style)),
+        Text('${hours.toStringAsFixed(0)} h', style: style?.copyWith(fontFeatures: const [FontFeature.tabularFigures()])),
+      ],
     );
   }
 }
@@ -137,22 +147,41 @@ class _IncidentStatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const callDaysLabel = 'Dni wyjazdowe';
-    return GridView(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.5,
-      ),
-      children: [
-        _KpiCard(title: 'Pożary', value: stats.fires, icon: Icons.local_fire_department_rounded, color: Colors.deepOrange),
-        _KpiCard(title: 'Miejscowe zagrożenia', value: stats.localHazards, icon: Icons.warning_amber_rounded, color: Colors.amber),
-        _KpiCard(title: 'Fałszywe alarmy', value: stats.falseAlarms, icon: Icons.report_gmailerrorred_rounded, color: Colors.blueGrey),
-        _KpiCard(title: callDaysLabel, value: stats.callDays, icon: Icons.today_rounded, color: Colors.teal),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 8.0;
+        const minTileWidth = 70.0; // ultra‑compact target width
+        final tiles = [
+          _MicroKpi(label: 'P', value: stats.fires, color: Colors.deepOrange, tooltip: 'Pożary'),
+          _MicroKpi(label: 'MZ', value: stats.localHazards, color: Colors.amber, tooltip: 'Miejscowe zagrożenia'),
+          _MicroKpi(label: 'AF', value: stats.falseAlarms, color: Colors.blueGrey, tooltip: 'Fałszywe alarmy'),
+          _MicroKpi(label: '0,5%', value: stats.callDays, color: Colors.teal, tooltip: 'Dni wyjazdowe'),
+        ];
+        final requiredWidth = tiles.length * minTileWidth + (tiles.length - 1) * spacing;
+
+        if (constraints.maxWidth >= requiredWidth) {
+          // Jedna linia, równy podział szerokości
+            return Row(
+              children: [
+                for (var i = 0; i < tiles.length; i++) ...[
+                  Expanded(child: tiles[i]),
+                  if (i != tiles.length - 1) const SizedBox(width: spacing),
+                ]
+              ],
+            );
+        }
+
+        // Za wąsko – poziomy scroll, dalej jedna linia
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(children: [
+            for (var i = 0; i < tiles.length; i++) ...[
+              SizedBox(width: minTileWidth, child: tiles[i]),
+              if (i != tiles.length - 1) const SizedBox(width: spacing),
+            ],
+          ]),
+        );
+      },
     );
   }
 }
@@ -279,32 +308,60 @@ class _ProgressBar extends StatelessWidget {
   }
 }
 
-class _KpiCard extends StatelessWidget {
-  const _KpiCard({required this.title, required this.value, required this.icon, required this.color});
-  final String title;
+class _MicroKpi extends StatelessWidget {
+  const _MicroKpi({required this.label, required this.value, required this.color, this.tooltip});
+  final String label;
   final int value;
-  final IconData icon;
   final Color color;
+  final String? tooltip;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(children: [
-          _CircleBadge(icon: icon, color: color),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            const SizedBox(height: 4),
-            Text('$value', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700, fontFeatures: const [FontFeature.tabularFigures()])),
-          ])),
-        ]),
+    final surface = theme.colorScheme.surfaceContainerHigh;
+    final content = Container(
+      height: 58,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [surface, surface.withOpacity(0.92)],
+        ),
+        border: Border.all(color: color.withOpacity(0.28), width: 1),
+      ),
+      padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: color.withOpacity(0.95),
+              letterSpacing: 0.3,
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Text(
+              '$value',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+                fontFeatures: const [FontFeature.tabularFigures()],
+                letterSpacing: -0.5,
+                height: 1.0,
+              ),
+            ),
+          ),
+        ],
       ),
     );
+    if (tooltip != null) {
+      return Tooltip(message: tooltip!, child: content);
+    }
+    return content;
   }
 }
 
@@ -330,28 +387,9 @@ class _CircleBadge extends StatelessWidget {
   }
 }
 
-class _ChipStat extends StatelessWidget {
-  const _ChipStat({required this.label, required this.value, this.highlighted = false});
-  final String label;
-  final double value;
-  final bool highlighted;
+// (Removed _TinyLabel in favour of integrated label styling inside _MicroKpi.)
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final bg = highlighted ? theme.colorScheme.primary.withOpacity(0.12) : theme.colorScheme.surfaceContainerHighest;
-    final fg = highlighted ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Text(label, style: theme.textTheme.labelLarge?.copyWith(color: fg)),
-        const SizedBox(width: 8),
-        Text('${value.toStringAsFixed(0)} h', style: theme.textTheme.labelLarge?.copyWith(color: fg, fontWeight: FontWeight.w700)),
-      ]),
-    );
-  }
-}
+// (Removed _ChipStat pill component — replaced by plain text lines for vacation card.)
 
 class _SkeletonCard extends StatelessWidget {
   const _SkeletonCard({this.height = 120});

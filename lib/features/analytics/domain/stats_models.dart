@@ -18,6 +18,7 @@ class IncidentYearStats {
     required this.localHazards,
     required this.falseAlarms,
     required this.callDays,
+    required this.monthlyStats,
   });
 
   final int year;
@@ -25,8 +26,26 @@ class IncidentYearStats {
   final int localHazards; // MZ
   final int falseAlarms; // AF
   final int callDays; // dni z co najmniej jednym P lub MZ
+  final List<MonthlyIncidentStats> monthlyStats; // 12 elements, index 0 = Jan
 
   int get totalIncidents => fires + localHazards + falseAlarms;
+}
+
+@immutable
+class MonthlyIncidentStats {
+  const MonthlyIncidentStats({
+    required this.month,
+    required this.fires,
+    required this.localHazards,
+    required this.falseAlarms,
+  });
+
+  final int month; // 1-12
+  final int fires;
+  final int localHazards;
+  final int falseAlarms;
+
+  int get total => fires + localHazards + falseAlarms;
 }
 
 @immutable

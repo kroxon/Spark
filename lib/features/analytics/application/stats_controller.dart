@@ -31,7 +31,22 @@ final incidentStatsProvider = FutureProvider.family<IncidentYearStats, int>((ref
   final auth = ref.watch(firebaseAuthProvider);
   final user = auth.currentUser;
   if (user == null) {
-    return IncidentYearStats(year: year, fires: 0, localHazards: 0, falseAlarms: 0, callDays: 0);
+    return IncidentYearStats(
+      year: year,
+      fires: 0,
+      localHazards: 0,
+      falseAlarms: 0,
+      callDays: 0,
+      monthlyStats: List.generate(
+        12,
+        (i) => MonthlyIncidentStats(
+          month: i + 1,
+          fires: 0,
+          localHazards: 0,
+          falseAlarms: 0,
+        ),
+      ),
+    );
   }
 
   final repo = ref.read(calendarEntryRepositoryProvider);
@@ -43,22 +58,32 @@ final incidentStatsProvider = FutureProvider.family<IncidentYearStats, int>((ref
   var mz = 0;
   var af = 0;
   final callDays = <DateTime>{};
+  
+  // [fires, mz, af] per month (0-11)
+  final monthlyCounts = List.generate(12, (_) => [0, 0, 0]);
 
   for (final entry in entries) {
     if (entry.incidents.isEmpty) continue;
     var hasCallPOrMz = false;
+    
     for (final inc in entry.incidents) {
+      final monthIndex = entry.date.month - 1;
+      if (monthIndex < 0 || monthIndex > 11) continue;
+
       switch (inc.category) {
         case IncidentCategory.fire:
           fires++;
+          monthlyCounts[monthIndex][0]++;
           hasCallPOrMz = true;
           break;
         case IncidentCategory.localHazard:
           mz++;
+          monthlyCounts[monthIndex][1]++;
           hasCallPOrMz = true;
           break;
         case IncidentCategory.falseAlarm:
           af++;
+          monthlyCounts[monthIndex][2]++;
           break;
       }
     }
@@ -67,12 +92,22 @@ final incidentStatsProvider = FutureProvider.family<IncidentYearStats, int>((ref
     }
   }
 
+  final monthlyStats = List.generate(12, (i) {
+    return MonthlyIncidentStats(
+      month: i + 1,
+      fires: monthlyCounts[i][0],
+      localHazards: monthlyCounts[i][1],
+      falseAlarms: monthlyCounts[i][2],
+    );
+  });
+
   return IncidentYearStats(
     year: year,
     fires: fires,
     localHazards: mz,
     falseAlarms: af,
     callDays: callDays.length,
+    monthlyStats: monthlyStats,
   );
 });
 

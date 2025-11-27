@@ -44,11 +44,11 @@ class AppSections {
     branchIndex: 1,
   );
 
-  static const notes = AppSection(
-    name: 'notes',
-    path: '/notes',
-    label: 'Notatki',
-    icon: Icons.note_alt_outlined,
+  static const extras = AppSection(
+    name: 'extras',
+    path: '/extras',
+    label: 'Dodatki',
+    icon: Icons.extension_outlined,
     type: AppSectionType.primary,
     branchIndex: 2,
   );
@@ -92,7 +92,7 @@ class AppSections {
   static const all = <AppSection>[
     schedule,
     statistics,
-    notes,
+    extras,
     settings,
     reports,
     subscription,
@@ -102,7 +102,7 @@ class AppSections {
   static const primary = <AppSection>[
     schedule,
     statistics,
-    notes,
+    extras,
   ];
 
   static const drawer = <AppSection>[

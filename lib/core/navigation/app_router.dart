@@ -13,7 +13,7 @@ import 'package:iskra/features/auth/presentation/pages/login_page.dart';
 import 'package:iskra/features/auth/presentation/pages/register_page.dart';
 import 'package:iskra/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:iskra/features/home/presentation/pages/home_page.dart';
-import 'package:iskra/features/notes/presentation/pages/notes_page.dart';
+import 'package:iskra/features/extras/presentation/pages/extras_page.dart';
 import 'package:iskra/features/profile/presentation/pages/profile_page.dart';
 import 'package:iskra/features/reports/presentation/pages/reports_page.dart';
 import 'package:iskra/features/subscription/presentation/pages/subscription_page.dart';
@@ -86,9 +86,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutePath.notes,
-                name: AppRouteName.notes,
-                builder: (context, state) => const NotesPage(),
+                path: AppRoutePath.extras,
+                name: AppRouteName.extras,
+                builder: (context, state) => const ExtrasPage(),
               ),
             ],
           ),

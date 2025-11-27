@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class NotesPage extends StatelessWidget {
-  const NotesPage({super.key});
+class ExtrasPage extends StatelessWidget {
+  const ExtrasPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +13,12 @@ class NotesPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Twoje notatki',
+            'Dodatki',
             style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
-            'Zapisuj indywidualne notatki, checklisty i szybkie informacje służbowe.',
+            'Dodatkowe funkcje i narzędzia wspierające Twoją pracę.',
             style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
@@ -29,12 +29,12 @@ class NotesPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Panel notatek w przygotowaniu',
+                    'Sekcja dodatków w przygotowaniu',
                     style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Docelowo dodasz tutaj kategorie, oznaczysz priorytety oraz zsynchronizujesz zapiski między urządzeniami.',
+                    'Tutaj znajdziesz dodatkowe moduły i rozszerzenia aplikacji, które pomogą Ci w codziennych zadaniach.',
                     style: theme.textTheme.bodyMedium,
                   ),
                 ],

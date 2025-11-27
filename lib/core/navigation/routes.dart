@@ -7,7 +7,7 @@ class AppRouteName {
 
   static const schedule = 'schedule';
   static const statistics = 'statistics';
-  static const notes = 'notes';
+  static const extras = 'extras';
   static const settings = 'settings';
   static const settingsAppearance = 'settings-appearance';
   static const settingsSchedule = 'settings-schedule';
@@ -28,7 +28,7 @@ class AppRoutePath {
 
   static const schedule = '/schedule';
   static const statistics = '/statistics';
-  static const notes = '/notes';
+  static const extras = '/extras';
   static const settings = '/settings';
   static const settingsAppearance = '/settings/appearance';
   static const settingsSchedule = '/settings/schedule';

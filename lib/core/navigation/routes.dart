@@ -15,6 +15,7 @@ class AppRouteName {
   static const reports = 'reports';
   static const subscription = 'subscription';
   static const help = 'help';
+  static const game2048 = 'game-2048';
 
   static const profile = 'profile';
 }
@@ -36,6 +37,7 @@ class AppRoutePath {
   static const reports = '/reports';
   static const subscription = '/subscription';
   static const help = '/help';
+  static const game2048 = '/extras/game-2048';
 
   static const profile = '/profile';
 }

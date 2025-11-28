@@ -48,6 +48,7 @@ dependencies:
   flutter_color_picker_wheel: ^0.0.1
   google_nav_bar: ^5.0.7
   fl_chart: ^1.1.1
+  uuid: ^4.5.2
 
 dev_dependencies:
   flutter_test:

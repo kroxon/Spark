@@ -14,6 +14,7 @@ import 'package:iskra/features/auth/presentation/pages/register_page.dart';
 import 'package:iskra/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:iskra/features/home/presentation/pages/home_page.dart';
 import 'package:iskra/features/extras/presentation/pages/extras_page.dart';
+import 'package:iskra/features/games/game_2048/presentation/pages/game_2048_page.dart';
 import 'package:iskra/features/profile/presentation/pages/profile_page.dart';
 import 'package:iskra/features/reports/presentation/pages/reports_page.dart';
 import 'package:iskra/features/subscription/presentation/pages/subscription_page.dart';
@@ -207,6 +208,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             return FadeTransition(
               opacity: fade,
               child: SlideTransition(position: slide, child: child),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.game2048,
+        name: AppRouteName.game2048,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const Game2048Page(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
             );
           },
         ),

@@ -19,122 +19,93 @@ class RankPainter extends CustomPainter {
     );
     canvas.drawRRect(rrect, paint);
 
-    // Insignia paint - GOLD
     final insigniaPaint = Paint()
       ..shader = const LinearGradient(
         colors: [
-          Color(0xFFFFD700), // Gold
-          Color(0xFFFFC107), // Amber
-          Color(0xFFFFE082), // Light Gold
+          Color(0xFFFFD700),
+          Color(0xFFFFC107),
+          Color(0xFFFFE082),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.round;
-
-    // Ensure stroke paint also uses gold shader or color
-    final strokePaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [
-          Color(0xFFFFD700),
-          Color(0xFFFFB300),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final borderPaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [
-          Color(0xFFFFD700),
-          Color(0xFFFFB300),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0;
+      ..style = PaintingStyle.fill;
 
     final center = Offset(size.width / 2, size.height / 2);
     final w = size.width;
     final h = size.height;
 
     switch (value) {
-      case 2: // Strażak - Puste
-        // No insignia
+      case 2:
         break;
-      case 4: // Starszy strażak - 1 belka
+      case 4:
         _drawStripes(canvas, center, w, h, 1, insigniaPaint);
         break;
-      case 8: // Sekcyjny - 2 belki
+      case 8:
         _drawStripes(canvas, center, w, h, 2, insigniaPaint);
         break;
-      case 16: // Starszy sekcyjny - 3 belki
+      case 16:
         _drawStripes(canvas, center, w, h, 3, insigniaPaint);
         break;
-      case 32: // Młodszy ogniomistrz - 4 belki
+      case 32:
         _drawStripes(canvas, center, w, h, 4, insigniaPaint);
         break;
-      case 64: // Ogniomistrz - 1 krokiew
+      case 64:
         _drawChevrons(canvas, center, w, h, 1, insigniaPaint);
         break;
-      case 128: // Starszy ogniomistrz - 2 krokwie
+      case 128:
         _drawChevrons(canvas, center, w, h, 2, insigniaPaint);
         break;
-      case 256: // Młodszy aspirant - V + 1 gwiazdka
+      case 256:
         _drawAspirantInsignia(canvas, center, w, h, 1, insigniaPaint);
         break;
-      case 512: // Aspirant - 1 gwiazdka
+      case 512:
         _drawStars(canvas, center, w, h, 1, insigniaPaint);
         break;
-      case 1024: // Starszy aspirant - 2 gwiazdki
+      case 1024:
         _drawStars(canvas, center, w, h, 2, insigniaPaint);
         break;
-      case 2048: // Aspirant sztabowy - 3 gwiazdki
+      case 2048:
         _drawStars(canvas, center, w, h, 3, insigniaPaint);
         break;
-      case 4096: // Młodszy kapitan - 1 gwiazdka + 1 belka
-        _drawCaptainInsignia(canvas, center, w, h, 1, insigniaPaint);
-        break;
-      case 8192: // Kapitan - 2 gwiazdki + 1 belka
+      case 4096:
         _drawCaptainInsignia(canvas, center, w, h, 2, insigniaPaint);
         break;
-      case 16384: // Starszy kapitan - 3 gwiazdki + 1 belka
+      case 8192:
         _drawCaptainInsignia(canvas, center, w, h, 3, insigniaPaint);
         break;
-      case 32768: // Młodszy brygadier - 2 belki poziome + 1 gwiazdka
+      case 16384:
+        _drawCaptainInsignia(canvas, center, w, h, 4, insigniaPaint);
+        break;
+      case 32768:
         _drawBrigadierInsignia(canvas, center, w, h, 1, insigniaPaint);
         break;
-      case 65536: // Brygadier - 2 belki poziome + 2 gwiazdki
+      case 65536:
         _drawBrigadierInsignia(canvas, center, w, h, 2, insigniaPaint);
         break;
-      case 131072: // Starszy brygadier - 2 belki poziome + 3 gwiazdki
+      case 131072:
         _drawBrigadierInsignia(canvas, center, w, h, 3, insigniaPaint);
         break;
-      case 262144: // Nadbrygadier - Wężyk + 1 gwiazdka
-        _drawGeneralZigzag(canvas, size, borderPaint);
-        _drawStars(canvas, center, w, h, 1, insigniaPaint);
+      case 262144:
+        _drawGeneralZigzag(canvas, size, insigniaPaint);
+        _drawStars(canvas, Offset(center.dx, center.dy - h * 0.15), w, h, 1, insigniaPaint);
         break;
-      case 524288: // Generał brygadier - Wężyk + 2 gwiazdki
-        _drawGeneralZigzag(canvas, size, borderPaint);
-        _drawStars(canvas, center, w, h, 2, insigniaPaint);
+      case 524288:
+        _drawGeneralZigzag(canvas, size, insigniaPaint);
+        _drawStars(canvas, Offset(center.dx, center.dy - h * 0.15), w, h, 2, insigniaPaint);
         break;
       default:
-        // Fallback for unknown or 0
         if (value > 0) {
-           // Just draw text if way too high
-           final textSpan = TextSpan(
-             text: '$value',
-             style: const TextStyle(color: Color(0xFFFFD700), fontSize: 12, fontWeight: FontWeight.bold),
-           );
-           final textPainter = TextPainter(
-             text: textSpan,
-             textDirection: TextDirection.ltr,
-           );
-           textPainter.layout();
-           textPainter.paint(canvas, Offset(center.dx - textPainter.width / 2, center.dy - textPainter.height / 2));
+          final textSpan = TextSpan(
+            text: '$value',
+            style: const TextStyle(color: Color(0xFFFFD700), fontSize: 12, fontWeight: FontWeight.bold),
+          );
+          final textPainter = TextPainter(
+            text: textSpan,
+            textDirection: TextDirection.ltr,
+          );
+          textPainter.layout();
+          textPainter.paint(canvas, Offset(center.dx - textPainter.width / 2, center.dy - textPainter.height / 2));
         }
     }
   }
@@ -144,9 +115,7 @@ class RankPainter extends CustomPainter {
     final stripeWidth = w * 0.6;
     final gap = h * 0.05;
     final totalHeight = count * stripeHeight + (count - 1) * gap;
-    
     double startY = center.dy - totalHeight / 2;
-
     for (int i = 0; i < count; i++) {
       canvas.drawRect(
         Rect.fromCenter(
@@ -161,165 +130,156 @@ class RankPainter extends CustomPainter {
   }
 
   void _drawChevrons(Canvas canvas, Offset center, double w, double h, int count, Paint paint) {
-    final chevronHeight = h * 0.12;
+    final chevronHeight = h * 0.15;
     final chevronWidth = w * 0.6;
-    final gap = h * 0.05;
+    final gap = h * 0.08;
     final totalHeight = count * chevronHeight + (count - 1) * gap;
-    
     double startY = center.dy - totalHeight / 2;
-
-    // Use the gold shader paint for strokes too, but set style to stroke
+    final strokeW = w * 0.1;
     final strokePaint = Paint()
       ..shader = paint.shader
-      ..color = paint.color // Fallback
+      ..color = paint.color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0
+      ..strokeWidth = strokeW
       ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
+      ..strokeJoin = StrokeJoin.miter;
     for (int i = 0; i < count; i++) {
       final path = Path();
-      // V shape (pointing down)
       path.moveTo(center.dx - chevronWidth / 2, startY);
       path.lineTo(center.dx, startY + chevronHeight);
       path.lineTo(center.dx + chevronWidth / 2, startY);
-      
       canvas.drawPath(path, strokePaint);
       startY += chevronHeight + gap;
     }
   }
 
   void _drawStars(Canvas canvas, Offset center, double w, double h, int count, Paint paint) {
-    final size = w * 0.2;
-    final gap = size * 0.2;
-    
-    // Stars are usually arranged in a triangle or line depending on count.
-    // 1: Center
-    // 2: Vertical line
-    // 3: Triangle (1 top, 2 bottom) or line?
-    // In PSP:
-    // 2 stars: vertical line
-    // 3 stars: triangle (1 top, 2 bottom)
-    
-    List<Offset> positions = [];
-    if (count == 1) {
-      positions.add(center);
-    } else if (count == 2) {
-      positions.add(Offset(center.dx, center.dy - size / 2 - gap / 2));
-      positions.add(Offset(center.dx, center.dy + size / 2 + gap / 2));
-    } else if (count == 3) {
-      positions.add(Offset(center.dx, center.dy - size / 2 - gap)); // Top
-      positions.add(Offset(center.dx - size / 2 - gap / 2, center.dy + size / 2)); // Bottom Left
-      positions.add(Offset(center.dx + size / 2 + gap / 2, center.dy + size / 2)); // Bottom Right
-    }
-
-    for (final pos in positions) {
-      _drawStarShape(canvas, pos, size, paint);
+    final size = w * 0.18;
+    final gap = size * 0.25;
+    final totalWidth = count * size + (count - 1) * gap;
+    double startX = center.dx - totalWidth / 2 + size / 2;
+    for (int i = 0; i < count; i++) {
+      _drawStarShape(canvas, Offset(startX, center.dy), size, paint);
+      startX += size + gap;
     }
   }
 
-  void _drawStarShape(Canvas canvas, Offset center, double size, Paint paint) {
-    // 4-pointed star (stylized)
+  void _drawStarShape(Canvas canvas, Offset center, double diameter, Paint paint) {
+    final radius = diameter / 2;
+    final innerRadius = radius * 0.4;
     final path = Path();
-    final half = size / 2;
-    final quarter = size / 4;
-    
-    path.moveTo(center.dx, center.dy - half); // Top
-    path.lineTo(center.dx + quarter, center.dy - quarter);
-    path.lineTo(center.dx + half, center.dy); // Right
-    path.lineTo(center.dx + quarter, center.dy + quarter);
-    path.lineTo(center.dx, center.dy + half); // Bottom
-    path.lineTo(center.dx - quarter, center.dy + quarter);
-    path.lineTo(center.dx - half, center.dy); // Left
-    path.lineTo(center.dx - quarter, center.dy - quarter);
+    double angle = -math.pi / 2;
+    final step = math.pi / 5;
+    path.moveTo(
+      center.dx + radius * math.cos(angle),
+      center.dy + radius * math.sin(angle)
+    );
+    for (int i = 1; i < 10; i++) {
+      angle += step;
+      double r = (i % 2 == 1) ? innerRadius : radius;
+      path.lineTo(
+        center.dx + r * math.cos(angle),
+        center.dy + r * math.sin(angle)
+      );
+    }
     path.close();
-    
     canvas.drawPath(path, paint);
   }
 
-  void _drawOfficerStripes(Canvas canvas, Size size, Paint paint) {
-    // Two vertical stripes along the edges? Or framing?
-    // "Obszycie naramiennika" usually means a border.
-    // But for "Młodszy brygadier" it's "2 belki".
-    // In icons, it's often a border.
-    
-    final border = size.width * 0.1;
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, border, size.height),
-      paint..style = PaintingStyle.fill,
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(size.width - border, 0, border, size.height),
-      paint..style = PaintingStyle.fill,
-    );
-  }
-
   void _drawGeneralZigzag(Canvas canvas, Size size, Paint paint) {
-    // Wężyk generalski - zigzag border
-    final path = Path();
     final w = size.width;
     final h = size.height;
-    final step = 5.0;
-    final amplitude = 3.0;
-    
-    // Draw along the border
-    // Top
-    /*
-    path.moveTo(0, 0);
-    for (double x = 0; x <= w; x += step) {
-      path.lineTo(x, amplitude * (x / step % 2 == 0 ? 1 : -1));
+    final left = w * 0.08;
+    final right = w * 0.92;
+    final baseY = h * 0.88;
+    final peakY = h * 0.68;
+    final bandWidth = h * 0.13;
+    final chevronCount = 3;
+    final chevronWidth = (right - left) / chevronCount;
+    for (int i = 0; i < chevronCount; i++) {
+      final x0 = left + i * chevronWidth;
+      final x1 = x0 + chevronWidth / 2;
+      final x2 = x0 + chevronWidth;
+      final band = Path();
+      band.moveTo(x0, baseY);
+      band.lineTo(x1, peakY);
+      band.lineTo(x2, baseY);
+      band.lineTo(x2, baseY + bandWidth);
+      band.lineTo(x1, peakY + bandWidth);
+      band.lineTo(x0, baseY + bandWidth);
+      band.close();
+      final fillPaint = Paint()
+        ..shader = paint.shader
+        ..style = PaintingStyle.fill;
+      canvas.drawPath(band, fillPaint);
+      final triCount = 4;
+      for (int t = 0; t < triCount; t++) {
+        final frac = t / triCount;
+        final tx0 = x0 + (x1 - x0) * frac + bandWidth * 0.15;
+        final tx1 = x0 + (x1 - x0) * (frac + 1.0 / triCount) - bandWidth * 0.15;
+        final ty0 = baseY + bandWidth * 0.18;
+        final ty1 = peakY + bandWidth * 0.18;
+        final tri = Path();
+        tri.moveTo(tx0, ty0);
+        tri.lineTo(tx1, ty0);
+        tri.lineTo((tx0 + tx1) / 2, ty1);
+        tri.close();
+        final triPaint = Paint()
+          ..color = Colors.black.withOpacity(0.18)
+          ..style = PaintingStyle.fill;
+        canvas.drawPath(tri, triPaint);
+      }
     }
-    */
-    // Simplified: Just a thick patterned border
-    final borderPaint = Paint()
-      ..color = paint.color
+    final interlacePaint = Paint()
+      ..shader = paint.shader
+      ..color = paint.color.withOpacity(0.7)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0;
-      
-    canvas.drawRect(Rect.fromLTWH(2, 2, w-4, h-4), borderPaint);
-    
-    // Add zigzag detail if possible, but a thick border is a good approximation for small icons
+      ..strokeWidth = h * 0.04
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    for (int i = 0; i < chevronCount; i++) {
+      final x0 = left + i * chevronWidth;
+      final x1 = x0 + chevronWidth / 2;
+      final x2 = x0 + chevronWidth;
+      final line = Path();
+      line.moveTo(x0, baseY + bandWidth * 0.5);
+      line.lineTo(x1, peakY + bandWidth * 0.5);
+      line.lineTo(x2, baseY + bandWidth * 0.5);
+      canvas.drawPath(line, interlacePaint);
+      if (i < chevronCount - 1) {
+        final nextX0 = left + (i + 1) * chevronWidth;
+        final cross = Path();
+        cross.moveTo(x1, peakY + bandWidth * 0.5);
+        cross.lineTo(nextX0, baseY + bandWidth * 0.5);
+        canvas.drawPath(cross, interlacePaint);
+      }
+    }
   }
 
   void _drawAspirantInsignia(Canvas canvas, Offset center, double w, double h, int starCount, Paint paint) {
-    // Draw V shape (Chevron pointing down)
-    final vHeight = h * 0.25;
-    final vWidth = w * 0.6;
-    
-    // V shape path
+    final vHeight = h * 0.3;
+    final vWidth = w * 0.7;
+    final strokeW = w * 0.08;
     final path = Path();
-    path.moveTo(center.dx - vWidth / 2, center.dy - vHeight / 2); // Top Left
-    path.lineTo(center.dx, center.dy + vHeight / 2); // Bottom Center
-    path.lineTo(center.dx + vWidth / 2, center.dy - vHeight / 2); // Top Right
-    
-    // Use stroke paint for V
+    path.moveTo(center.dx - vWidth / 2, center.dy - vHeight / 2);
+    path.lineTo(center.dx, center.dy + vHeight / 2);
+    path.lineTo(center.dx + vWidth / 2, center.dy - vHeight / 2);
     final strokePaint = Paint()
       ..shader = paint.shader
       ..color = paint.color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-      
+      ..strokeWidth = strokeW
+      ..strokeCap = StrokeCap.butt
+      ..strokeJoin = StrokeJoin.miter;
     canvas.drawPath(path, strokePaint);
-    
-    // Draw stars inside the V (above the bottom vertex)
-    // Adjust center for stars to be "inside" the V
-    final starCenterY = center.dy - vHeight / 4;
-    
-    // Reuse _drawStars but maybe scale down if needed?
-    // _drawStars uses w*0.2 for size. That fits.
+    final starCenterY = center.dy - vHeight * 0.35;
     _drawStars(canvas, Offset(center.dx, starCenterY), w, h, starCount, paint);
   }
 
   void _drawCaptainInsignia(Canvas canvas, Offset center, double w, double h, int starCount, Paint paint) {
-    // Draw 1 stripe (belka) below the stars
     final stripeHeight = h * 0.08;
     final stripeWidth = w * 0.6;
-    
-    // Position the bar below the center
-    final barCenterY = center.dy + h * 0.2;
-    
+    final barCenterY = center.dy + h * 0.25;
     canvas.drawRect(
       Rect.fromCenter(
         center: Offset(center.dx, barCenterY),
@@ -328,10 +288,7 @@ class RankPainter extends CustomPainter {
       ),
       paint,
     );
-    
-    // Draw stars above the bar
-    // Shift center up for stars to balance the composition
-    final starsCenterY = center.dy - h * 0.15;
+    final starsCenterY = center.dy - h * 0.1;
     _drawStars(canvas, Offset(center.dx, starsCenterY), w, h, starCount, paint);
   }
 
@@ -339,11 +296,7 @@ class RankPainter extends CustomPainter {
     final stripeHeight = h * 0.08;
     final stripeWidth = w * 0.6;
     final gap = h * 0.04;
-    
-    // Draw 2 horizontal stripes below the stars
-    // Position the top stripe of the pair
-    double currentY = center.dy + h * 0.15;
-    
+    double currentY = center.dy + h * 0.2;
     for (int i = 0; i < 2; i++) {
       canvas.drawRect(
         Rect.fromCenter(
@@ -355,9 +308,7 @@ class RankPainter extends CustomPainter {
       );
       currentY += stripeHeight + gap;
     }
-    
-    // Draw stars above the stripes
-    final starsCenterY = center.dy - h * 0.2;
+    final starsCenterY = center.dy - h * 0.15;
     _drawStars(canvas, Offset(center.dx, starsCenterY), w, h, starCount, paint);
   }
 

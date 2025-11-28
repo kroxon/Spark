@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 enum GameStatus { playing, won, lost }
@@ -8,8 +11,8 @@ enum SwipeDirection { up, down, left, right }
 class Tile {
   final String id;
   final int value;
-  final int x; // Column (0-3)
-  final int y; // Row (0-3)
+  final int x; // Column (0-gridSize-1)
+  final int y; // Row (0-gridSize-1)
   final bool isNew; // For pop animation
   final bool isMerged; // For pop animation
 
@@ -39,6 +42,28 @@ class Tile {
       isMerged: isMerged ?? this.isMerged,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'value': value,
+      'x': x,
+      'y': y,
+      'isNew': isNew,
+      'isMerged': isMerged,
+    };
+  }
+
+  factory Tile.fromJson(Map<String, dynamic> json) {
+    return Tile(
+      id: json['id'] as String,
+      value: json['value'] as int,
+      x: json['x'] as int,
+      y: json['y'] as int,
+      isNew: json['isNew'] as bool? ?? false,
+      isMerged: json['isMerged'] as bool? ?? false,
+    );
+  }
 }
 
 class Game2048State {
@@ -47,6 +72,7 @@ class Game2048State {
   final int bestScore;
   final GameStatus status;
   final List<Game2048State> history; // For undo functionality
+  final int gridSize;
 
   const Game2048State({
     required this.tiles,
@@ -54,15 +80,17 @@ class Game2048State {
     required this.bestScore,
     required this.status,
     this.history = const [],
+    this.gridSize = 4,
   });
 
-  factory Game2048State.initial() {
-    return const Game2048State(
+  factory Game2048State.initial({int gridSize = 4}) {
+    return Game2048State(
       tiles: [],
       score: 0,
       bestScore: 0,
       status: GameStatus.playing,
       history: [],
+      gridSize: gridSize,
     );
   }
 
@@ -72,6 +100,7 @@ class Game2048State {
     int? bestScore,
     GameStatus? status,
     List<Game2048State>? history,
+    int? gridSize,
   }) {
     return Game2048State(
       tiles: tiles ?? this.tiles,
@@ -79,6 +108,30 @@ class Game2048State {
       bestScore: bestScore ?? this.bestScore,
       status: status ?? this.status,
       history: history ?? this.history,
+      gridSize: gridSize ?? this.gridSize,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tiles': tiles.map((t) => t.toJson()).toList(),
+      'score': score,
+      'bestScore': bestScore,
+      'status': status.index,
+      'gridSize': gridSize,
+      // We don't save history to keep storage small, or we could if needed.
+      // For now let's skip history persistence to avoid complexity/size issues.
+    };
+  }
+
+  factory Game2048State.fromJson(Map<String, dynamic> json) {
+    return Game2048State(
+      tiles: (json['tiles'] as List).map((e) => Tile.fromJson(e)).toList(),
+      score: json['score'] as int,
+      bestScore: json['bestScore'] as int,
+      status: GameStatus.values[json['status'] as int],
+      gridSize: json['gridSize'] as int? ?? 4,
+      history: [], // History is lost on reload
     );
   }
 }
@@ -86,54 +139,97 @@ class Game2048State {
 class Game2048Notifier extends Notifier<Game2048State> {
   final _uuid = const Uuid();
   static const int maxUndoCount = 3;
+  static const String _storageKeyPrefix = 'game_2048_state_';
 
   @override
   Game2048State build() {
+    // Initial load will happen in init
     return Game2048State.initial();
   }
 
+  Future<void> loadGame(int gridSize) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = '$_storageKeyPrefix$gridSize';
+      final jsonString = prefs.getString(key);
+
+      if (jsonString != null) {
+        try {
+          final jsonMap = jsonDecode(jsonString);
+          state = Game2048State.fromJson(jsonMap);
+        } catch (e) {
+          debugPrint('Error parsing game state: $e');
+          // If error, start new game
+          state = Game2048State.initial(gridSize: gridSize);
+          startNewGame();
+        }
+      } else {
+        state = Game2048State.initial(gridSize: gridSize);
+        startNewGame();
+      }
+    } catch (e) {
+      debugPrint('Error loading game (likely plugin not ready): $e');
+      // Fallback to memory-only game
+      state = Game2048State.initial(gridSize: gridSize);
+      startNewGame();
+    }
+  }
+
+  Future<void> _saveGame() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = '$_storageKeyPrefix${state.gridSize}';
+      final jsonString = jsonEncode(state.toJson());
+      await prefs.setString(key, jsonString);
+    } catch (e) {
+      debugPrint('Error saving game: $e');
+    }
+  }
+
+  Future<void> switchGridSize(int newSize) async {
+    if (state.gridSize == newSize) return;
+    await _saveGame(); // Save current game before switching
+    await loadGame(newSize); // Load game for new size
+  }
+
   void startNewGame() {
-    state = Game2048State.initial().copyWith(bestScore: state.bestScore);
+    // Keep best score if we are resetting the same grid size
+    // But if we are just starting fresh, we might want to load best score from storage?
+    // Actually, bestScore is part of the state.
+    // If we want to keep best score across resets of the SAME grid size:
+    state = Game2048State.initial(gridSize: state.gridSize).copyWith(bestScore: state.bestScore);
     _addRandomTile();
     _addRandomTile();
+    _saveGame();
   }
 
   void undo() {
     if (state.history.isNotEmpty) {
       final previousState = state.history.last;
-      // Restore state but keep the current best score if it was higher? 
-      // Usually undo reverts score too.
-      // We also need to keep the history list (minus the one we just popped)
       final newHistory = List<Game2048State>.from(state.history)..removeLast();
       
       state = previousState.copyWith(
         history: newHistory,
-        bestScore: max(state.bestScore, previousState.bestScore), // Keep best score
+        bestScore: max(state.bestScore, previousState.bestScore),
       );
+      _saveGame();
     }
   }
 
   void move(SwipeDirection direction) {
     if (state.status != GameStatus.playing) return;
 
-    // Save current state to history before modifying
-    // We only store up to maxUndoCount states
     List<Game2048State> newHistory = List.from(state.history);
     if (newHistory.length >= maxUndoCount) {
-      newHistory.removeAt(0); // Remove oldest
+      newHistory.removeAt(0);
     }
-    // We need to store a snapshot of the current state (without the history itself to avoid recursion/bloat, 
-    // though here it's immutable so it's fine, but we should clear history in the saved state to save memory?)
-    // Actually, just saving 'state' is fine, but we should probably set its history to empty to avoid chain.
     newHistory.add(state.copyWith(history: []));
 
-    // 1. Reset merge/new flags for current tiles
     var tiles = state.tiles.map((t) => t.copyWith(isNew: false, isMerged: false)).toList();
     
     bool moved = false;
     int scoreToAdd = 0;
 
-    // 2. Sort tiles based on direction to process them in correct order
     switch (direction) {
       case SwipeDirection.up:
         tiles.sort((a, b) => a.y.compareTo(b.y));
@@ -149,9 +245,9 @@ class Game2048Notifier extends Notifier<Game2048State> {
         break;
     }
 
-    // 3. Process each tile
     List<Tile> newTiles = [];
     final Map<String, Tile> occupied = {};
+    final gridSize = state.gridSize;
 
     for (var tile in tiles) {
       int targetX = tile.x;
@@ -171,8 +267,7 @@ class Game2048Notifier extends Notifier<Game2048State> {
       
       Tile? mergeTarget;
 
-      // Find farthest position
-      while (nextX >= 0 && nextX < 4 && nextY >= 0 && nextY < 4) {
+      while (nextX >= 0 && nextX < gridSize && nextY >= 0 && nextY < gridSize) {
         final key = '$nextX,$nextY';
         final existing = occupied[key];
         
@@ -194,7 +289,6 @@ class Game2048Notifier extends Notifier<Game2048State> {
         final newValue = tile.value * 2;
         scoreToAdd += newValue;
         
-        // Update the target tile in the map and list
         final mergedTile = mergeTarget.copyWith(
           value: newValue,
           isMerged: true,
@@ -202,7 +296,6 @@ class Game2048Notifier extends Notifier<Game2048State> {
         
         occupied['${mergeTarget.x},${mergeTarget.y}'] = mergedTile;
         
-        // Replace in newTiles list
         final index = newTiles.indexWhere((t) => t.id == mergeTarget!.id);
         if (index != -1) {
           newTiles[index] = mergedTile;
@@ -225,22 +318,24 @@ class Game2048Notifier extends Notifier<Game2048State> {
         tiles: newTiles,
         score: state.score + scoreToAdd,
         bestScore: max(state.bestScore, state.score + scoreToAdd),
-        history: newHistory, // Update history
+        history: newHistory,
       );
       _addRandomTile();
       _checkGameStatus();
+      _saveGame();
     }
   }
 
   void _addRandomTile() {
     List<Point<int>> emptyCells = [];
-    final grid = List.generate(4, (_) => List.filled(4, false));
+    final gridSize = state.gridSize;
+    final grid = List.generate(gridSize, (_) => List.filled(gridSize, false));
     for (var t in state.tiles) {
       grid[t.y][t.x] = true;
     }
 
-    for (int r = 0; r < 4; r++) {
-      for (int c = 0; c < 4; c++) {
+    for (int r = 0; r < gridSize; r++) {
+      for (int c = 0; c < gridSize; c++) {
         if (!grid[r][c]) {
           emptyCells.add(Point(c, r));
         }
@@ -271,18 +366,19 @@ class Game2048Notifier extends Notifier<Game2048State> {
   }
 
   bool _canMove() {
-    if (state.tiles.length < 16) return true;
+    final gridSize = state.gridSize;
+    if (state.tiles.length < gridSize * gridSize) return true;
 
-    final grid = List.generate(4, (_) => List.filled(4, 0));
+    final grid = List.generate(gridSize, (_) => List.filled(gridSize, 0));
     for (var t in state.tiles) {
       grid[t.y][t.x] = t.value;
     }
 
-    for (int r = 0; r < 4; r++) {
-      for (int c = 0; c < 4; c++) {
+    for (int r = 0; r < gridSize; r++) {
+      for (int c = 0; c < gridSize; c++) {
         final val = grid[r][c];
-        if (c < 3 && val == grid[r][c + 1]) return true;
-        if (r < 3 && val == grid[r + 1][c]) return true;
+        if (c < gridSize - 1 && val == grid[r][c + 1]) return true;
+        if (r < gridSize - 1 && val == grid[r + 1][c]) return true;
       }
     }
     return false;

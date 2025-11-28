@@ -16,7 +16,7 @@ class _Game2048PageState extends ConsumerState<Game2048Page> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(game2048Provider.notifier).startNewGame();
+      ref.read(game2048Provider.notifier).loadGame(4);
     });
   }
 
@@ -40,6 +40,23 @@ class _Game2048PageState extends ConsumerState<Game2048Page> {
           onPressed: () => context.pop(),
         ),
         actions: [
+          // Grid Size Switcher
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            height: 32,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: Row(
+              children: [
+                _buildGridOption(context, 4, gameState.gridSize == 4),
+                Container(width: 1, color: Colors.white.withOpacity(0.1)),
+                _buildGridOption(context, 5, gameState.gridSize == 5),
+              ],
+            ),
+          ),
           IconButton(
             icon: Icon(
               Icons.undo,
@@ -71,56 +88,64 @@ class _Game2048PageState extends ConsumerState<Game2048Page> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
             child: Column(
               children: [
                 // Header
-                const Text(
-                  '2048',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 48,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black54,
-                        offset: Offset(0, 4),
-                        blurRadius: 8,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    const Text(
+                      '2048',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            offset: Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                const Text(
-                  'PSP EDITION',
-                  style: TextStyle(
-                    color: Color(0xFFFFD700), // Gold
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 4,
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'PSP EDITION',
+                      style: TextStyle(
+                        color: Color(0xFFFFD700), // Gold
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
                 ),
                 
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
 
                 // Score Board
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildScoreBox('WYNIK', gameState.score),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     _buildScoreBox('REKORD', gameState.bestScore),
                   ],
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
                 
                 // Current Rank Display
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.3)),
                   ),
                   child: Column(
@@ -129,17 +154,17 @@ class _Game2048PageState extends ConsumerState<Game2048Page> {
                         'AKTUALNY STOPIEŃ',
                         style: TextStyle(
                           color: const Color(0xFFFFD700).withOpacity(0.8),
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
+                          letterSpacing: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         currentRankName.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1,
                         ),
@@ -243,16 +268,16 @@ class _Game2048PageState extends ConsumerState<Game2048Page> {
 
   Widget _buildScoreBox(String label, int score) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -262,21 +287,47 @@ class _Game2048PageState extends ConsumerState<Game2048Page> {
             label,
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             '$score',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildGridOption(BuildContext context, int size, bool isSelected) {
+    return InkWell(
+      onTap: () {
+        if (!isSelected) {
+          ref.read(game2048Provider.notifier).switchGridSize(size);
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFFD700) : Colors.transparent,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Text(
+          '${size}x$size',
+          style: TextStyle(
+            color: isSelected ? Colors.black : Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
       ),
     );
   }

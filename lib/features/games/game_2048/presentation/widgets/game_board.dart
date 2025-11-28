@@ -9,11 +9,13 @@ class GameBoard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameState = ref.watch(game2048Provider);
+    final gridSizeInt = gameState.gridSize;
     
     return LayoutBuilder(
       builder: (context, constraints) {
-        final gridSize = constraints.maxWidth;
-        final tileSize = (gridSize - (5 * 8)) / 4; // 5 gaps of 8px
+        final boardSize = constraints.maxWidth;
+        final gap = 8.0;
+        final tileSize = (boardSize - ((gridSizeInt + 1) * gap)) / gridSizeInt;
 
         return GestureDetector(
           onVerticalDragEnd: (details) {
@@ -31,9 +33,9 @@ class GameBoard extends ConsumerWidget {
             }
           },
           child: Container(
-            width: gridSize,
-            height: gridSize,
-            padding: const EdgeInsets.all(8),
+            width: boardSize,
+            height: boardSize,
+            padding: EdgeInsets.all(gap),
             decoration: BoxDecoration(
               color: const Color(0xFF1A237E).withOpacity(0.3), // Darker background for better contrast
               borderRadius: BorderRadius.circular(12),
@@ -42,10 +44,10 @@ class GameBoard extends ConsumerWidget {
             child: Stack(
               children: [
                 // Background grid cells
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < gridSizeInt * gridSizeInt; i++)
                   Positioned(
-                    left: (i % 4) * (tileSize + 8.0),
-                    top: (i ~/ 4) * (tileSize + 8.0),
+                    left: (i % gridSizeInt) * (tileSize + gap),
+                    top: (i ~/ gridSizeInt) * (tileSize + gap),
                     child: Container(
                       width: tileSize,
                       height: tileSize,
@@ -63,8 +65,8 @@ class GameBoard extends ConsumerWidget {
                     key: ValueKey(tile.id),
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOutCubic,
-                    left: tile.x * (tileSize + 8.0),
-                    top: tile.y * (tileSize + 8.0),
+                    left: tile.x * (tileSize + gap),
+                    top: tile.y * (tileSize + gap),
                     child: GameTile(
                       value: tile.value,
                       size: tileSize,

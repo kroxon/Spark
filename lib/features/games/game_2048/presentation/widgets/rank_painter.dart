@@ -95,26 +95,23 @@ class RankPainter extends CustomPainter {
       case 2048: // Aspirant sztabowy - 3 gwiazdki
         _drawStars(canvas, center, w, h, 3, insigniaPaint);
         break;
-      case 4096: // Młodszy kapitan - 1 gwiazdka
-        _drawStars(canvas, center, w, h, 1, insigniaPaint);
+      case 4096: // Młodszy kapitan - 1 gwiazdka + 1 belka
+        _drawCaptainInsignia(canvas, center, w, h, 1, insigniaPaint);
         break;
-      case 8192: // Kapitan - 2 gwiazdki
-        _drawStars(canvas, center, w, h, 2, insigniaPaint);
+      case 8192: // Kapitan - 2 gwiazdki + 1 belka
+        _drawCaptainInsignia(canvas, center, w, h, 2, insigniaPaint);
         break;
-      case 16384: // Starszy kapitan - 3 gwiazdki
-        _drawStars(canvas, center, w, h, 3, insigniaPaint);
+      case 16384: // Starszy kapitan - 3 gwiazdki + 1 belka
+        _drawCaptainInsignia(canvas, center, w, h, 3, insigniaPaint);
         break;
-      case 32768: // Młodszy brygadier - 2 belki pionowe + 1 gwiazdka
-        _drawOfficerStripes(canvas, size, borderPaint);
-        _drawStars(canvas, center, w, h, 1, insigniaPaint);
+      case 32768: // Młodszy brygadier - 2 belki poziome + 1 gwiazdka
+        _drawBrigadierInsignia(canvas, center, w, h, 1, insigniaPaint);
         break;
-      case 65536: // Brygadier - 2 belki pionowe + 2 gwiazdki
-        _drawOfficerStripes(canvas, size, borderPaint);
-        _drawStars(canvas, center, w, h, 2, insigniaPaint);
+      case 65536: // Brygadier - 2 belki poziome + 2 gwiazdki
+        _drawBrigadierInsignia(canvas, center, w, h, 2, insigniaPaint);
         break;
-      case 131072: // Starszy brygadier - 2 belki pionowe + 3 gwiazdki
-        _drawOfficerStripes(canvas, size, borderPaint);
-        _drawStars(canvas, center, w, h, 3, insigniaPaint);
+      case 131072: // Starszy brygadier - 2 belki poziome + 3 gwiazdki
+        _drawBrigadierInsignia(canvas, center, w, h, 3, insigniaPaint);
         break;
       case 262144: // Nadbrygadier - Wężyk + 1 gwiazdka
         _drawGeneralZigzag(canvas, size, borderPaint);
@@ -182,33 +179,13 @@ class RankPainter extends CustomPainter {
 
     for (int i = 0; i < count; i++) {
       final path = Path();
-      path.moveTo(center.dx - chevronWidth / 2, startY + chevronHeight);
-      path.lineTo(center.dx, startY);
-      path.lineTo(center.dx + chevronWidth / 2, startY + chevronHeight);
+      // V shape (pointing down)
+      path.moveTo(center.dx - chevronWidth / 2, startY);
+      path.lineTo(center.dx, startY + chevronHeight);
+      path.lineTo(center.dx + chevronWidth / 2, startY);
       
       canvas.drawPath(path, strokePaint);
       startY += chevronHeight + gap;
-    }
-  }
-
-  void _drawDiamonds(Canvas canvas, Offset center, double w, double h, int count, Paint paint) {
-    final size = w * 0.15;
-    final gap = size * 0.5;
-    final totalHeight = count * size + (count - 1) * gap;
-    
-    double startY = center.dy - totalHeight / 2;
-
-    for (int i = 0; i < count; i++) {
-      final path = Path();
-      final cy = startY + size / 2;
-      path.moveTo(center.dx, cy - size / 2); // Top
-      path.lineTo(center.dx + size / 2, cy); // Right
-      path.lineTo(center.dx, cy + size / 2); // Bottom
-      path.lineTo(center.dx - size / 2, cy); // Left
-      path.close();
-      
-      canvas.drawPath(path, paint);
-      startY += size + gap;
     }
   }
 
@@ -333,6 +310,55 @@ class RankPainter extends CustomPainter {
     // Reuse _drawStars but maybe scale down if needed?
     // _drawStars uses w*0.2 for size. That fits.
     _drawStars(canvas, Offset(center.dx, starCenterY), w, h, starCount, paint);
+  }
+
+  void _drawCaptainInsignia(Canvas canvas, Offset center, double w, double h, int starCount, Paint paint) {
+    // Draw 1 stripe (belka) below the stars
+    final stripeHeight = h * 0.08;
+    final stripeWidth = w * 0.6;
+    
+    // Position the bar below the center
+    final barCenterY = center.dy + h * 0.2;
+    
+    canvas.drawRect(
+      Rect.fromCenter(
+        center: Offset(center.dx, barCenterY),
+        width: stripeWidth,
+        height: stripeHeight,
+      ),
+      paint,
+    );
+    
+    // Draw stars above the bar
+    // Shift center up for stars to balance the composition
+    final starsCenterY = center.dy - h * 0.15;
+    _drawStars(canvas, Offset(center.dx, starsCenterY), w, h, starCount, paint);
+  }
+
+  void _drawBrigadierInsignia(Canvas canvas, Offset center, double w, double h, int starCount, Paint paint) {
+    final stripeHeight = h * 0.08;
+    final stripeWidth = w * 0.6;
+    final gap = h * 0.04;
+    
+    // Draw 2 horizontal stripes below the stars
+    // Position the top stripe of the pair
+    double currentY = center.dy + h * 0.15;
+    
+    for (int i = 0; i < 2; i++) {
+      canvas.drawRect(
+        Rect.fromCenter(
+          center: Offset(center.dx, currentY),
+          width: stripeWidth,
+          height: stripeHeight,
+        ),
+        paint,
+      );
+      currentY += stripeHeight + gap;
+    }
+    
+    // Draw stars above the stripes
+    final starsCenterY = center.dy - h * 0.2;
+    _drawStars(canvas, Offset(center.dx, starsCenterY), w, h, starCount, paint);
   }
 
   @override

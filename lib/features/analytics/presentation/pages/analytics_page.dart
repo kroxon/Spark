@@ -11,7 +11,6 @@ import 'package:iskra/core/navigation/routes.dart';
 import 'package:iskra/features/analytics/application/stats_controller.dart';
 import 'package:iskra/features/analytics/domain/stats_models.dart';
 import 'package:iskra/features/auth/data/user_profile_repository.dart';
-import 'package:iskra/features/auth/domain/models/user_profile.dart';
 
 class AnalyticsPage extends ConsumerStatefulWidget {
   const AnalyticsPage({super.key});
@@ -61,7 +60,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
 
     return profileAsync.when(
       data: (profile) {
-        if (profile == null || !profile.isOnboardingComplete) {
+        if (!profile.isOnboardingComplete) {
           return const _OnboardingPrompt();
         }
         return _buildAnalyticsView(context, ref, theme);

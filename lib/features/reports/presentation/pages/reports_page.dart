@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iskra/core/navigation/routes.dart';
 import 'package:iskra/features/auth/data/user_profile_repository.dart';
-import 'package:iskra/features/auth/domain/models/user_profile.dart';
 
 class ReportsPage extends ConsumerWidget {
   const ReportsPage({super.key});
@@ -22,7 +21,7 @@ class ReportsPage extends ConsumerWidget {
 
     return profileAsync.when(
       data: (profile) {
-        if (profile == null || !profile.isOnboardingComplete) {
+        if (!profile.isOnboardingComplete) {
           return const _OnboardingPrompt();
         }
         return _buildReportsView(context);

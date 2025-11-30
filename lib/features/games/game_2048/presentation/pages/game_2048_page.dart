@@ -389,11 +389,6 @@ class _Game2048PageState extends ConsumerState<Game2048Page> with SingleTickerPr
     );
   }
 
-  Widget _buildScoreBox(String label, int score) {
-    // Deprecated, kept for reference or remove if unused
-    return Container(); 
-  }
-
   Widget _buildGridOption(BuildContext context, int size, bool isSelected) {
     return InkWell(
       onTap: () {

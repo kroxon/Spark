@@ -26,7 +26,6 @@ import 'package:iskra/features/system_settings/presentation/pages/balances_setti
 import 'package:iskra/features/onboarding/presentation/pages/onboarding_page.dart';
 
 import 'package:iskra/features/auth/data/user_profile_repository.dart';
-import 'package:iskra/features/auth/domain/models/user_profile.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 

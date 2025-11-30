@@ -50,7 +50,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return profileAsync.when(
       data: (profile) {
-        if (profile == null || !profile.isOnboardingComplete) {
+        if (!profile.isOnboardingComplete) {
           return const _OnboardingPrompt();
         }
         return _buildCalendarView(

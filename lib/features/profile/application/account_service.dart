@@ -39,9 +39,9 @@ class AccountService {
     // Keep user profile document, account and session; caller may refresh UI/state.
   }
 
-  /// Deletes Firestore data and Firebase Auth account.
-  /// [emailPassword] is required for password-based accounts when reauth is needed.
-  Future<void> deleteAccount({String? emailPassword}) async {
+  /// Deletes Firestore data and attempts to delete Firebase Auth account.
+  /// If account deletion requires recent login, data is still deleted and user is signed out.
+  Future<void> deleteAccount() async {
     final user = _currentUser;
     if (user == null) {
       throw StateError('Brak zalogowanego użytkownika');
@@ -50,87 +50,28 @@ class AccountService {
     // Capture provider ids before deletion to properly sign out providers.
     final providerIds = user.providerData.map((e) => e.providerId).toList(growable: false);
 
-    await _reauthenticateIfRequired(user, emailPassword: emailPassword);
-
-    // 1) Delete user subcollections (calendarEntries)
+    // Always delete user data first
     await _deleteUserSubcollections(user.uid);
-
-    // 2) Delete user profile document
     await _firestore.collection('users').doc(user.uid).delete().catchError((_) async {
       // If doc doesn't exist it's fine
     });
 
-    // 3) Delete auth user
-    await user.delete();
-
-    // 4) Proactively sign out from providers and Firebase to clear local session
-    if (providerIds.contains('google.com') && !kIsWeb) {
-      try {
-        final google = GoogleSignIn();
-        await google.signOut();
-        await google.disconnect();
-      } catch (_) {}
-    }
-    await _auth.signOut();
-  }
-
-  Future<void> _reauthenticateIfRequired(
-    User user, {
-    String? emailPassword,
-  }) async {
+    // Try to delete auth user; if it requires recent login, still sign out.
     try {
-      // Attempt a cheap reload; if recent sign-in is valid, this should pass further deletes.
-      await user.reload();
-      return;
-    } catch (_) {
-      // Proceed to explicit reauth below.
-    }
-
-    final providerIds = user.providerData.map((e) => e.providerId).toSet();
-
-    if (providerIds.contains('password')) {
-      final email = user.email;
-      if (email == null || (emailPassword == null || emailPassword.isEmpty)) {
-        // Surface a clear error to caller to ask for a password.
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        // Data deleted, but account remains; inform user.
         throw FirebaseAuthException(
-          code: 'requires-recent-login',
-          message: 'Wymagane ponowne logowanie hasłem.',
+          code: 'partial-delete',
+          message: 'Dane zostały usunięte, ale konto wymaga świeżego logowania. Zostałeś wylogowany.',
         );
+      } else {
+        rethrow;
       }
-      final cred = EmailAuthProvider.credential(email: email, password: emailPassword);
-      await user.reauthenticateWithCredential(cred);
-      return;
     }
 
-    if (providerIds.contains('google.com')) {
-      if (kIsWeb) {
-        final provider = GoogleAuthProvider();
-        await user.reauthenticateWithProvider(provider);
-        return;
-      }
-      // Mobile/desktop: use google_sign_in to obtain tokens for credential.
-      final google = GoogleSignIn(scopes: const ['email'], forceCodeForRefreshToken: true);
-      // Ensure fresh session
-      try {
-        await google.signOut();
-      } catch (_) {}
-      final account = await google.signIn();
-      if (account == null) {
-        throw FirebaseAuthException(
-          code: 'user-cancelled',
-          message: 'Anulowano ponowne logowanie Google.',
-        );
-      }
-      final auth = await account.authentication;
-      final credential = GoogleAuthProvider.credential(
-        idToken: auth.idToken,
-        accessToken: auth.accessToken,
-      );
-      await user.reauthenticateWithCredential(credential);
-      return;
-    }
-
-    // Fallback: try to delete and let backend enforce recent login if required.
+    // If account deletion succeeded, do not sign out here; caller will handle it after showing dialog.
   }
 
   Future<void> _deleteUserSubcollections(String uid) async {

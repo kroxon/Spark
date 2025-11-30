@@ -30,15 +30,12 @@ class ProfilePage extends ConsumerWidget {
     final user = auth.currentUser;
     if (user == null) return;
 
-    final isEmailProvider = user.providerData.any((p) => p.providerId == 'password');
-    String? password;
     final confirmOk = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
         final formKey = GlobalKey<FormState>();
         final confirmController = TextEditingController();
-        final passwordController = TextEditingController();
         bool isDeleting = false;
         return StatefulBuilder(
           builder: (context, setState) {
@@ -47,19 +44,52 @@ class ProfilePage extends ConsumerWidget {
               if (!formKey.currentState!.validate()) return;
               setState(() => isDeleting = true);
               try {
-                password = isEmailProvider ? passwordController.text : null;
-                await AccountService(auth, firestore).deleteAccount(emailPassword: password);
-                // Safety: ensure local session is cleared even if backend delete succeeded.
-                await AccountService(auth, firestore).signOut();
+                await AccountService(auth, firestore).deleteAccount();
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Konto zostało usunięte. Zostałeś wylogowany.')),
+                await showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Konto usunięte'),
+                    content: const Text('Twoje konto i wszystkie dane zostały całkowicie usunięte z Iskry. Zostałeś wylogowany.'),
+                    actions: [
+                      FilledButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
                 );
+                if (!context.mounted) return;
+                // Now sign out after dialog
+                await AccountService(auth, firestore).signOut();
                 Navigator.of(context).pop(true);
               } on FirebaseAuthException catch (e) {
-                final msg = _mapDeleteError(e);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+                if (e.code == 'partial-delete') {
+                  // Data deleted, account may remain; sign out anyway.
+                  await AccountService(auth, firestore).signOut();
+                  if (!context.mounted) return;
+                  await showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Dane usunięte'),
+                      content: Text(e.message ?? 'Twoje dane zostały usunięte, ale konto wymaga świeżego logowania. Zostałeś wylogowany.'),
+                      actions: [
+                        FilledButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop(true);
+                } else {
+                  final msg = _mapDeleteError(e);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+                  }
                 }
               } catch (e) {
                 if (context.mounted) {
@@ -84,23 +114,6 @@ class ProfilePage extends ConsumerWidget {
                       'Ta operacja jest nieodwracalna. Usuniemy wszystkie Twoje dane i konto w Iskrze.',
                     ),
                     const SizedBox(height: 12),
-                    if (isEmailProvider) ...[
-                      TextFormField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Potwierdź hasło',
-                          prefixIcon: Icon(Icons.lock_outline),
-                        ),
-                        validator: (v) {
-                          if (v == null || v.isEmpty) {
-                            return 'Podaj hasło aby potwierdzić.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                    ],
                     TextFormField(
                       controller: confirmController,
                       decoration: const InputDecoration(

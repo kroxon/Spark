@@ -48,9 +48,7 @@ class UserProfileRepository {
       uid: uid,
       email: email ?? '',
       subscriptionPlan: 'free',
-      shiftHistory: [
-        ShiftAssignment(shiftId: 2, startDate: DateTime(2024, 1, 1)),
-      ],
+      shiftHistory: [],
       standardVacationHours: 208,
       additionalVacationHours: 104,
       themeMode: ThemeMode.light,
@@ -162,6 +160,26 @@ class UserProfileRepository {
       'shiftHistory': payload,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+  }
+
+  Future<void> addShiftAssignment({
+    required String uid,
+    required int shiftId,
+    required DateTime startDate,
+  }) async {
+    final docRef = _doc(uid);
+    final snapshot = await docRef.get();
+    final currentHistory = snapshot.exists
+        ? (snapshot.data()?['shiftHistory'] as List<dynamic>? ?? [])
+            .map((e) => ShiftAssignment(
+                  shiftId: e['shiftId'] as int,
+                  startDate: (e['startDate'] as Timestamp).toDate(),
+                ))
+            .toList()
+        : <ShiftAssignment>[];
+
+    currentHistory.add(ShiftAssignment(shiftId: shiftId, startDate: startDate));
+    await updateShiftHistory(uid: uid, assignments: currentHistory);
   }
 }
 

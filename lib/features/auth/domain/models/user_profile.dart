@@ -30,6 +30,8 @@ class UserProfile {
   })  : shiftColorPalette = shiftColorPalette ?? ShiftColorPalette.defaults,
         onDutyIndicatorColor =
             onDutyIndicatorColor ?? Colors.yellow.shade400;
+
+  bool get isOnboardingComplete => shiftHistory.isNotEmpty;
 }
 
 class ShiftAssignment {

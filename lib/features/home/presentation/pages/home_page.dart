@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:iskra/core/navigation/routes.dart';
 import 'package:iskra/features/auth/data/user_profile_repository.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/data/calendar_entry_repository.dart';
@@ -47,13 +49,18 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
 
     return profileAsync.when(
-      data: (profile) => _buildCalendarView(
-        context,
-        user,
-        profile,
-        visibleMonth,
-        isEditingSchedule,
-      ),
+      data: (profile) {
+        if (profile == null || !profile.isOnboardingComplete) {
+          return const _OnboardingPrompt();
+        }
+        return _buildCalendarView(
+          context,
+          user,
+          profile,
+          visibleMonth,
+          isEditingSchedule,
+        );
+      },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => _ErrorView(
         message: 'Nie udało się załadować profilu użytkownika.',
@@ -264,6 +271,53 @@ class _CalendarContent extends StatelessWidget {
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         );
       },
+    );
+  }
+}
+
+class _OnboardingPrompt extends StatelessWidget {
+  const _OnboardingPrompt();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.calendar_today,
+                size: 80,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Witaj w aplikacji Iskra!',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Aby korzystać z kalendarza i innych funkcji, musisz najpierw skonfigurować swoje podstawowe dane.',
+                style: theme.textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              FilledButton.icon(
+                onPressed: () => context.go(AppRoutePath.onboarding),
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Rozpocznij konfigurację'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

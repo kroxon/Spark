@@ -1,14 +1,17 @@
-import 'dart:ui';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:iskra/core/navigation/app_shell.dart';
 import 'package:iskra/core/navigation/nav_destinations.dart';
+import 'package:iskra/core/navigation/routes.dart';
 import 'package:iskra/features/analytics/application/stats_controller.dart';
 import 'package:iskra/features/analytics/domain/stats_models.dart';
+import 'package:iskra/features/auth/data/user_profile_repository.dart';
+import 'package:iskra/features/auth/domain/models/user_profile.dart';
 
 class AnalyticsPage extends ConsumerStatefulWidget {
   const AnalyticsPage({super.key});
@@ -47,6 +50,30 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
     final ref = this.ref;
     final theme = Theme.of(context);
 
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+
+    final profileAsync = ref.watch(
+      userProfileProvider(UserProfileRequest(uid: user.uid, email: user.email)),
+    );
+
+    return profileAsync.when(
+      data: (profile) {
+        if (profile == null || !profile.isOnboardingComplete) {
+          return const _OnboardingPrompt();
+        }
+        return _buildAnalyticsView(context, ref, theme);
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text('Błąd ładowania profilu: $error'),
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsView(BuildContext context, WidgetRef ref, ThemeData theme) {
     // Listen to tab changes to trigger animation replay
     ref.listen(currentNavIndexProvider, (previous, next) {
       if (next == AppSections.statistics.branchIndex) {
@@ -1018,6 +1045,53 @@ class _ErrorCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(child: Text(message, style: TextStyle(color: Theme.of(context).colorScheme.error))),
         ],
+      ),
+    );
+  }
+}
+
+class _OnboardingPrompt extends StatelessWidget {
+  const _OnboardingPrompt();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.analytics,
+                size: 80,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Statystyki niedostępne',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Aby zobaczyć statystyki, musisz najpierw skonfigurować swoje podstawowe dane.',
+                style: theme.textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              FilledButton.icon(
+                onPressed: () => context.go(AppRoutePath.onboarding),
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Rozpocznij konfigurację'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

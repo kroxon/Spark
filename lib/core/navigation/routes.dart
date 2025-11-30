@@ -5,6 +5,8 @@ class AppRouteName {
   static const authRegister = 'auth-register';
   static const authVerify = 'auth-verify';
 
+  static const onboarding = 'onboarding';
+
   static const schedule = 'schedule';
   static const statistics = 'statistics';
   static const extras = 'extras';
@@ -26,6 +28,8 @@ class AppRoutePath {
   static const authLogin = '/auth/login';
   static const authRegister = '/auth/register';
   static const authVerify = '/auth/verify-email';
+
+  static const onboarding = '/onboarding';
 
   static const schedule = '/schedule';
   static const statistics = '/statistics';

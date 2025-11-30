@@ -23,6 +23,10 @@ import 'package:iskra/features/system_settings/presentation/pages/system_setting
 import 'package:iskra/features/system_settings/presentation/pages/appearance_settings_page.dart';
 import 'package:iskra/features/system_settings/presentation/pages/schedule_settings_page.dart';
 import 'package:iskra/features/system_settings/presentation/pages/balances_settings_page.dart';
+import 'package:iskra/features/onboarding/presentation/pages/onboarding_page.dart';
+
+import 'package:iskra/features/auth/data/user_profile_repository.dart';
+import 'package:iskra/features/auth/domain/models/user_profile.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -62,6 +66,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutePath.authVerify,
         name: AppRouteName.authVerify,
         builder: (context, state) => const VerifyEmailPage(),
+      ),
+      GoRoute(
+        path: AppRoutePath.onboarding,
+        name: AppRouteName.onboarding,
+        builder: (context, state) => const OnboardingPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
@@ -237,6 +246,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final location = state.matchedLocation;
       final isAuthRoute = location.startsWith('/auth');
+      final isOnboardingRoute = location == AppRoutePath.onboarding;
       final user = authState.value;
 
       if (authState.isLoading) {
@@ -259,7 +269,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return state.matchedLocation == AppRoutePath.authVerify ? null : AppRoutePath.authVerify;
       }
 
-      if (isAuthRoute) {
+      // Watch user profile
+      final userProfileAsync = ref.watch(userProfileProvider(UserProfileRequest(uid: user.uid, email: user.email)));
+      final userProfile = userProfileAsync.value;
+
+      if (userProfileAsync.isLoading) {
+        return null;
+      }
+
+      // Check if onboarding is needed
+      if (userProfile != null && !userProfile.isOnboardingComplete && !isOnboardingRoute) {
+        return AppRoutePath.onboarding;
+      }
+
+      if (isOnboardingRoute && userProfile != null && userProfile.isOnboardingComplete) {
         return AppSections.schedule.path;
       }
 

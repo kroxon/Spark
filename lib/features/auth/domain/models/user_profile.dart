@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iskra/core/theme/app_theme_type.dart';
 import 'package:iskra/features/calendar/models/shift_color_palette.dart';
 
 class UserProfile {
@@ -12,6 +13,7 @@ class UserProfile {
   final double additionalVacationHours; // Urlop dodatkowy
   final ShiftColorPalette shiftColorPalette;
   final ThemeMode themeMode;
+  final AppThemeType appTheme;
   final double overtimeIndicatorThresholdHours;
   final Color onDutyIndicatorColor;
 
@@ -26,6 +28,7 @@ class UserProfile {
     this.overtimeIndicatorThresholdHours =
         UserProfile.defaultOvertimeIndicatorThresholdHours,
     this.themeMode = ThemeMode.light,
+    this.appTheme = AppThemeType.defaultRed,
     Color? onDutyIndicatorColor,
   })  : shiftColorPalette = shiftColorPalette ?? ShiftColorPalette.defaults,
         onDutyIndicatorColor =

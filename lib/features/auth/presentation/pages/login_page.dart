@@ -300,10 +300,20 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final primaryHsl = HSLColor.fromColor(theme.colorScheme.primary);
+    final gradient = LinearGradient(
+      colors: [
+        primaryHsl.withLightness(0.15).toColor(),
+        primaryHsl.withLightness(0.25).toColor(),
+        primaryHsl.withLightness(0.35).toColor(),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.mainGradient),
+        decoration: BoxDecoration(gradient: gradient),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -312,17 +322,17 @@ class _LoginPageState extends State<LoginPage> {
                 constraints: const BoxConstraints(maxWidth: 420),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
-                  decoration: AppDecorations.elevatedSurface(),
+                  decoration: AppDecorations.elevatedSurface(color: theme.colorScheme.surface),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
                         height: 64,
                         width: 64,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
-                            colors: [AppColors.primary, AppColors.secondary],
+                            colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
@@ -333,7 +343,7 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         'Witaj w Iskrze',
                         style: theme.textTheme.headlineMedium?.copyWith(
-                          color: AppColors.primary,
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.2,
                         ),
@@ -342,7 +352,7 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         'Zaloguj się, aby kontynuować',
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          color: Colors.black.withValues(alpha: 0.72),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
                         ),
                       ),
                       const SizedBox(height: 36),
@@ -378,7 +388,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextButton(
                           onPressed: _resetPassword,
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.secondary,
+                            foregroundColor: theme.colorScheme.secondary,
                             textStyle: theme.textTheme.labelLarge,
                           ),
                           child: const Text('Nie pamiętasz hasła?'),
@@ -393,15 +403,15 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 28),
                       Row(
                         children: [
-                          Expanded(child: Divider(color: AppColors.primary.withValues(alpha: 0.2))),
+                          Expanded(child: Divider(color: theme.colorScheme.primary.withValues(alpha: 0.2))),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: Text(
                               'lub',
-                              style: theme.textTheme.bodySmall?.copyWith(color: Colors.black54),
+                              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.54)),
                             ),
                           ),
-                          Expanded(child: Divider(color: AppColors.primary.withValues(alpha: 0.2))),
+                          Expanded(child: Divider(color: theme.colorScheme.primary.withValues(alpha: 0.2))),
                         ],
                       ),
                       const SizedBox(height: 18),
@@ -416,12 +426,12 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Text(
                             'Nie masz konta?',
-                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black.withValues(alpha: 0.7)),
+                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
                           ),
                           TextButton(
                             onPressed: _navigateToRegister,
                             style: TextButton.styleFrom(
-                              foregroundColor: AppColors.secondary,
+                              foregroundColor: theme.colorScheme.secondary,
                               textStyle: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             child: const Text('Zarejestruj się'),

@@ -168,6 +168,16 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final primaryHsl = HSLColor.fromColor(theme.colorScheme.primary);
+    final gradient = LinearGradient(
+      colors: [
+        primaryHsl.withLightness(0.15).toColor(),
+        primaryHsl.withLightness(0.25).toColor(),
+        primaryHsl.withLightness(0.35).toColor(),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -178,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
         title: const Text('Rejestracja'),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.mainGradient),
+        decoration: BoxDecoration(gradient: gradient),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -187,7 +197,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 constraints: const BoxConstraints(maxWidth: 460),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
-                  decoration: AppDecorations.elevatedSurface(),
+                  decoration: AppDecorations.elevatedSurface(color: theme.colorScheme.surface),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -195,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         'Dołącz do Iskry',
                         textAlign: TextAlign.left,
                         style: theme.textTheme.headlineMedium?.copyWith(
-                          color: AppColors.primary,
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iskra/core/firebase/firebase_providers.dart';
+import 'package:iskra/core/theme/app_theme_type.dart';
 import 'package:iskra/features/auth/domain/models/user_profile.dart';
 import 'package:iskra/features/calendar/models/shift_color_palette.dart';
 
@@ -25,6 +26,19 @@ ThemeMode _themeModeFromString(String? value) {
     case 'light':
     default:
       return ThemeMode.light;
+  }
+}
+
+String _appThemeToString(AppThemeType theme) {
+  return theme.name;
+}
+
+AppThemeType _appThemeFromString(String? value) {
+  if (value == null) return AppThemeType.defaultRed;
+  try {
+    return AppThemeType.values.byName(value);
+  } catch (_) {
+    return AppThemeType.defaultRed;
   }
 }
 
@@ -75,6 +89,16 @@ class UserProfileRepository {
   }) {
     return _doc(uid).set({
       'themeMode': _themeModeToString(themeMode),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> updateAppTheme({
+    required String uid,
+    required AppThemeType appTheme,
+  }) {
+    return _doc(uid).set({
+      'appTheme': _appThemeToString(appTheme),
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
@@ -231,6 +255,7 @@ class _UserProfileDto {
     required this.additionalVacationHours,
     required this.shiftColorPalette,
     required this.themeMode,
+    required this.appTheme,
     required this.overtimeIndicatorThresholdHours,
     required this.onDutyIndicatorColor,
   });
@@ -242,6 +267,7 @@ class _UserProfileDto {
   final double additionalVacationHours;
   final ShiftColorPalette shiftColorPalette;
   final ThemeMode themeMode;
+  final AppThemeType appTheme;
   final double overtimeIndicatorThresholdHours;
   final Color onDutyIndicatorColor;
 
@@ -298,6 +324,7 @@ class _UserProfileDto {
           (data['additionalVacationHours'] as num?)?.toDouble() ?? 0,
       shiftColorPalette: palette,
       themeMode: _themeModeFromString(data['themeMode'] as String?),
+      appTheme: _appThemeFromString(data['appTheme'] as String?),
       overtimeIndicatorThresholdHours:
           (data['overtimeIndicatorThresholdHours'] as num?)?.toDouble() ??
           UserProfile.defaultOvertimeIndicatorThresholdHours,
@@ -316,6 +343,7 @@ class _UserProfileDto {
       additionalVacationHours: profile.additionalVacationHours,
       shiftColorPalette: profile.shiftColorPalette,
       themeMode: profile.themeMode,
+      appTheme: profile.appTheme,
       overtimeIndicatorThresholdHours: profile.overtimeIndicatorThresholdHours,
       onDutyIndicatorColor: profile.onDutyIndicatorColor,
     );
@@ -331,6 +359,7 @@ class _UserProfileDto {
       additionalVacationHours: additionalVacationHours,
       shiftColorPalette: shiftColorPalette,
       themeMode: themeMode,
+      appTheme: appTheme,
       overtimeIndicatorThresholdHours: overtimeIndicatorThresholdHours,
       onDutyIndicatorColor: onDutyIndicatorColor,
     );
@@ -356,6 +385,7 @@ class _UserProfileDto {
         'shift3': shiftColorPalette.shift3.toARGB32(),
       },
       'themeMode': _themeModeToString(themeMode),
+      'appTheme': _appThemeToString(appTheme),
       'overtimeIndicatorThresholdHours': overtimeIndicatorThresholdHours,
       'onDutyIndicatorColor': onDutyIndicatorColor.value,
       'updatedAt': FieldValue.serverTimestamp(),

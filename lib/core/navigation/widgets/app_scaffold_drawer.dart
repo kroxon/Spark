@@ -18,6 +18,18 @@ class AppScaffoldDrawer extends StatelessWidget {
     final theme = Theme.of(context);
     final drawerSections = AppSections.drawer;
 
+    // Generate a gradient based on the current primary color to match the app theme
+    final primaryHsl = HSLColor.fromColor(theme.colorScheme.primary);
+    final gradient = LinearGradient(
+      colors: [
+        primaryHsl.withLightness(0.15).toColor(),
+        primaryHsl.withLightness(0.25).toColor(),
+        primaryHsl.withLightness(0.35).toColor(),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
     return Drawer(
       child: SafeArea(
         child: Column(
@@ -25,7 +37,7 @@ class AppScaffoldDrawer extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-              decoration: const BoxDecoration(gradient: AppColors.mainGradient),
+              decoration: BoxDecoration(gradient: gradient),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

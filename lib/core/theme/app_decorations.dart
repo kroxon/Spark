@@ -5,9 +5,12 @@ import 'package:iskra/core/theme/app_colors.dart';
 class AppDecorations {
   const AppDecorations._();
 
-  static BoxDecoration elevatedSurface({double radius = 28}) {
+  static BoxDecoration elevatedSurface({
+    double radius = 28,
+    Color? color,
+  }) {
     return BoxDecoration(
-      color: AppColors.surface.withValues(alpha: 0.96),
+      color: (color ?? AppColors.surface).withValues(alpha: 0.96),
       borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(

@@ -29,11 +29,12 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final appTheme = ref.watch(appThemeProvider);
 
     return MaterialApp.router(
       title: 'Iskra',
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: AppTheme.light(appTheme),
+      darkTheme: AppTheme.dark(appTheme),
       themeMode: themeMode,
       locale: const Locale('pl', 'PL'),
       supportedLocales: const [

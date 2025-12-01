@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_bottom_nav_theme.dart';
+import 'package:iskra/core/theme/app_theme_type.dart';
 
 /// Centralised theme configuration for the Iskra application.
 class AppTheme {
   const AppTheme._();
 
-  static ThemeData light() {
+  static ThemeData light([AppThemeType theme = AppThemeType.defaultRed]) {
+    final seed = theme.seedColor;
+    final isDefault = theme == AppThemeType.defaultRed;
+
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      primary: AppColors.primary,
-      secondary: AppColors.secondary,
-      background: AppColors.surface,
-      surface: AppColors.surface,
+      seedColor: seed,
+      primary: isDefault ? AppColors.primary : null,
+      secondary: isDefault ? AppColors.secondary : null,
+      background: isDefault ? AppColors.surface : null,
+      surface: isDefault ? AppColors.surface : null,
       brightness: Brightness.light,
     );
 
@@ -22,7 +26,7 @@ class AppTheme {
       scaffoldBackgroundColor: colorScheme.surface,
       extensions: <ThemeExtension<dynamic>>[
         // Keep bottom navigation darker even in light mode
-        BottomNavColors.darkOnLight(),
+        BottomNavColors.darkOnLight(seed),
       ],
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,
@@ -124,11 +128,14 @@ class AppTheme {
     );
   }
 
-  static ThemeData dark() {
+  static ThemeData dark([AppThemeType theme = AppThemeType.defaultRed]) {
+    final seed = theme.seedColor;
+    final isDefault = theme == AppThemeType.defaultRed;
+
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      primary: AppColors.primary,
-      secondary: AppColors.secondary,
+      seedColor: seed,
+      primary: isDefault ? AppColors.primary : null,
+      secondary: isDefault ? AppColors.secondary : null,
       brightness: Brightness.dark,
     );
 
@@ -137,7 +144,7 @@ class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
       extensions: <ThemeExtension<dynamic>>[
-        BottomNavColors.darkOnDark(),
+        BottomNavColors.darkOnDark(seed),
       ],
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,

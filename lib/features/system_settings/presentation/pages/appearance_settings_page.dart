@@ -9,7 +9,9 @@ import 'package:iskra/features/calendar/application/calendar_indicator_settings_
 import 'package:iskra/features/calendar/widgets/on_duty_indicator.dart';
 import 'package:iskra/features/system_settings/presentation/widgets/overtime_indicator_settings_card.dart';
 import 'package:iskra/features/system_settings/presentation/widgets/theme_mode_switch_card.dart';
+import 'package:iskra/features/system_settings/presentation/widgets/app_theme_selector_card.dart';
 import 'package:iskra/features/calendar/models/shift_color_palette.dart';
+import 'package:iskra/core/theme/app_theme_type.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
   const AppearanceSettingsPage({super.key});
@@ -37,6 +39,26 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Nie udało się zapisać motywu: $error'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isUpdatingTheme = false);
+    }
+  }
+
+  Future<void> _onAppThemeChanged(BuildContext context, AppThemeType theme) async {
+    if (_isUpdatingTheme) return;
+
+    setState(() => _isUpdatingTheme = true);
+    try {
+      final controller = ref.read(themePreferencesControllerProvider);
+      await controller.setAppTheme(theme);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Nie udało się zapisać motywu aplikacji: $error'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -415,8 +437,9 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-  final isDarkMode = ref.watch(themeModeProvider) == ThemeMode.dark;
-  final user = ref.watch(firebaseAuthProvider).currentUser;
+    final isDarkMode = ref.watch(themeModeProvider) == ThemeMode.dark;
+    final appTheme = ref.watch(appThemeProvider);
+    final user = ref.watch(firebaseAuthProvider).currentUser;
 
     return Scaffold(
       appBar: AppBar(
@@ -432,6 +455,14 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
                 isDarkMode: isDarkMode,
                 isUpdating: _isUpdatingTheme,
                 onChanged: (value) => _onThemeChanged(context, value),
+              ),
+              const SizedBox(height: 8),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
+              AppThemeSelectorCard(
+                currentTheme: appTheme,
+                onThemeSelected: (value) => _onAppThemeChanged(context, value),
+                isUpdating: _isUpdatingTheme,
               ),
               const SizedBox(height: 8),
               const Divider(height: 1),

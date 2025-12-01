@@ -23,28 +23,44 @@ class BottomNavColors extends ThemeExtension<BottomNavColors> {
   final double tabRadius;
 
   /// A darker style used in both light and dark themes to emphasize the nav.
-  factory BottomNavColors.darkOnLight() => const BottomNavColors(
-        // Iskra brand-inspired: warm burgundy base with ember pill
-        background: Color(0xFF5C1323), // deep brand burgundy (lighter than near-black)
-        tabBackground: Color(0xFF8B2339), // glowing ember pill
-        activeColor: Color(0xFFFFFFFF),
-        inactiveColor: Color(0xFFEFD3D9), // soft rose-tinted near-white
-        elevation: 3,
-        containerRadius: 16,
-        tabRadius: 12,
-      );
+  factory BottomNavColors.darkOnLight(Color seedColor) {
+    final hsl = HSLColor.fromColor(seedColor);
+    // Dark background: low lightness, slightly less saturation than seed
+    final background = hsl.withLightness(0.15).withSaturation(0.6).toColor();
+    // Tab background: slightly lighter than background
+    final tabBackground = hsl.withLightness(0.25).withSaturation(0.6).toColor();
+    // Inactive: very light version of seed
+    final inactiveColor = hsl.withLightness(0.9).withSaturation(0.3).toColor();
+
+    return BottomNavColors(
+      background: background,
+      tabBackground: tabBackground,
+      activeColor: const Color(0xFFFFFFFF),
+      inactiveColor: inactiveColor,
+      elevation: 3,
+      containerRadius: 16,
+      tabRadius: 12,
+    );
+  }
 
   /// A slightly adjusted darker style for dark theme (keeps it dark and rich).
-  factory BottomNavColors.darkOnDark() => const BottomNavColors(
-        // Dark mode variant keeps color, avoids flat black
-        background: Color(0xFF45101E),
-        tabBackground: AppColors.primary, // strong brand accent
-        activeColor: Color(0xFFFFFFFF),
-        inactiveColor: Color(0xCCFFFFFF), // ~80% white for better legibility
-        elevation: 2,
-        containerRadius: 16,
-        tabRadius: 12,
-      );
+  factory BottomNavColors.darkOnDark(Color seedColor) {
+    final hsl = HSLColor.fromColor(seedColor);
+    // Background: very dark, close to black but tinted
+    final background = hsl.withLightness(0.08).withSaturation(0.5).toColor();
+    // Tab background: the seed color itself (primary)
+    final tabBackground = seedColor;
+    
+    return BottomNavColors(
+      background: background,
+      tabBackground: tabBackground,
+      activeColor: const Color(0xFFFFFFFF),
+      inactiveColor: const Color(0xCCFFFFFF),
+      elevation: 2,
+      containerRadius: 16,
+      tabRadius: 12,
+    );
+  }
 
   @override
   BottomNavColors copyWith({

@@ -36,12 +36,12 @@ class GoogleSignInButton extends StatelessWidget {
             ),
           ),
           if (isLoading)
-            const SizedBox(
+            SizedBox(
               height: 22,
               width: 22,
               child: CircularProgressIndicator(
                 strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
               ),
             ),
         ],

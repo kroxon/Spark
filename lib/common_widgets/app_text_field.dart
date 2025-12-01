@@ -76,25 +76,25 @@ class _AppTextFieldState extends State<AppTextField> {
     final baseDecoration = InputDecoration(
       labelText: widget.label,
       filled: true,
-      fillColor: Colors.white,
+      fillColor: theme.colorScheme.surface,
       contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       prefixIcon: widget.prefixIcon != null
-          ? Icon(widget.prefixIcon, color: AppColors.primary)
+          ? Icon(widget.prefixIcon, color: theme.colorScheme.primary)
           : null,
       suffixIcon: shouldShowToggle
           ? IconButton(
               icon: Icon(
                 _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
               ),
               onPressed: _toggleVisibility,
               tooltip: _obscureText ? 'Pokaż hasło' : 'Ukryj hasło',
             )
           : widget.suffixIcon,
-      labelStyle: theme.textTheme.bodyMedium?.copyWith(color: Colors.black87),
+      labelStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.18)),
+        borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.18)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),

@@ -16,11 +16,12 @@ class AppPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final effectiveOnPressed = isLoading ? null : onPressed;
     return ElevatedButton(
       onPressed: effectiveOnPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: theme.colorScheme.primary,
         padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
@@ -36,10 +37,8 @@ class AppPrimaryButton extends StatelessWidget {
             )
           : Text(
               label,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge
-                  ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+              style: theme.textTheme.labelLarge
+                  ?.copyWith(color: theme.colorScheme.onPrimary, fontWeight: FontWeight.w600),
             ),
     );
   }

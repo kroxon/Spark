@@ -45,7 +45,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           ),
         ),
         body: Container(
-          decoration: const BoxDecoration(gradient: AppColors.mainGradient),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                HSLColor.fromColor(Theme.of(context).colorScheme.primary).withLightness(0.15).toColor(),
+                HSLColor.fromColor(Theme.of(context).colorScheme.primary).withLightness(0.25).toColor(),
+                HSLColor.fromColor(Theme.of(context).colorScheme.primary).withLightness(0.35).toColor(),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
           child: SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -54,17 +64,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   constraints: const BoxConstraints(maxWidth: 460),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
-                    decoration: AppDecorations.elevatedSurface(),
+                    decoration: AppDecorations.elevatedSurface(color: Theme.of(context).colorScheme.surface),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
                           height: 80,
                           width: 80,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: LinearGradient(
-                              colors: [AppColors.primary, AppColors.secondary],
+                              colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                             ),
@@ -76,7 +86,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           'Na adres $email wysłaliśmy link weryfikacyjny.',
                           textAlign: TextAlign.left,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: AppColors.primary,
+                                color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
@@ -84,7 +94,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         Text(
                           'Kliknij link w wiadomości, aby aktywować konto. Jeśli nie widzisz maila, sprawdź folder spam.',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Colors.black.withValues(alpha: 0.72),
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.72),
                               ),
                         ),
                         const SizedBox(height: 32),

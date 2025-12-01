@@ -18,13 +18,14 @@ class AppOutlinedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final effectiveOnPressed = isLoading ? null : onPressed;
     final style = OutlinedButton.styleFrom(
-      foregroundColor: AppColors.primary,
-      side: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
+      foregroundColor: theme.colorScheme.primary,
+      side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.5)),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: Colors.white.withValues(alpha: 0.85),
+      backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.85),
     );
 
     final Widget labelWidget = isLoading
@@ -33,15 +34,13 @@ class AppOutlinedButton extends StatelessWidget {
             width: 22,
             child: CircularProgressIndicator(
               strokeWidth: 2.4,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
             ),
           )
         : Text(
             label,
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+            style: theme.textTheme.labelLarge
+                ?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
           );
 
     if (icon != null && !isLoading) {

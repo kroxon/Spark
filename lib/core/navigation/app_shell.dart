@@ -65,7 +65,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     }
 
     // Control visibility of chrome elements per section
-    final hideAppBar = currentSection == AppSections.settings || currentSection == AppSections.statistics;
+    final hideAppBar = currentSection == AppSections.settings;
     final hideBottomNav = currentSection == AppSections.settings;
 
     return WillPopScope(

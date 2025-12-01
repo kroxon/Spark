@@ -157,8 +157,6 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
   Widget _buildHeader(ThemeData theme, String headerLabel) {
     final header = _HeaderRow(
       title: headerLabel,
-      isEditing: widget.isEditing,
-      onEditToggle: widget.onEditModeToggle,
     );
 
     if (!widget.showMonthNavigation) {
@@ -290,13 +288,9 @@ class _ShiftMonthCalendarState extends State<ShiftMonthCalendar> {
 class _HeaderRow extends StatelessWidget {
   const _HeaderRow({
     required this.title,
-    required this.isEditing,
-    required this.onEditToggle,
   });
 
   final String title;
-  final bool isEditing;
-  final VoidCallback? onEditToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -308,15 +302,6 @@ class _HeaderRow extends StatelessWidget {
             title,
             style: theme.textTheme.titleMedium,
             textAlign: TextAlign.center,
-          ),
-        ),
-        IconButton.filledTonal(
-          onPressed: onEditToggle,
-          tooltip: isEditing
-              ? 'Zakończ edycję harmonogramu'
-              : 'Włącz edycję harmonogramu',
-          icon: Icon(
-            isEditing ? Icons.edit_off_outlined : Icons.edit_calendar_outlined,
           ),
         ),
       ],
@@ -355,7 +340,13 @@ class _EditingBanner extends StatelessWidget {
             ),
           ),
           if (onExit != null)
-            FilledButton.tonal(onPressed: onExit, child: const Text('Zakończ')),
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: FilledButton.tonal(
+                onPressed: onExit,
+                child: const Text('Zakończ'),
+              ),
+            ),
         ],
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iskra/core/navigation/nav_destinations.dart';
-import 'package:iskra/core/theme/app_colors.dart';
 
 /// Drawer wykorzystywany w głównym szkielecie aplikacji.
 class AppScaffoldDrawer extends StatelessWidget {

@@ -8,7 +8,6 @@ import 'package:iskra/common_widgets/app_primary_button.dart';
 import 'package:iskra/common_widgets/app_text_field.dart';
 import 'package:iskra/common_widgets/google_sign_in_button.dart';
 import 'package:iskra/core/navigation/routes.dart';
-import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_decorations.dart';
 
 class LoginPage extends StatefulWidget {

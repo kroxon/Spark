@@ -48,7 +48,7 @@ class AccountService {
     }
 
     // Capture provider ids before deletion to properly sign out providers.
-    final providerIds = user.providerData.map((e) => e.providerId).toList(growable: false);
+    user.providerData.map((e) => e.providerId).toList(growable: false);
 
     // Always delete user data first
     await _deleteUserSubcollections(user.uid);

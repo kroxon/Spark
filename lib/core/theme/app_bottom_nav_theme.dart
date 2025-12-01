@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iskra/core/theme/app_colors.dart';
 
 /// Theme extension for styling the custom bottom navigation (GNav).
 @immutable

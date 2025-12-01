@@ -63,23 +63,20 @@ class VacationController {
         date = date.add(const Duration(days: 1))) {
 
       final existingEntry = await repository.getEntryForDay(user.uid, date);
-      final scheduledHours = existingEntry?.scheduledHours ?? 0;
-
-      // Check if user has scheduled service either manually (scheduledHours > 0)
-      // or through their shift cycle
-      final hasManualSchedule = scheduledHours > 0;
-      final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
-        date,
-        userProfile.shiftHistory,
-      );
-
-      if (hasManualSchedule || hasShiftSchedule) {
-        // User has service this day - consume vacation hours
-        // Use scheduledHours if available, otherwise default to 24 hours for shift cycle
-        final consumedOnThisDay = hasManualSchedule ? scheduledHours : 24.0;
-        totalConsumedHours += consumedOnThisDay;
+      
+      if (existingEntry != null) {
+        // If we have an explicit entry, use its scheduled hours (even if 0)
+        totalConsumedHours += existingEntry.scheduledHours;
+      } else {
+        // No entry - fallback to shift cycle
+        final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
+          date,
+          userProfile.shiftHistory,
+        );
+        if (hasShiftSchedule) {
+          totalConsumedHours += 24.0;
+        }
       }
-      // If neither manual schedule nor shift schedule, consume 0 hours (day off)
     }
 
     return totalConsumedHours;
@@ -120,19 +117,19 @@ class VacationController {
       if (hasConflict) continue;
 
       final existingEntry = await repository.getEntryForDay(user.uid, date);
-      final scheduledHours = existingEntry?.scheduledHours ?? 0;
-
-      // Check if user has scheduled service either manually (scheduledHours > 0)
-      // or through their shift cycle
-      final hasManualSchedule = scheduledHours > 0;
-      final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
-        date,
-        userProfile.shiftHistory,
-      );
-
-      if (hasManualSchedule || hasShiftSchedule) {
-        final consumedOnThisDay = hasManualSchedule ? scheduledHours : 24.0;
-        totalConsumedHours += consumedOnThisDay;
+      
+      if (existingEntry != null) {
+        // If we have an explicit entry, use its scheduled hours (even if 0)
+        totalConsumedHours += existingEntry.scheduledHours;
+      } else {
+        // No entry - fallback to shift cycle
+        final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
+          date,
+          userProfile.shiftHistory,
+        );
+        if (hasShiftSchedule) {
+          totalConsumedHours += 24.0;
+        }
       }
     }
 
@@ -293,16 +290,7 @@ class VacationController {
 
   final existingEntry = await repository.getEntryForDay(user.uid, date);
   debugPrint('[VAC_CTRL] got entry for ${date.toIso8601String()}: scheduledHours=${existingEntry?.scheduledHours} events=${existingEntry?.events.length ?? 0}');
-      final scheduledHours = existingEntry?.scheduledHours ?? 0;
-
-      // Check if user has scheduled service either manually (scheduledHours > 0)
-      // or through their shift cycle
-      final hasManualSchedule = scheduledHours > 0;
-      final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
-        date,
-        userProfile.shiftHistory,
-      );
-
+      
       // Skip days with conflicts
       final hasConflict = conflicts.any((ConflictDay conflict) =>
         conflict.date.year == date.year &&
@@ -312,12 +300,20 @@ class VacationController {
         continue;
       }
 
-      if (hasManualSchedule || hasShiftSchedule) {
-        // User has service this day - consume vacation hours
-        // Use scheduledHours if available, otherwise default to 24 hours for shift cycle
-        final consumedOnThisDay = hasManualSchedule ? scheduledHours : 24.0;
-        totalConsumedHours += consumedOnThisDay;
+      double consumedOnThisDay;
+      if (existingEntry != null) {
+        // If entry exists, use its scheduled hours (even if 0)
+        consumedOnThisDay = existingEntry.scheduledHours;
+      } else {
+        // No entry - fallback to shift cycle
+        final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
+          date,
+          userProfile.shiftHistory,
+        );
+        consumedOnThisDay = hasShiftSchedule ? 24.0 : 0.0;
       }
+      
+      totalConsumedHours += consumedOnThisDay;
     }
     debugPrint('[VacationController] _saveVacationDirect totalConsumedHours (excluding conflicts) = $totalConsumedHours');
     // Determine primary and secondary balances depending on selected type
@@ -366,59 +362,60 @@ class VacationController {
       debugPrint('[VAC_CTRL] allocating for day $saveIndex: ${date.toIso8601String()} (toAllocate start)');
 
       final existingEntry = await repository.getEntryForDay(user.uid, date);
-      final scheduledHours = existingEntry?.scheduledHours ?? 0;
-
-      // Check if user has scheduled service either manually (scheduledHours > 0)
-      // or through their shift cycle
-      final hasManualSchedule = scheduledHours > 0;
-      final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
+      
+      // Check if it is a shift day according to the cycle
+      final isShiftDay = shiftCalculator.isScheduledDayForUser(
         date,
         userProfile.shiftHistory,
       );
 
-      // Skip days with conflicts
-      final hasConflict = conflicts.any((ConflictDay conflict) =>
-        conflict.date.year == date.year &&
-        conflict.date.month == date.month &&
-        conflict.date.day == date.day);
-      if (hasConflict) {
-        continue;
+      double vacationHours;
+      if (existingEntry != null) {
+        // If entry exists, use its scheduled hours (even if 0)
+        vacationHours = existingEntry.scheduledHours;
+      } else {
+        // No entry - fallback to shift cycle
+        vacationHours = isShiftDay ? 24.0 : 0.0;
       }
-
-      if (!(hasManualSchedule || hasShiftSchedule)) {
-        // nothing to consume this day
-        continue;
-      }
-
-      final vacationHours = hasManualSchedule ? scheduledHours : 24.0;
 
       double toAllocate = vacationHours;
       final events = <DayEvent>[];
 
-      // Allocate from primary first
-      final useFromPrimary = remainingPrimary >= toAllocate ? toAllocate : remainingPrimary;
-      if (useFromPrimary > 0) {
-        events.add(DayEvent(
-          type: vacationType == VacationType.regular ? EventType.vacationRegular : EventType.vacationAdditional,
-          hours: useFromPrimary,
-        ));
-        remainingPrimary -= useFromPrimary;
-        consumedFromPrimary += useFromPrimary;
-        toAllocate -= useFromPrimary;
-      }
-
-      // If still need hours, allocate from secondary
       if (toAllocate > 0) {
-        final secondaryEventType = vacationType == VacationType.regular ? EventType.vacationAdditional : EventType.vacationRegular;
-        final useFromSecondary = remainingSecondary >= toAllocate ? toAllocate : remainingSecondary;
-        if (useFromSecondary > 0) {
+        // Allocate from primary first
+        final useFromPrimary = remainingPrimary >= toAllocate ? toAllocate : remainingPrimary;
+        if (useFromPrimary > 0) {
           events.add(DayEvent(
-            type: secondaryEventType,
-            hours: useFromSecondary,
+            type: vacationType == VacationType.regular ? EventType.vacationRegular : EventType.vacationAdditional,
+            hours: useFromPrimary,
           ));
-          remainingSecondary -= useFromSecondary;
-          consumedFromSecondary += useFromSecondary;
-          toAllocate -= useFromSecondary;
+          remainingPrimary -= useFromPrimary;
+          consumedFromPrimary += useFromPrimary;
+          toAllocate -= useFromPrimary;
+        }
+
+        // If still need hours, allocate from secondary
+        if (toAllocate > 0) {
+          final secondaryEventType = vacationType == VacationType.regular ? EventType.vacationAdditional : EventType.vacationRegular;
+          final useFromSecondary = remainingSecondary >= toAllocate ? toAllocate : remainingSecondary;
+          if (useFromSecondary > 0) {
+            events.add(DayEvent(
+              type: secondaryEventType,
+              hours: useFromSecondary,
+            ));
+            remainingSecondary -= useFromSecondary;
+            consumedFromSecondary += useFromSecondary;
+            toAllocate -= useFromSecondary;
+          }
+        }
+      } else {
+        // Do not add 0h event for days off
+        // BUT if it is a shift day (even if hours are 0 due to manual override), mark it
+        if (isShiftDay) {
+          events.add(DayEvent(
+            type: vacationType == VacationType.regular ? EventType.vacationRegular : EventType.vacationAdditional,
+            hours: 0,
+          ));
         }
       }
 
@@ -566,22 +563,21 @@ class VacationController {
         date = date.add(const Duration(days: 1))) {
 
       final existingEntry = await repository.getEntryForDay(user.uid, date);
-      final scheduledHours = existingEntry?.scheduledHours ?? 0;
-
-      // Check if user has scheduled service either manually (scheduledHours > 0)
-      // or through their shift cycle
-      final hasManualSchedule = scheduledHours > 0;
-      final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
-        date,
-        userProfile.shiftHistory,
-      );
-
-      if (hasManualSchedule || hasShiftSchedule) {
-        // User has service this day - consume vacation hours
-        // Use scheduledHours if available, otherwise default to 24 hours for shift cycle
-        final consumedOnThisDay = hasManualSchedule ? scheduledHours : 24.0;
-        totalConsumedHours += consumedOnThisDay;
+      
+      double consumedOnThisDay;
+      if (existingEntry != null) {
+        // If entry exists, use its scheduled hours (even if 0)
+        consumedOnThisDay = existingEntry.scheduledHours;
+      } else {
+        // No entry - fallback to shift cycle
+        final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
+          date,
+          userProfile.shiftHistory,
+        );
+        consumedOnThisDay = hasShiftSchedule ? 24.0 : 0.0;
       }
+      
+      totalConsumedHours += consumedOnThisDay;
     }
 
   // After restoring and clearing, read latest profile to get up-to-date balances
@@ -623,51 +619,62 @@ class VacationController {
         date = date.add(const Duration(days: 1))) {
 
       final existingEntry = await repository.getEntryForDay(user.uid, date);
-      final scheduledHours = existingEntry?.scheduledHours ?? 0;
-
-      final hasManualSchedule = scheduledHours > 0;
-      final hasShiftSchedule = shiftCalculator.isScheduledDayForUser(
+      
+      // Check if it is a shift day according to the cycle
+      final isShiftDay = shiftCalculator.isScheduledDayForUser(
         date,
         userProfile.shiftHistory,
       );
 
-      // Only assign vacation on days that have scheduled hours (manual) or are
-      // scheduled via the shift cycle. Skip other days in the range.
-      if (!(hasManualSchedule || hasShiftSchedule)) {
-        continue;
+      double vacationHours;
+      if (existingEntry != null) {
+        // If entry exists, use its scheduled hours (even if 0)
+        vacationHours = existingEntry.scheduledHours;
+      } else {
+        // No entry - fallback to shift cycle
+        vacationHours = isShiftDay ? 24.0 : 0.0;
       }
-
-      // Vacation hours: same logic as before — scheduledHours for manual, otherwise 24
-      final vacationHours = hasManualSchedule ? scheduledHours : 24.0;
 
       double toAllocate = vacationHours;
       final events = <DayEvent>[];
 
-      final useFromPrimary = remainingPrimary >= toAllocate ? toAllocate : remainingPrimary;
-      if (useFromPrimary > 0) {
-        events.add(DayEvent(
-          type: vacationType == VacationType.regular ? EventType.vacationRegular : EventType.vacationAdditional,
-          hours: useFromPrimary,
-        ));
-        remainingPrimary -= useFromPrimary;
-        consumedFromPrimary += useFromPrimary;
-        toAllocate -= useFromPrimary;
-      }
-
       if (toAllocate > 0) {
-        final secondaryEventType = vacationType == VacationType.regular ? EventType.vacationAdditional : EventType.vacationRegular;
-        final useFromSecondary = remainingSecondary >= toAllocate ? toAllocate : remainingSecondary;
-        if (useFromSecondary > 0) {
+        // Allocate from primary first
+        final useFromPrimary = remainingPrimary >= toAllocate ? toAllocate : remainingPrimary;
+        if (useFromPrimary > 0) {
           events.add(DayEvent(
-            type: secondaryEventType,
-            hours: useFromSecondary,
+            type: vacationType == VacationType.regular ? EventType.vacationRegular : EventType.vacationAdditional,
+            hours: useFromPrimary,
           ));
-          remainingSecondary -= useFromSecondary;
-          consumedFromSecondary += useFromSecondary;
-          toAllocate -= useFromSecondary;
+          remainingPrimary -= useFromPrimary;
+          consumedFromPrimary += useFromPrimary;
+          toAllocate -= useFromPrimary;
+        }
+
+        // If still need hours, allocate from secondary
+        if (toAllocate > 0) {
+          final secondaryEventType = vacationType == VacationType.regular ? EventType.vacationAdditional : EventType.vacationRegular;
+          final useFromSecondary = remainingSecondary >= toAllocate ? toAllocate : remainingSecondary;
+          if (useFromSecondary > 0) {
+            events.add(DayEvent(
+              type: secondaryEventType,
+              hours: useFromSecondary,
+            ));
+            remainingSecondary -= useFromSecondary;
+            consumedFromSecondary += useFromSecondary;
+            toAllocate -= useFromSecondary;
+          }
+        }
+      } else {
+        // Do not add 0h event for days off
+        // BUT if it is a shift day (even if hours are 0 due to manual override), mark it
+        if (isShiftDay) {
+          events.add(DayEvent(
+            type: vacationType == VacationType.regular ? EventType.vacationRegular : EventType.vacationAdditional,
+            hours: 0,
+          ));
         }
       }
-
       if (toAllocate > 0) {
         throw Exception('Brak wystarczających godzin do zaalokowania dla dnia ${date.toIso8601String()}');
       }

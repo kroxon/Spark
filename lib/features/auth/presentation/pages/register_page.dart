@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iskra/common_widgets/app_primary_button.dart';
 import 'package:iskra/common_widgets/app_text_field.dart';
-import 'package:iskra/core/theme/app_colors.dart';
 import 'package:iskra/core/theme/app_decorations.dart';
 
 class RegisterPage extends StatefulWidget {

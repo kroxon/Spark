@@ -279,8 +279,7 @@ class CalendarEntryRepository {
     final sanitizedSchedule = scheduledHours == null
         ? null
         : _normalizeScheduleHours(scheduledHours);
-    final shouldPersistSchedule =
-        sanitizedSchedule != null && sanitizedSchedule > 0;
+    final shouldPersistSchedule = sanitizedSchedule != null;
 
     if (query.docs.isEmpty) {
       final scheduleForNew = sanitizedSchedule ?? 0;
@@ -349,12 +348,9 @@ class CalendarEntryRepository {
   }
 
   bool _isEntryEmpty(CalendarEntry entry) {
-    final hasSchedule = entry.scheduledHours > 0;
-    final hasEvents = entry.events.isNotEmpty;
-    final hasIncidents = entry.incidents.isNotEmpty;
-    final hasNote =
-        entry.generalNote != null && entry.generalNote!.trim().isNotEmpty;
-    return !hasSchedule && !hasEvents && !hasIncidents && !hasNote;
+    // We treat scheduledHours (even 0) as explicit data to support overriding shift cycles,
+    // so we never consider an entry "empty" enough to auto-delete it.
+    return false;
   }
 
   List<DayEvent> _sanitizeEvents(List<DayEvent> events, double scheduledHours) {

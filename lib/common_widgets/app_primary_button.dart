@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iskra/core/theme/app_colors.dart';
 
 /// Primary elevated button used across the app.
 class AppPrimaryButton extends StatelessWidget {

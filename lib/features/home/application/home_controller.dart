@@ -106,9 +106,53 @@ class HomeController extends Notifier<HomeState> {
     double scheduledHours = 24,
   }) async {
     final repository = ref.read(calendarEntryRepositoryProvider);
-    await repository.assignScheduledService(
+    final existingEntry = await repository.getEntryForDay(userId, day);
+
+    if (existingEntry == null) {
+      await repository.assignScheduledService(
+        userId: userId,
+        day: day,
+        scheduledHours: scheduledHours,
+      );
+      return;
+    }
+
+    // Clamp deducting types to new scheduledHours
+    const deductingTypes = {
+      EventType.vacationRegular,
+      EventType.vacationAdditional,
+      EventType.overtimeTimeOff,
+      EventType.paidAbsence,
+    };
+
+    final newEvents = existingEntry.events
+        .where((e) {
+          // Remove 0h vacation events if we are assigning a schedule
+          if (scheduledHours > 0 &&
+              (e.type == EventType.vacationRegular ||
+                  e.type == EventType.vacationAdditional) &&
+              e.hours == 0) {
+            return false;
+          }
+          return true;
+        })
+        .map((e) {
+          if (deductingTypes.contains(e.type)) {
+            // Clamp to scheduledHours
+            if (e.hours > scheduledHours) {
+              return e.copyWith(hours: scheduledHours);
+            }
+          }
+          return e;
+        })
+        .toList();
+
+    await saveDayDetails(
       userId: userId,
       day: day,
+      events: newEvents,
+      incidents: existingEntry.incidents,
+      generalNote: existingEntry.generalNote ?? '',
       scheduledHours: scheduledHours,
     );
   }
@@ -118,7 +162,37 @@ class HomeController extends Notifier<HomeState> {
     required DateTime day,
   }) async {
     final repository = ref.read(calendarEntryRepositoryProvider);
-    await repository.removeScheduledService(userId: userId, day: day);
+    final existingEntry = await repository.getEntryForDay(userId, day);
+
+    if (existingEntry == null) {
+      await repository.assignScheduledService(
+        userId: userId,
+        day: day,
+        scheduledHours: 0,
+      );
+      return;
+    }
+
+    // Remove vacation and other schedule-dependent events
+    const deductingTypes = {
+      EventType.vacationRegular,
+      EventType.vacationAdditional,
+      EventType.overtimeTimeOff,
+      EventType.paidAbsence,
+    };
+
+    final newEvents = existingEntry.events
+        .where((e) => !deductingTypes.contains(e.type))
+        .toList();
+
+    await saveDayDetails(
+      userId: userId,
+      day: day,
+      events: newEvents,
+      incidents: existingEntry.incidents,
+      generalNote: existingEntry.generalNote ?? '',
+      scheduledHours: 0,
+    );
   }
 
   (double, double) _calculateVacationHoursChange({

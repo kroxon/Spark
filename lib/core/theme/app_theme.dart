@@ -15,21 +15,27 @@ class AppTheme {
       seedColor: seed,
       primary: isDefault ? AppColors.primary : null,
       secondary: isDefault ? AppColors.secondary : null,
-      background: isDefault ? AppColors.surface : null,
-      surface: isDefault ? AppColors.surface : null,
+      // We want a modern look, so we let Material 3 generate the surface colors
+      // but we will override the scaffold background to be a tinted version.
       brightness: Brightness.light,
     );
+
+    // Modern tinted background: strong tint, clearly distinct from white
+    final hslSeed = HSLColor.fromColor(seed);
+    // Lightness 0.90 makes the color much more visible
+    // Saturation 0.50 gives it a strong character
+    final tintedBackground = hslSeed.withLightness(0.90).withSaturation(0.50).toColor();
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: tintedBackground,
       extensions: <ThemeExtension<dynamic>>[
         // Keep bottom navigation darker even in light mode
         BottomNavColors.darkOnLight(seed),
       ],
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: tintedBackground,
         foregroundColor: colorScheme.onSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -40,7 +46,7 @@ class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: tintedBackground,
         elevation: 1,
         indicatorColor: colorScheme.primary.withOpacity(0.12),
         surfaceTintColor: Colors.transparent,
@@ -60,7 +66,7 @@ class AppTheme {
         ),
       ),
       drawerTheme: DrawerThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: tintedBackground,
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -70,10 +76,13 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: colorScheme.surface,
+        color: Colors.white, // Cards pop against the tinted background
         surfaceTintColor: Colors.transparent,
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 0, // Modern flat look with border or subtle shadow
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.3)),
+        ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(foregroundColor: colorScheme.primary),
@@ -139,15 +148,19 @@ class AppTheme {
       brightness: Brightness.dark,
     );
 
+    // Modern dark background: deep, rich color rather than black
+    final hslSeed = HSLColor.fromColor(seed);
+    final tintedBackground = hslSeed.withLightness(0.10).withSaturation(0.30).toColor();
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: tintedBackground,
       extensions: <ThemeExtension<dynamic>>[
         BottomNavColors.darkOnDark(seed),
       ],
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: tintedBackground,
         foregroundColor: colorScheme.onSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -158,7 +171,7 @@ class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: tintedBackground,
         elevation: 1,
         indicatorColor: colorScheme.primary.withOpacity(0.24),
         surfaceTintColor: Colors.transparent,
@@ -178,7 +191,7 @@ class AppTheme {
         ),
       ),
       drawerTheme: DrawerThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: tintedBackground,
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -188,10 +201,13 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: colorScheme.surface,
+        color: colorScheme.surface.withOpacity(0.5), // Semi-transparent surface for depth
         surfaceTintColor: Colors.transparent,
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.3)),
+        ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(foregroundColor: colorScheme.primary),

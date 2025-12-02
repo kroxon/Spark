@@ -22,6 +22,9 @@ class AppRouteName {
   static const kppFlashcards = 'kpp-flashcards';
   static const kppExam = 'kpp-exam';
 
+  static const fitnessMenu = 'fitness-menu';
+  static const fitnessTestNew = 'fitness-test-new';
+
   static const profile = 'profile';
 }
 
@@ -48,6 +51,8 @@ class AppRoutePath {
   static const kppMenu = '/extras/kpp';
   static const kppFlashcards = '/extras/kpp/flashcards';
   static const kppExam = '/extras/kpp/exam';
+  static const fitnessMenu = '/extras/fitness';
+  static const fitnessTestNew = '/extras/fitness/new';
 
   static const profile = '/profile';
 }

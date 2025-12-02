@@ -18,6 +18,8 @@ import 'package:iskra/features/games/game_2048/presentation/pages/game_2048_page
 import 'package:iskra/features/kpp/presentation/pages/kpp_menu_page.dart';
 import 'package:iskra/features/kpp/presentation/pages/kpp_flashcards_page.dart';
 import 'package:iskra/features/kpp/presentation/pages/kpp_exam_page.dart';
+import 'package:iskra/features/fitness/presentation/pages/fitness_menu_page.dart';
+import 'package:iskra/features/fitness/presentation/pages/fitness_test_page.dart';
 import 'package:iskra/features/profile/presentation/pages/profile_page.dart';
 import 'package:iskra/features/reports/presentation/pages/reports_page.dart';
 import 'package:iskra/features/subscription/presentation/pages/subscription_page.dart';
@@ -255,6 +257,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutePath.kppExam,
         name: AppRouteName.kppExam,
         builder: (context, state) => const KppExamPage(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.fitnessMenu,
+        name: AppRouteName.fitnessMenu,
+        builder: (context, state) => const FitnessTestPage(),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,

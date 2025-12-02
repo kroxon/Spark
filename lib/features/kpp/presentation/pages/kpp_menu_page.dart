@@ -62,18 +62,13 @@ class KppMenuPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildMenuCard(
                     context,
-                    title: 'Test (Wkrótce)',
-                    description: 'Symulacja egzaminu z losowymi pytaniami.',
+                    title: 'Egzamin Próbny',
+                    description: 'Symulacja egzaminu. 30 pytań, 30 minut.',
                     icon: Icons.timer_outlined,
-                    color: Colors.orange,
-                    gradientColors: [Colors.orange, Colors.deepOrangeAccent],
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Tryb testowy będzie dostępny wkrótce!')),
-                      );
-                    },
+                    color: Colors.orangeAccent,
+                    gradientColors: [Colors.orangeAccent, Colors.deepOrangeAccent],
+                    onTap: () => context.pushNamed(AppRouteName.kppExam),
                     delay: 400.ms,
-                    isLocked: true,
                   ),
                 ],
               ),

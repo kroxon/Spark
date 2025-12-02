@@ -20,6 +20,7 @@ class AppRouteName {
   static const game2048 = 'game-2048';
   static const kppMenu = 'kpp-menu';
   static const kppFlashcards = 'kpp-flashcards';
+  static const kppExam = 'kpp-exam';
 
   static const profile = 'profile';
 }
@@ -46,6 +47,7 @@ class AppRoutePath {
   static const game2048 = '/extras/game-2048';
   static const kppMenu = '/extras/kpp';
   static const kppFlashcards = '/extras/kpp/flashcards';
+  static const kppExam = '/extras/kpp/exam';
 
   static const profile = '/profile';
 }

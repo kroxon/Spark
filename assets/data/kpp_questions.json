@@ -1,0 +1,3002 @@
+[
+  {
+    "id": 1,
+    "question": "Jedną z przyczyn wstrząsu hipowolemicznego jest:",
+    "answers": [
+      "nagły spadek poziomu glukozy we krwi.",
+      "nagłe podniesienie poziomu glukozy we krwi.",
+      "chwilowa utrata przytomności.",
+      "spadek objętości krwi krążącej.",
+      "żadne z wymienionych."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 2,
+    "question": "Osobę poszkodowaną zabezpieczamy przed wychłodzeniem folią „NRC\". Należy ja ułożyć:",
+    "answers": [
+      "złotą stroną na zewnątrz.",
+      "srebrną stroną na zewnątrz.",
+      "kolor nie ma znaczenia.",
+      "najważniejsze jest dokładne owinięcie poszkodowanego folią.",
+      "Poprawne są C, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 3,
+    "question": "Pozycja przeciwwstrząsowa polega na ułożeniu poszkodowanego:",
+    "answers": [
+      "w pozycji bocznej ustalonej.",
+      "na wznak (na plecach), jeżeli brak cech urazów, można zastosować bierne uniesienie kończyn dolnych do 7min.",
+      "na wznak z uniesionymi kończynami dolnymi 30 cm do góry.",
+      "na wznak z uniesioną głową (wałek pod głowę).",
+      "w pozycji półsiedzącej."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 4,
+    "question": "Niepokój, szybki oddech, brak wyczuwalnego tętna na tętnicy promieniowej, nawrót kapilarny >2sek, bladość powłok skórnych, zimny pot. Te objawy mogą być oznaką:",
+    "answers": [
+      "udaru cieplnego.",
+      "śmierci klinicznej.",
+      "przegrzania.",
+      "wstrząsu.",
+      "żadne z wymienionych"
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 5,
+    "question": "Czas nawrotu kapilarnego (CRT - capillary refill time).",
+    "answers": [
+      "< 2 sek. świadczy, że nie wystąpiła centralizacja krążenia.",
+      "> 2 sek. może być jedną z oznak wstrząsu.",
+      "przy wychłodzeniu nie jest wyznacznikiem stanu poszkodowanego.",
+      "prawdziwe są odpowiedzi B,C.",
+      "prawdziwe są odpowiedzi A,B,C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 6,
+    "question": "Będąc świadkiem napadu drgawek u chorego na ulicy należy:",
+    "answers": [
+      "wezwać natychmiast Zespół Ratownictwa Medycznego.",
+      "przy pomocy długopisu rozchylić usta poszkodowanego.",
+      "przytrzymać całe ciało starając się wyhamować drgawki.",
+      "chronić głowę przed obrażeniami, następnie utrzymać drożność górnych dróg oddechowych",
+      "nie dotykać pacjenta bo napad musi sam minąć."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 7,
+    "question": "Wskaż zdanie fałszywe dotyczące napadu drgawkowego:",
+    "answers": [
+      "może wystąpić utrata przytomności z niepamięcią wsteczną.",
+      "najczęściej dochodzi do zagryzienia języka i należy włożyć patyk między zęby, by nie było krwawienia (nawet podczas drgawek należy próbować).",
+      "często bezwiednie następuje oddanie moczu.",
+      "podczas drgawek może dojść do urazów głowy.",
+      "drgawki i prężenia często obejmują całe ciało."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 8,
+    "question": "Drgawki mogą występować przy:",
+    "answers": [
+      "urazie mózgowo-czaszkowym.",
+      "zatruciu, niedotlenieniu.",
+      "wysokiej temperaturze ciała, szczególnie u dzieci.",
+      "odwodnieniu, udarze cieplnym.",
+      "wszystkich wymienionych."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 9,
+    "question": "Wskaż zdanie prawdziwe dotyczące występowania śpiączki u chorego na cukrzycę:",
+    "answers": [
+      "może być spowodowana znacznym spadkiem glukozy we krwi.",
+      "występują zaburzenia świadomości aż do jej utraty.",
+      "może być spowodowana przedawkowaniem insuliny.",
+      "prawidłowe są odpowiedzi A,B.",
+      "prawdziwe są odpowiedzi A,B,C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 10,
+    "question": "U osoby, która jest nieprzytomna, śpiączkę cukrzycową możesz podejrzewać na podstawie:",
+    "answers": [
+      "obecności cukierków w kieszeni, bo to chroni przed „niedocukrzeniem”.",
+      "zapachu acetonu w wydychanym powietrzu.",
+      "suchości skóry i języka.",
+      "pokłute opuszki palców.",
+      "prawdziwe są odpowiedzi B,C,D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 11,
+    "question": "Hipoglikemia to stan:",
+    "answers": [
+      "w którym może dojść do utraty przytomności.",
+      "charakteryzujący się niskim poziomem glukozy we krwi (znacznie poniżej normy).",
+      "mogą wystąpić następujące objawy: dezorientacja, bełkotliwa mowa, uczucie niepokoju, obfite pocenie się lub bladość powłok skórnych.",
+      "w którym jak najszybciej podasz insulinę.",
+      "prawdziwe są odpowiedzi A,B,C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 12,
+    "question": "Wskaż prawdziwe stwierdzenie dotyczące powikłań dotyczących cukrzycy:",
+    "answers": [
+      "śpiączka cukrzycowa to stan, w którym może być znacznie podwyższone stężenie glukozy we krwi. (hiperglikemia)",
+      "śpiączka cukrzycowa to stan, w którym może być znacznie obniżone stężenie glukozy we krwi. (hipoglikemia)",
+      "hipoglikemia to stan bezpośredniego zagrożenia życia.",
+      "w hipoglikemii mogą wystąpić następujące objawy: dezorientacja, bełkotliwa mowa, uczucie niepokoju, obfite pocenie się lub bladość powłok skórnych.",
+      "wszystkie wymienione."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 13,
+    "question": "Na przystanku autobusowym leży na brzuchu mężczyzna w wieku ok. 55 lat. Co robisz?",
+    "answers": [
+      "zapewne jest pijany i wzywasz policję.",
+      "układasz go w pozycji bocznej ustalonej, wzywasz policję.",
+      "sprawdzasz oznaki życia.",
+      "wsiadasz do autobusu bo nadjechał ten na który czekałeś.",
+      "pytasz czy jest w pobliżu lekarz."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 14,
+    "question": "W autobusie siedzi mężczyzna, skarżący się na piekący ból w kl. piersiowej, jest blady i spocony, oddycha szybko. Jakie będzie Twoje działanie?",
+    "answers": [
+      "natychmiast wyprowadzisz go z autobusu i zaprowadzisz na postój taksówek by pojechał do szpitala.",
+      "nie pozwolisz mu wstać, rozepniesz koszulę, zapytasz: jak długo boli , czy leczy się na serce, wezwiesz pomoc, rozważysz ułożenie w pozycji przeciwwstrząsowej.",
+      "jeśli jest dostępna podasz mu aspirynę (160-300 mg).",
+      "nie należy podawać aspiryny dorosłym z bólem w klatce piersiowej niejasnego pochodzenia, uczulonym na lek lub przyjmującym go na stałe.",
+      "prawdziwe są odpowiedzi B,C,D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 15,
+    "question": "U osoby, która uskarżała się na ból w kl. piersiowej doszło w Twojej obecności do utraty przytomności i osunięcia na podłogę. Co robisz?",
+    "answers": [
+      "układasz osobę w pozycji bocznej ustalonej z utrzymaniem drożności dróg oddechowych i wzywasz pomoc.",
+      "układasz osobę na wznak z nogami uniesionymi około 30cm do góry i wzywasz pomoc.",
+      "sprawdzasz czy w kieszeni poszkodowany nie ma leków na serce by je podać.",
+      "udrażniasz drogi oddechowe i sprawdzasz obecność oddechu, podejmujesz uciśnięcia klatki piersiowej, jeśli jest brak oddechu.",
+      "po stwierdzeniu braku oddechu prowadzisz oddech zastępczy."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 16,
+    "question": "U nieprzytomnej osoby dorosłej brak oddechu stanowi podstawę do podjęcia resuscytacji w schemacie:",
+    "answers": [
+      "2 wdechy, 15 uciśnięć kl. piersiowej.",
+      "2 wdechy, 30 uciśnięć kl. piersiowej.",
+      "15 uciśnięć kl. Piersiowej, 2 wdechy.",
+      "30 uciśnięć kl. piersiowej, 2 wdechy.",
+      "dowolnym z wymienionych."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 17,
+    "question": "Do często spotykanych objawów zawału mięśnia sercowego należą:",
+    "answers": [
+      "piekący lub kłujący ból w kl. piersiowej.",
+      "drętwienie lewej kończyny górnej.",
+      "uczucie lęku i osłabienia.",
+      "pobudzenie psychoruchowe.",
+      "prawdziwe A,B,C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 18,
+    "question": "Częstym powikłaniem uciśnięć klatki piersiowej u osoby z zatrzymaniem oddechu i krążenia, jest:",
+    "answers": [
+      "uraz kręgosłupa.",
+      "niedowład kończyn dolnych.",
+      "złamanie żeber i mostka.",
+      "uszkodzenie naczyń w kl. piersiowej.",
+      "zaburzenia rytmu serca."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 19,
+    "question": "Przy trudnościach w oddychaniu pacjenta przebywającego w strefie zadymienia należy:",
+    "answers": [
+      "podać tlen i posadzić poszkodowanego w pozycji półsiedzącej.",
+      "podać tlen i ewakuować ze strefy zadymienia.",
+      "wezwać pomoc do poszkodowanego i przystąpić do oceny stanu poszkodowanego w miejscu zdarzenia.",
+      "w miarę możliwości odizolować drogi oddechowe poszkodowanego od atmosfery toksycznej i ewakuować ze strefy zagrożenia",
+      "ułożyć w pozycji bezpiecznej i czekać na przybycie ratowników."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 20,
+    "question": "Oddechu zastępczego metodą usta - usta nie wolno wykonywać gdy:",
+    "answers": [
+      "poszkodowany jest pijany.",
+      "poszkodowany jest chory na cukrzycę.",
+      "poszkodowany ma krótką szyję.",
+      "poszkodowany wypił środki ochrony roślin.",
+      "należy prowadzić oddech zastępczy z użyciem mokrej chusteczki."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 21,
+    "question": "Przy podejrzeniu zatrucia cyjanowodorem poszkodowanego (możliwy wyczuwalny zapach gorzkich migdałów), który ma ślady wymiocin na ustach możemy:",
+    "answers": [
+      "wentylować metodą usta-usta jeśli nie ma innych możliwości.",
+      "wentylować tylko przy użyciu maski twarzowej.",
+      "zaniechać wentylacji metodą usta-usta jeżeli są opory natury estetycznej.",
+      "wentylować z użyciem nawilżonej wodą chusteczki.",
+      "wentylować go tylko przy użyciu worka samorozprężalnego."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 22,
+    "question": "Najczęstszą przyczyną zgonu u osób, które uległy zatruciu substancjami wpływającymi na funkcjonowanie centralnego układu nerwowego jest:",
+    "answers": [
+      "działanie samej substancji trującej.",
+      "podawanie odtrutek przez osoby niewykwalifikowane.",
+      "utrata przytomności i niedrożność górnych dróg oddechowych.",
+      "zaburzenia świadomości i próby samobójcze.",
+      "żadne z wymienionych."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 23,
+    "question": "W stosunku do osoby, która w wyniku zatrucia straciła przytomność podejmiesz następujące czynności:",
+    "answers": [
+      "podasz węgiel aktywowany jako odtrutkę i wezwiesz pomoc.",
+      "sprowokujesz wymioty i udasz się po pomoc.",
+      "zabezpieczysz substancję która została zażyta i udasz się po pomoc.",
+      "przy zachowanym oddechu, ułożysz poszkodowanego w pozycji bocznej bezpiecznej i wezwiesz pomoc.",
+      "wezwiesz pomoc by nie tracić czasu na zbędne działania."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 24,
+    "question": "Wskaż prawidłową kolejność postępowania z osobą, która straciła przytomność podczas kąpieli w łazience w której jest piecyk gazowy: 1) wstrzymując oddech zamkniesz dopływ gazu i otworzysz okno w łazience; 2) ocenisz czynności życiowe. 3) wyniesiesz poszkodowanego poza strefę zagrożenia; 4) wezwiesz Zespół Ratownictwa Medycznego i straż pożarną następnie udzielisz pomocy w razie potrzeby. 5) opuścisz pomieszczenie by Tobie nic się nie stało i wezwiesz pomoc. Prawidłowa odpowiedź to:",
+    "answers": [
+      "5,4.",
+      "3,2,4,1.",
+      "3,4,5.",
+      "1,2,3,4.",
+      "3,2,4."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 25,
+    "question": "Wskaż zdanie fałszywe dotyczące informacji o tlenku węgla:",
+    "answers": [
+      "łączy się z hemoglobiną 250-300 razy trwalej niż tlen.",
+      "ma charakterystyczny zapach i barwę.",
+      "jest lżejszy od powietrza.",
+      "potocznie nazywany jest czadem.",
+      "powstaje podczas spalania."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 26,
+    "question": "Po wyjściu z kąpieli z łazienki w której jest piecyk gazowy, osoba zgłasza nudności oraz zawroty głowy, zaczyna wymiotować. Jakie jest Twoje postępowanie?",
+    "answers": [
+      "podejrzewasz, że za długo przebywała w gorącej kąpieli i polecasz jej odpoczynek w pokoju.",
+      "sądzisz, że zjadła „coś” co jej zaszkodziło.",
+      "podejrzewasz zatrucie gazami spalinowymi w łazience (CO).",
+      "uważasz że piła alkohol w łazience podczas kąpieli.",
+      "zabierasz na spacer by się „przewietrzyła”."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 27,
+    "question": "Pulsoksymetria jako metoda pomiarowa do czego jest wykorzystywana??",
+    "answers": [
+      "Jest to nieinwazyjna metoda przezskórnego oznaczania wysycenia krwi tlenem.",
+      "Jest to inwazyjna metoda żylnego oznaczania wysycenia krwi tlenem.",
+      "Jest to nieinwazyjna metoda przezskórnego oznaczania wysycenia krwi CO2.",
+      "Metoda ta pozwala na jednoczesną ocenę tętna.",
+      "Prawidłowe jest A i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 28,
+    "question": "Osobie, która uległa podtopieniu, po wyjęciu z wody należy:",
+    "answers": [
+      "wylać wodę z dróg oddechowych poprzez odpowiednie ułożenie.",
+      "utrzymywać stabilizację kręgosłupa, gdyż najczęściej dochodzi do urazu w odcinku szyjnym.",
+      "okryć natychmiast folią życia chroniąc przed wychłodzeniem.",
+      "udrożnić drogi oddechowe i w przypadku braku oddechu wykonać 5 oddechów ratowniczych.",
+      "wszystkie prawdziwe."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 29,
+    "question": "Jednym z pierwszych objawów zatrucia tlenkiem węgla jest/są:",
+    "answers": [
+      "bóle brzucha.",
+      "zawroty głowy.",
+      "drapanie w gardle.",
+      "skoki temperatury.",
+      "swędzenie skóry."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 30,
+    "question": "Osobie, która uległa podtopieniu, po wyjęciu z wody należy:",
+    "answers": [
+      "wylać wodę z dróg oddechowych poprzez odpowiednie ułożenie.",
+      "utrzymywać stabilizację kręgosłupa, gdyż najczęściej dochodzi do urazu w odcinku szyjnym.",
+      "okryć natychmiast folią życia chroniąc przed wychłodzeniem.",
+      "sprawdzić jamę ustną, następnie udrożnić drogi oddechowe i w przypadku braku oddechu wykonać 5 oddechów ratowniczych.",
+      "wszystkie prawdziwe"
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 31,
+    "question": "Wskaż zdanie prawdziwe:",
+    "answers": [
+      "woda słona uszkadza drogi oddechowe i należy ją najpierw wylać z poszkodowanego.",
+      "woda słodka się nie wchłania i należy ja wylać z poszkodowanego.",
+      "przy utonięciu w wodzie morskiej rokowanie jest lepsze.",
+      "przy utonięciu w wodzie słodkiej rokowanie jest lepsze.",
+      "postępowanie z osobą podtopioną jest takie samo, niezależnie od rodzaju wody."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 32,
+    "question": "Ratując osobę podtopioną w wodzie o niskiej temperaturze należy pamiętać że:",
+    "answers": [
+      "śmierć mózgu następuje szybciej w zimnej wodzie.",
+      "uciskanie kl. piersiowej i prowadzenie oddechu zastępczego jest mało efektywne z uwagi na wodę w płucach.",
+      "głowa nie powinna być odchylana z uwagi na możliwość zachłyśnięcia wypitą wodą.",
+      "uzyskanie powrotu czynności życiowych może wystąpić po kilkudziesięciu minutach resuscytacji.",
+      "wszystkie powyższe stwierdzenia są fałszywe."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 33,
+    "question": "W przypadku podtopienia prowadzenie oddechu zastępczego należy rozpocząć:",
+    "answers": [
+      "po 5 min od wyjęcia z wody by mogła się ona wchłonąć z płuc.",
+      "po wylaniu wody z dróg oddechowych.",
+      "po zapewnieniu stabilizacji kręgosłupa szyjnego.",
+      "najwcześniej jak jest to możliwe, w miarę możliwości jeszcze w wodzie.",
+      "wszystkie powyższe są fałszywe."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 34,
+    "question": "Stosując regułę „9” można ustalić, że oparzenie obejmujące obie kończyny dolne u osoby dorosłej stanowi następujący procent powierzchni całego ciała:",
+    "answers": [
+      "18%.",
+      "27%.",
+      "30%.",
+      "36%.",
+      "45%."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 35,
+    "question": "Powierzchnia dłoni u dorosłego (reguła dłoni) to:",
+    "answers": [
+      "0,5% powierzchni całkowitej ciała..",
+      "1% powierzchni całkowitej ciała.",
+      "1,5% powierzchni całkowitej ciała.",
+      "2% powierzchni całkowitej ciała.",
+      "2,5% powierzchni całkowitej ciała."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 36,
+    "question": "Przy oparzeniu parą wodną obu rąk należy:",
+    "answers": [
+      "wezwać pomoc i podawać środki przeciwbólowe.",
+      "pokryć powierzchnię mokrym, jałowym opatrunkiem.",
+      "schładzać aktywnie wodą co najmniej 10 min lub do ustania bólu i wezwać pomoc.",
+      "okryć folią „życia\" w celu ochrony przed utratą ciepła.",
+      "prawidłowe odpowiedzi to C, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 37,
+    "question": "Oparzenie ciężkie to:",
+    "answers": [
+      "oparzenie prądem elektrycznym.",
+      "oparzenie dróg oddechowych.",
+      "oparzenie II stopnia >25 % powierzchni ciała.",
+      "oparzenie III stopnia >10 % powierzchni ciała.",
+      "wszystkie wymienione."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 38,
+    "question": "Wskaż pierwszą czynność przy poszkodowanym porażeniem prądem po odłączeniu źródła napięcia:",
+    "answers": [
+      "udrożnienie dróg oddechowych i uciski klatki piersiowej.",
+      "ocena stanu świadomości i oddechu u poszkodowanego.",
+      "stabilizacja kręgosłupa szyjnego, udrożnienie dróg oddechowych i prowadzenie oddechu zastępczego.",
+      "nie podchodzimy i nie ruszamy poszkodowanego w obawie o pozostały ładunek elektryczny wokół poszkodowanego.",
+      "żadna z powyższych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 39,
+    "question": "O oparzeniu dróg oddechowych i zatruciu wziewnym mogą świadczyć następujące objawy:",
+    "answers": [
+      "duszność, kaszel.",
+      "ślady sadzy na twarzy, w jamie ustnej i ślinie, opalone brwi i rzęsy.",
+      "charakter zdarzenia.",
+      "chrypka, świszczący oddech.",
+      "wszystkie wymienione."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 40,
+    "question": "Jaka jest najpoważniejsza wczesna komplikacja porażenia prądem elektrycznym zmiennym?",
+    "answers": [
+      "zaburzenia rytmu serca.",
+      "uraz kręgosłupa szyjnego.",
+      "wstrząs hipowolemiczny.",
+      "niewydolność nerek.",
+      "żadna z wymienionych."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 41,
+    "question": "Brak odczuwania bólu w miejscu urazu, stwierdzisz przy oparzeniach:",
+    "answers": [
+      "I°.",
+      "II°.",
+      "III°.",
+      "chemicznym.",
+      "wszystkich wymienionych."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 42,
+    "question": "Podczas prac budowlanych jeden z pracowników został ochlapany wapnem w okolicy twarzy. Wskaż poprawną kolejność postępowania: 1. opłukanie twarzy wodą w celu usunięcia substancji. 2. starcie suchą szmatką zaprawy z twarzy i okolicy oczu. 3. usunięcie poszkodowanego ze strefy zagrożenia. 4. delikatne przemywanie wodą, najlepiej mineralną. 5. zdecydowane przemywanie oczu bieżącym strumieniem wody Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,2.",
+      "3,2,4.",
+      "3,2,5.",
+      "4,1,2,3.",
+      "3,5."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 43,
+    "question": "Wskaż prawidłową sekwencję postępowania z osobą nieprzytomną z objawami hipotermii: 1. przenieść do suchego, ciepłego pomieszczenia i zdjęcie mokrego ubrania. 2. podać ciepły napój najlepiej z alkoholem - działa rozgrzewająco. 3. kontrola podstawowych czynności życiowych. 4. zdecydowanymi ruchami rozcierać miejsca wychłodzone lub zalecić gimnastykę. 5. ułożyć w pozycji poziomej, ograniczyć ruch i ogrzewać biernie. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,2,3,4,5.",
+      "1,3,2,5.",
+      "3,4,2.",
+      "2,4,3.",
+      "3,1,5."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 44,
+    "question": "Podczas smażenia frytek doszło do ochlapania gorącym olejem całej dłoni. Skuteczne postępowanie polega na: 1. natychmiastowym odsunięciu poszkodowanego od naczynia z olejem; 2. ułożenie w pozycji bocznej ustalonej. 3. chłodzeniu ręki aktywnie bieżącą wodą co najmniej 10 min. lub do ustania bólu. 4. trzymaniu ręki w wiadrze z wodą; 5. polewaniu ręki alkoholem, bo świetnie odprowadza ciepło. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,5.",
+      "1,3.",
+      "3,5.",
+      "4,5.",
+      "1,2,4,5."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 45,
+    "question": "Wskaż jaki procent powierzchni ciała stanowi powierzchnia głowy odpowiednio u osoby dorosłej i niemowlęcia (według reguły 9):",
+    "answers": [
+      "18%, 16%.",
+      "8%, 18%.",
+      "9%, 18%.",
+      "9%, 20%.",
+      "10%, 20%."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 46,
+    "question": "Podczas prac przeładunkowych jeden z pracowników został obsypany wapnem gaszonym. Wskaż prawidłowe postępowanie: 1) natychmiast polewasz wodą poszkodowanego; 2) usuwasz poszkodowanego w miejsce bezpieczne. 3) zdejmujesz odzież z poszkodowanego; 4) posypujesz piachem ubranego poszkodowanego- piach wchłania ług sodowy; 5) spłukujesz poszkodowanego bieżącą woda i wzywasz pomoc. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,5,2.",
+      "2,3,4.",
+      "2,3,5.",
+      "5,3,4.",
+      "1,2,3,5."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 47,
+    "question": "Jesteś świadkiem wypadku samochodu-cysterny, na drogę wycieka płyn, który daje biało-żółty dym. Jakie działania podejmujesz? 1. natychmiast udajesz się do kabiny by wyciągnąć kierowcę z kabiny. 2. zabezpieczasz miejsce wypadku: zatrzymujesz pojazd w bezpiecznej odległości, zakładasz kamizelkę odblaskową, rozstawiasz trójkąt ostrzegawczy. 3. dzwonisz na nr 112/998 i podajesz informacje o zdarzeniu oraz numery z pomarańczowej tablicy informacyjnej z samochodu jeżeli są widoczne. 4. jak najszybciej oddalasz się z miejsca zdarzenia by nie ulec zatruciu. 5. w bezpiecznej odległości oczekujesz na przybycie służb ratowniczych. Prawidłowa odpowiedź to",
+    "answers": [
+      "1,5,2.",
+      "3,4,5.",
+      "3,2,4,5.",
+      "3,2,1.",
+      "3,2,5."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 48,
+    "question": "Po spożyciu przez poszkodowanego dużej ilości leków w celach samobójczych należy jak najszybciej:",
+    "answers": [
+      "zapytać poszkodowanego o powód i rozmawiać z nim by nie zasnął.",
+      "prowokować wymioty w celu eliminacji trucizny pod warunkiem, że jest przytomny, dbając by się nie zachłysnął.",
+      "zabezpieczyć pozostałe opakowania po środkach by przekazać je ratownikom.",
+      "wezwać Zespół Ratownictwa Medycznego i czekać na przyjazd.",
+      "wezwać policję."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 49,
+    "question": "Osobę po spożyciu dużej ilości alkoholu należy:",
+    "answers": [
+      "chronić przed upadkiem, wychłodzeniem.",
+      "w przypadku utraty świadomości, ułożyć w pozycji bezpiecznej.",
+      "prowokować wymioty w celu eliminacji alkoholu i zmniejszenie efektu toksycznego.",
+      "prawdziwe są odpowiedzi A,B,C.",
+      "prawdziwe są odpowiedzi A,B."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 50,
+    "question": "Czy jest różnica w postępowaniu z osobą oparzoną silnym kwasem lub silną zasadą? (w postępowaniu na poziomie kwalifikowanej pierwszej pomocy)",
+    "answers": [
+      "nie ma różnicy, w obu przypadkach musimy najpierw zobojętnić substancję żrącą.",
+      "przy oparzeniu kwasem mamy więcej czasu na podjęcie działań.",
+      "zasada jest mniej groźna.",
+      "postępowanie w obu przypadkach jest takie samo.",
+      "wszystko zależy od stężenia substancji żrącej."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 51,
+    "question": "Oparzenie I° charakteryzuje się:",
+    "answers": [
+      "pęcherzami z płynem surowiczym.",
+      "piekącym, swędzącym rumieniem na skórze, bólem przy dotyku.",
+      "brakiem czucia.",
+      "wszystkimi wymienionymi cechami.",
+      "prawdziwe są odpowiedzi A,B."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 52,
+    "question": "Oparzenie II° charakteryzuje się:",
+    "answers": [
+      "piekącym, rumieniem na skórze, bólem przy dotyku.",
+      "martwicą tkanek, brakiem czucia.",
+      "pęcherzami wypełnionymi płynem surowiczym na podłożu rumieniowym.",
+      "dużym bólem w miejscu oparzenia.",
+      "prawdziwe są odpowiedzi C i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 53,
+    "question": "Oparzenie III° charakteryzuje się:",
+    "answers": [
+      "brakiem czucia dotyku i bólu w miejscu oparzenia.",
+      "uszkodzeniem wszystkich warstw skóry.",
+      "pęcherzami na zaczerwienionej skórze i wyciekiem płynu z pęcherzy.",
+      "wszystkimi wymienionymi cechami.",
+      "prawdziwe są odpowiedzi A,B."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 54,
+    "question": "Hipertermia to stan w którym występuje:",
+    "answers": [
+      "podwyższona temperatura ciała.",
+      "obniżona temperatura ciała.",
+      "temperatura ciała nie ulega zmianie.",
+      "należy podjąć działania zmierzające do ochłodzenia organizmu.",
+      "prawdziwe są odpowiedzi A, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 55,
+    "question": "Na wycieczce w lesie doszło do ukąszenia przez żmiję jednego z uczestników. Należy natychmiast:",
+    "answers": [
+      "naciąć nożem ranę i wyssać krew.",
+      "wycisnąć jad razem z krwią.",
+      "założyć opatrunek osłonowy i udać się do szpitala z poszkodowanym.",
+      "wszystkie odpowiedzi są poprawne i możliwe do zastosowania.",
+      "prawdziwe są odpowiedzi A i B."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 56,
+    "question": "5 letnie dziecko w trakcie zabawy w ogrodzie zostało ukąszone wielokrotnie przez pszczoły. Należy natychmiast:",
+    "answers": [
+      "jeżeli występują objawy ostrej anafilaksji należy podać 0,3 mg adrenaliny (ampułkostrzykawka) domięśniowo.",
+      "wezwać pomoc.",
+      "przenieść dziecko w miejsce bezpieczne, w miarę możliwości usunąć pozostałe żądła",
+      "wezwać pomoc, obserwować oddech, uspokoić dziecko.",
+      "prawdziwe są odpowiedzi C,D,A."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 57,
+    "question": "Hipoksja to stan w którym:",
+    "answers": [
+      "występuje nadmiar tlenu w tkankach w stosunku do zapotrzebowania, prowadzący do hiperwentylacji.",
+      "następuje spadek ciśnienia wywołany zmianą pozycji ciała.",
+      "występuje niedobór tlenu w tkankach w stosunku do zapotrzebowania, prowadzący do niedotlenienia organizmu.",
+      "następuje wzrost ciśnienia wywołany zmianą pozycji ciała.",
+      "prawidłowe są odpowiedzi A i B."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 58,
+    "question": "Hipotonia ortostatyczna to stan w którym:",
+    "answers": [
+      "następuje spadek ciśnienia wywołany zmianą pozycji ciała.",
+      "następuje wzrost ciśnienia wywołany zmianą pozycji ciała.",
+      "występuje niedobór tlenu w tkankach w stosunku do zapotrzebowania, prowadzący do niedotlenienia organizmu",
+      "występuje nadmiar tlenu w tkankach w stosunku do zapotrzebowania, prowadzący do hiperwentylacji.",
+      "żadna z odpowiedzi nie jest prawidłowa."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 59,
+    "question": "W masywnych krwotokach (duża utrata krwi w krótkim czasie), w pierwszej fazie spodziewamy się u poszkodowanego: 1) zaburzeń świadomości; 2) przyśpieszonego tętna; 3) zaczerwienienia skóry; 4) sinicy twarzy. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,2,3.",
+      "1,3.",
+      "1,2.",
+      "1,4.",
+      "2,4."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 60,
+    "question": "Przy oparzeniach elektrycznych najbardziej zagrażające dla poszkodowanego są:",
+    "answers": [
+      "skutki miejscowe, jak np. oparzenie dłoni.",
+      "zaburzenia rytmu serca",
+      "niekorzystne działanie prądu na skórę (późniejsze blizny).",
+      "wpływ prądu elektrycznego na potencjały mózgowe.",
+      "żadne z wymienionych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 61,
+    "question": "Przy oparzeniach termicznych dłoni istotnymi elementami działań ratowniczych są: 1. schładzanie bieżącą wodą co najmniej 10 min. lub do ustąpienia bólu lub zastosowanie hydrożelu bezpośrednio na oparzenie. 2. zdjęcie biżuterii z palców i nadgarstków. 3. okrycie rany oparzeniowej po schłodzeniu suchym jałowym opatrunkiem. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,3.",
+      "1,2.",
+      "2,3.",
+      "wszystkie wymienione.",
+      "tylko 1."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 62,
+    "question": "U nieprzytomnego poszkodowanego, po upadku ze schodów, bez krwotoków zewnętrznych, z widocznym powierzchniowym otarciem skóry głowy, z zachowanym własnym oddechem i tętnem, działania pilne należy wykonać w następującej kolejności: 1. tlenoterapia (jeżeli są wskazania). 2. odkażenie rany. 3. ręczna stabilizacja kręgosłupa szyjnego, ocena oddechu. 4. ułożenie w pozycji przeciwwstrząsowej. 5. założenie opatrunku osłaniającego. Prawidłowa odpowiedź to:",
+    "answers": [
+      "3,1.",
+      "1,4.",
+      "1,2,3.",
+      "2,3,5.",
+      "1,2,3,4."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 63,
+    "question": "Spośród niżej wymienionych czynności ratowniczych, wskaż priorytetowe:",
+    "answers": [
+      "opatrzenie rany oparzeniowej.",
+      "udrożnienie dróg oddechowych.",
+      "unieruchomienie złamanej kończyny.",
+      "zatamowanie krwotoku tętniczego.",
+      "czynności ujęte w punktach D i B mają zawsze pierwszeństwo przed innymi działaniami."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 64,
+    "question": "Ranę kłutą klatki piersiowej na miejscu zdarzenia zaopatrzysz:",
+    "answers": [
+      "pozostawić bez opatrunku lub opatrunkiem nieokluzyjnym.",
+      "opatrunkiem z folii, szczelnie przymocowanym do klatki piersiowej ze wszystkich stron.",
+      "pozostawiasz bez zaopatrzenia ze względu na niebezpieczeństwo braku przepływu powietrza w drogach oddechowych poszkodowanego.",
+      "opatrunkiem zastawkowym.",
+      "prawidłowe odpowiedzi A, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 65,
+    "question": "W krwotoku tętniczym przedramienia, który nie zmniejsza się po zaopatrzeniu opatrunkiem uciskowym założonym w miejscu krwawienia, należy rozważyć następujące postępowanie: 1. ułożeniem poszkodowanego płasko oraz umieszczenie kończyny powyżej poziomu serca. 2. wzmocnienie ucisku poprzez owinięcie opatrunku dodatkowymi zwojami bandaża. 3. zdjęcie już założonego opatrunku i ponowne założenie grubszego opatrunku. 4. założenie opaski zaciskowej na przedramieniu 5-7 cm powyżej miejsca krwawienia. 5. założenie drugiej opaski zaciskowej na ramieniu jeżeli pierwsza jest nieskuteczna. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,3,5",
+      "1,2,4.",
+      "1,2,4,5.",
+      "1,3,4.",
+      "1,2,3,4,5."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 66,
+    "question": "Podawanie tlenu poszkodowanemu jest w określonych sytuacjach bezwzględnie konieczne. Spośród niżej przedstawionych wersji wybierz właściwą: 1. tlen podawać można tylko poszkodowanemu, znajdującemu się w pozycji leżącej. 2. podawanie tlenu jest podstawowym działaniem w zatruciach wziewnych. 3. aby uzyskać ok. 100% stężenie tlenu podawanego dorosłemu przez maskę do tlenoterapii należy zastosować przepływ minimum 6 litrów na minutę. 4. tlen jest szkodliwy przy dłuższym stosowaniu. 5. zestaw do tlenoterapii biernej powinien posiadać rezerwuar. Prawidłowa odpowiedź to:",
+    "answers": [
+      "2,3,4.",
+      "1,2,4.",
+      "2,4,5.",
+      "1,4,5.",
+      "1,3,4"
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 67,
+    "question": "U poszkodowanego w wyniku wypadku, stwierdzono szereg obrażeń i objawów. Zaznacz, który objaw (lub grupa objawów), albo obrażenie Twoim zdaniem jest najbardziej niepokojący i może wskazywać na potencjalne zagrożenie życia poszkodowanego:",
+    "answers": [
+      "złamanie kończyny górnej ze znacznym przemieszczeniem.",
+      "oparzenie II stopnia okolicy podudzia.",
+      "rana szarpana dłoni z niewielkim, powolnym wyciekiem krwi.",
+      "blada, chłodna i spocona skóra.",
+      "złamanie otwarte podudzia lewego bez krwotoku."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 68,
+    "question": "Wyciek płynu mózgowo-rdzeniowego i/lub krwawienie z uszu u poszkodowanego po urazie:",
+    "answers": [
+      "może grozić rozwinięciem wstrząsu.",
+      "świadczyć może o złamaniu podstawy czaszki.",
+      "wymaga założenia jałowego tamponu do ucha.",
+      "prawdziwe są odpowiedzi A,B i C.",
+      "prawdziwe A i B."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 69,
+    "question": "Krwotok tętniczy zaopatrujemy w pierwszej kolejności :",
+    "answers": [
+      "opaską zaciskową poniżej miejsca zranienia.",
+      "opaską zaciskową powyżej miejsca zranienia.",
+      "opatrunkiem uciskowym w miejscu zranienia.",
+      "szczelnym opatrunkiem osłaniającym.",
+      "prawdziwe są odpowiedzi C i/lub B."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 70,
+    "question": "W przypadku krwotoku u poszkodowanego w pierwszej fazie występują pewne charakterystyczne objawy. Wskaż, który z niżej wymienionych objawów raczej nie wystąpi u takiego poszkodowanego:",
+    "answers": [
+      "przyspieszone tętno",
+      "przyspieszony i spłycony oddech.",
+      "odczuwalne wzmożone pragnienie.",
+      "zwolniona czynność serca.",
+      "uczucie zimna."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 71,
+    "question": "W trakcie udzielania pomocy w przypadku oparzenia, miejsce urazu należy schłodzić bieżącą wodą lub użyć opatrunku hydrożelowego. Zaletami zastosowania opatrunku hydrożelowego są:",
+    "answers": [
+      "zmniejsza uczucie bólu.",
+      "opatrunek nie przywiera do rany.",
+      "zmniejsza znacznie ryzyko wystąpienia hipotermii spowodowanej schładzaniem.",
+      "prawdziwe są odpowiedzi A i B.",
+      "prawdziwe są odpowiedzi A, B i C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 72,
+    "question": "W wyniku zdarzenia drogowego poszkodowany leży na ulicy. Stwierdzasz ranę tłuczoną głowy, złamanie kości obu podudzi na tej samej wysokości oraz stłuczenie barku. Jeden ze stojących obok samochodów ma zbitą przednią szybę i wgniecioną maskę. Najbardziej prawdopodobną przyczyną doznanych obrażeń jest:",
+    "answers": [
+      "wypadnięcie poszkodowanego z jadącego samochodu.",
+      "zgniecenie samochodu, w którym znajdował się poszkodowany.",
+      "potrącenie poszkodowanego przez ten samochód osobowy.",
+      "na podstawie takiego obrazu nie można przypuszczać jaki był mechanizm urazu.",
+      "analiza przyczyn obrażeń nie ma znaczenia."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 73,
+    "question": "Najdogodniejszą pozycją dla poszkodowanych po urazie brzucha jest pozycja:",
+    "answers": [
+      "leżąca z nogami zgiętymi w stawach biodrowych i kolanowych.",
+      "półsiedząca.",
+      "boczna bezpieczna.",
+      "leżąca na brzuchu, z nogami wyprostowanymi.",
+      "przeciwwstrząsowa"
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 74,
+    "question": "U poszkodowanego po urazie głowy z ucha wycieka powoli różowo podbarwiony płyn. Podaj właściwy sposób postępowania:",
+    "answers": [
+      "stan taki nie wymaga na miejscu zdarzenia żadnych szczególnych działań ratowniczych, gdyż wyciek ustaje po kilku minutach.",
+      "należy wykonać opatrunek osłaniający z gazy jałowej i codofixu.",
+      "należy wykonać opatrunek uciskowy z gazy jałowej z użyciem bandaża elastycznego.",
+      "należy do przewodu słuchowego włożyć szczelny tampon z gazy jałowej, aby zapobiec dalszemu wyciekowi.",
+      "żaden z wymienionych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 75,
+    "question": "Krwotok tętniczy można próbować odróżnić od żylnego na podstawie:",
+    "answers": [
+      "intensywności wypływu krwi.",
+      "większej bolesności przy krwawieniu.",
+      "różnicy koloru wypływającej krwi.",
+      "krwotok tętniczy ma zawsze charakter tętniący.",
+      "prawdziwe są odpowiedzi A i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 76,
+    "question": "Poszkodowany siedzi w rozbitym samochodzie, jest blady, spocony, ma przyśpieszony oddech, złamania zamknięte obu kończyn dolnych na różnych wysokościach oraz zaburzenia świadomości. Podaj prawidłowy sposób postępowania przed przybyciem Zespołu Ratownictwa Medycznego:",
+    "answers": [
+      "w pierwszej kolejności należy unieruchomić złamania, później wykonywać dalsze czynności.",
+      "należy podać poszkodowanemu tlen i zaczekać z dalszym działaniem na przybycie lekarza.",
+      "należy pilnie ewakuować poszkodowanego z pojazdu, bo pozycja, w jakiej się znajduje stanowi dla niego zagrożenie, a następnie wykonywać dalsze, określone rodzajem obrażeń procedury ratownicze.",
+      "jeżeli pilna ewakuacja z pojazdu jest niemożliwa, należy dążyć do ułożenia w pozycji przeciwwstrząsowej w pojeździe.",
+      "prawdziwe są odpowiedzi C i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 77,
+    "question": "Wskaż prawidłową kolejność postępowania z poszkodowanym po urazie w wyniku wypadku samochodowego:",
+    "answers": [
+      "pilne unieruchomienie złamań, zatamowanie krwotoku, zapewnienie komfortu termicznego.",
+      "zabezpieczenie miejsca zdarzenia, dotarcie do poszkodowanego, udzielenie pomocy.",
+      "zabezpieczenie miejsca zdarzenia, unieruchomienie złamań, podanie tlenu.",
+      "stabilizacja głowy przy pomocy kołnierza ortopedycznego, tamowanie krwotoku, unieruchomienie złamań.",
+      "wszystkie wymienione są nieprawidłowe."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 78,
+    "question": "Kołnierz ortopedyczny służy do:",
+    "answers": [
+      "ograniczenia ruchomości odcinka szyjnego kręgosłupa.",
+      "usztywnienia kręgosłupa szyjnego.",
+      "unieruchomienia głowy.",
+      "unieruchomienia głowy tylko na czas ewakuacji.",
+      "żadnego z wymienionych."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 79,
+    "question": "U poszkodowanego z rozległą raną powłok i obrażeniami narządów jamy brzusznej ratownik powinien:",
+    "answers": [
+      "podać doustnie ogrzane, niesłodzone płyny celem zmniejszenia utraty ciepła.",
+      "założyć wilgotny opatrunek osłaniający przykryty szczelnie folią.",
+      "założyć opatrunek uciskowy przykryty folią termoizolacyjną.",
+      "prawdziwe są odpowiedzi A i C.",
+      "prawdziwe są odpowiedzi A i B."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 80,
+    "question": "Spośród wymienionych czynności, do zakresu kwalifikowanej pierwszej pomocy medycznej udzielanej przez ratowników, nie należy:",
+    "answers": [
+      "wykonywanie resuscytacji krążeniowo oddechowej (RKO).",
+      "podejmowanie decyzji o transporcie poszkodowanych do ośrodków leczniczych.",
+      "tamowanie krwotoków.",
+      "udrożnienie dróg oddechowych z użyciem rurki ustno-gardłowej lub maski krtaniowej.",
+      "zapewnienie komfortu cieplnego."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 81,
+    "question": "W masywnych krwotokach (duża utrata krwi w krótkim czasie) w pierwszej fazie, spodziewamy się u poszkodowanego:",
+    "answers": [
+      "zaburzeń świadomości.",
+      "przyspieszonego tętna.",
+      "zaczerwienienia skóry.",
+      "bladości skóry.",
+      "prawdziwe są odpowiedzi A,B i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 82,
+    "question": "W złamaniu otwartym kości udowej, któremu towarzyszy krwotok tętniczy, priorytetem ratowniczym jest:",
+    "answers": [
+      "zatamowanie krwotoku, w razie potrzeby przez ucisk na tętnicę powyżej miejsca złamania.",
+      "ułożenie odłamów w pozycji zbliżonej do fizjologicznej dla stworzenia warunków dla zastosowania opatrunku uciskowego.",
+      "założenie opatrunku osłaniającego i stabilizacja w pozycji zbliżonej do fizjologicznej.",
+      "stabilizacja i unieruchomienie w pozycji zastanej oraz opatrunek uciskowy.",
+      "tlenoterapia 100% tlenem"
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 83,
+    "question": "Poszkodowanemu w hipotermii należy zapewnić pozycję:",
+    "answers": [
+      "poziomą.",
+      "półsiedzącą.",
+      "przeciwwstrząsową.",
+      "boczną bezpieczną.",
+      "pozycja nie ma znaczenia."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 84,
+    "question": "W razie zwichnięcia stawu należy:",
+    "answers": [
+      "nakazać delikatne ruchy czynne, po kilkunastu minutach ból ustąpi.",
+      "nastawić zwichnięcie, podciągając w osi kończyny, staw rozmasować.",
+      "unieruchomić staw w pozycji fizjologicznej.",
+      "unieruchomić staw w pozycji zastanej.",
+      "dla zmniejszenia obrzęku zastosować opatrunek z bandaża elastycznego."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 85,
+    "question": "W przypadku braku szyn Kramera, jedną z możliwych alternatyw zabezpieczenia złamanego podudzia będzie:",
+    "answers": [
+      "pozostawiamy bez zaopatrzenia.",
+      "unieruchamiamy w pozycji zastanej przy użyciu kija, deski itp. sprzętu przygodnego.",
+      "owijamy ściśle bandażem elastycznym.",
+      "mocujemy do drugiej kończyny.",
+      "mocujemy do drugiej kończyny przy użyciu przekładki pomiędzy nimi."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 86,
+    "question": "Uszkodzoną kończynę górną możesz unieruchomić:",
+    "answers": [
+      "szyną Kramera.",
+      "na chuście trójkątnej.",
+      "przez przybandażowanie kończyny do klatki piersiowej.",
+      "przy użyciu sprzętu przygodnego.",
+      "każdą z wymienionych metod."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 87,
+    "question": "Leżącego poszkodowanego po urazie kręgosłupa ratownik wyposażony w sprzęt medyczny:",
+    "answers": [
+      "powinien zawsze ułożyć w pozycji bezpiecznej (bocznej ustalonej), gdyż zabezpiecza ona przed dalszymi urazami.",
+      "powinien zawsze ułożyć na plecach na miękkim podłożu.",
+      "powinien zawsze ułożyć na plecach, założyć kołnierz szyjny i uważać, aby przy przenoszeniu nie powodować zmian pozycji w osi kręgosłupa.",
+      "powinien, po założeniu kołnierza ortopedycznego, niezwłocznie doprowadzić do pozycji siedzącej w celu stabilizacji grawitacyjnej.",
+      "wszystkie powyższe są fałszywe."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 88,
+    "question": "Podejrzewasz uraz kręgosłupa w przypadku, gdy:",
+    "answers": [
+      "wypadkowi komunikacyjnemu towarzyszy złamanie kończyny dolnej.",
+      "wypadkowi komunikacyjnemu towarzyszy uraz głowy,",
+      "masz do czynienia z upadkiem z wysokości.",
+      "prawdziwe są odpowiedzi A i C.",
+      "prawdziwe są odpowiedzi A, B i C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 89,
+    "question": "Opatrunek uciskowy stosuje się:",
+    "answers": [
+      "w przypadku krwotoków zewnętrznych.",
+      "w przypadku krwotoków wewnętrznych.",
+      "jedynie w przypadku krwotoków żylnych.",
+      "jedynie w przypadku krwotoków z kończyn",
+      "jednocześnie z opaską zaciskową."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 90,
+    "question": "W przypadku rozpoznania wstrząsu hipowolemicznego postępowanie przeciwwstrząsowe obejmuje:",
+    "answers": [
+      "ułożenie w pozycji przeciwwstrząsowej.",
+      "tlenoterapia",
+      "wsparcie psychiczne.",
+      "zapewnienie komfortu termicznego.",
+      "prawidłowe jest postępowanie wskazane w odpowiedziach A, B, C, i D, ale po wcześniejszym zatamowaniu krwawienia zewnętrznego (jeżeli występuje)."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 91,
+    "question": "W postępowaniu przeciwwstrząsowym najważniejsze jest:",
+    "answers": [
+      "wspomaganie psychiczne.",
+      "termoizolacja.",
+      "ułożenie w pozycji przeciwwstrząsowej.",
+      "tlenoterapia.",
+      "wszystkie wymienione są jednakowo ważne."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 92,
+    "question": "Podczas ewakuacji poszkodowanego na noszach – desce, powinny być spełnione określone warunki. Wskaż wśród niżej wymienionych stwierdzeń błędne:",
+    "answers": [
+      "przed jakimkolwiek przemieszczeniem poszkodowanego na desce, należy zapiąć 4 pasy mocujące.",
+      "przenosić poszkodowanego należy – w miarę możliwości – nogami w kierunku marszu.",
+      "dla unieruchomienia głowy poszkodowanego w trakcie takiej ewakuacji wystarczy jedynie kołnierz ortopedyczny.",
+      "należy unikać kolejnego przekładania poszkodowanego na nosze karetki pogotowia; zgodnie z „zasadą jednych noszy”.",
+      "prawidłowe odpowiedzi to: A, C, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 93,
+    "question": "Poszkodowanego w wypadku drogowym ewakuuje się z wnętrza pojazdu, gdy:",
+    "answers": [
+      "dowódca wyda polecenie.",
+      "występuje konieczność resuscytacji.",
+      "rozpoznano objawy wstrząsu u poszkodowanego.",
+      "występuje zagrożenie zewnętrzne.",
+      "prawdziwe są odpowiedzi B,C i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 94,
+    "question": "Dla ratownika różnica pomiędzy transportem a ewakuacją polega na tym, że:",
+    "answers": [
+      "każde przemieszczenie poszkodowanego na mocy decyzji ratownika to ewakuacja, a na mocy decyzji lekarza lub ratownika medycznego to transport.",
+      "przemieszczanie poszkodowanego na noszach to zawsze ewakuacja, a przemieszczenie przy wykorzystaniu karetki – to transport.",
+      "strażacy zawsze ewakuują, a zespoły ratownictwa medycznego transportują.",
+      "prawdziwe są odpowiedzi A i C.",
+      "ewakuacja i transport to dwie nazwy tego samego zjawiska."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 95,
+    "question": "Określona w procesie segregacji poszkodowanych w zdarzeniu masowym grupa „czerwona” to grupa o najwyższym priorytecie:",
+    "answers": [
+      "transportowym.",
+      "terapeutycznym i transportowym.",
+      "reanimacyjnym.",
+      "prawdziwe są odpowiedzi A,B i C.",
+      "segregacja to wyznaczanie kolejności, a nie priorytetów."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 96,
+    "question": "Zdarzenie masowe to zdarzenie o znacznej dysproporcji pomiędzy zapotrzebowaniem na medyczne działania ratownicze realizowane w trybie natychmiastowym a możliwościami:",
+    "answers": [
+      "sił i środków podmiotów ratowniczych obecnych na miejscu zdarzenia.",
+      "sił i środków ratowniczych powiatu.",
+      "sił i środków ratowniczych województwa.",
+      "sił i środków ujętych w planie ratowniczym dla obszaru chronionego.",
+      "zespołów ratownictwa medycznego obecnych na miejscu zdarzenia."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 97,
+    "question": "Umieszczona w planie ratowniczym procedura dysponowania danego podmiotu ratowniczego oparta powinna być głównie na: 1. odległości miejsca stacjonowania podmiotu od miejsca zdarzenia; 2. przynależności administracyjnej miejsca zdarzenia; 3. teoretycznym czasie przybycia podmiotu ratowniczego na miejsce zdarzenia; 4. rodzaju zdarzenia; 5. aktualnym czasie przybycia podmiotu ratowniczego na miejsce zdarzenia. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,4.",
+      "2,4.",
+      "4,5.",
+      "1,4.",
+      "2,5."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 98,
+    "question": "Poszkodowany wydolny krążeniowo i oddechowo z zamkniętym złamaniem podudzi, u którego po kilkunastu minutach po segregacji pierwotnej rozwinęły się objawy wstrząsu, należy do grupy:",
+    "answers": [
+      "najpierw zielonej, później żółtej",
+      "najpierw czerwonej, potem żółtej.",
+      "cały czas żółtej",
+      "cały czas czerwonej",
+      "najpierw żółtej, potem czerwonej"
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 99,
+    "question": "W założeniach taktycznych ratownictwa medycznego w zdarzeniach na drogach, wykonanie dostępu oznacza:",
+    "answers": [
+      "dotarcie do poszkodowanego.",
+      "stworzenie możliwości zbadania i ewakuacji poszkodowanego.",
+      "stworzenie możliwości zbadania poszkodowanego.",
+      "to samo, co „wycięcie poszkodowanego z pojazdu”.",
+      "zabezpieczenie miejsca zdarzenia i umożliwienie procedur dochodzeniowych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 100,
+    "question": "Zadania z zakresu kwalifikowanej pierwszej pomocy realizowane przez ratowników KSRG:",
+    "answers": [
+      "zawsze w całości zastępują działania Zespołów Ratownictwa Medycznego.",
+      "wspomagają działania Zespołów Ratownictwa Medycznego.",
+      "są realizowane tylko i wyłącznie w przypadku technicznych trudności, uniemożliwiających dotarcie do poszkodowanego przez członków Zespołu Ratownictwa Medycznego.",
+      "mogą być wykonywane tylko przy udziale koordynatora medycznych czynności ratowniczych.",
+      "odbywają się zawsze pod nadzorem lekarza."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 101,
+    "question": "Do zadań koordynatora medycznych działań ratowniczych (KMDR) KSRG należy: 1. koordynacja działań z zakresu kwalifikowanej pierwszej pomocy, segregacji pierwotnej do czasu przybycia ZRM. 2. realizuje wraz z ratownikami KSRG kpp w strefach zagrożenie dla ZRM. 3. prowadzenie i ewentualne nadzorowanie segregacji, jako procesu określania priorytetów terapeutyczno-transportowych. 4. przekazuje informacje o wykonaniu dostępu do poszkodowanego i możliwości podjęcia medycznych czynności ratowniczych (mcr) przez ZRM. 5. transport poszkodowanych z kodem czerwonym do specjalistycznej placówki służby zdrowia. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,2,3,4.",
+      "1,2,3.",
+      "2,3,4.",
+      "3,4,5.",
+      "2,4,5."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 102,
+    "question": "Organizacja ratownictwa medycznego realizowanego przez podmioty KSRG nie obejmuje:",
+    "answers": [
+      "ujednolicenia zasad powiadamiania i dysponowania podmiotów systemu oraz podmiotów współdziałających z systemem.",
+      "ujednolicania zasad postępowania w zdarzeniach z dużą liczbą poszkodowanych.",
+      "transportu lżej poszkodowanych do miejsca zamieszkania.",
+      "ujednolicania metodyki planowania transportu poszkodowanej lub zagrożonej ludności do izb przyjęć lub szpitalnych oddziałów wyspecjalizowanych w zakresie medycyny ratunkowej lub innych podmiotów prowadzących ratownictwo medyczne w warunkach szpitalnych.",
+      "wsparcia psychologicznego osób uczestniczących w działaniach ratowniczych."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 103,
+    "question": "Kwalifikowana pierwsza pomoc to określenie czynności podejmowanych wobec osoby w stanie nagłego zagrożenia zdrowotnego przez ratownika. W rozumieniu Ustawy o Państwowym Ratownictwie Medycznym ratownikiem może być: 1. wyłącznie osoba posiadająca dyplom szkoły lub uczelni medycznej. 2. wyłącznie osoba zatrudniona lub pełniąca służbę w jednostkach współpracujących z systemem ratownictwa medycznego lub będąca członkiem tych jednostek. 3. osoba posiadająca ważne zaświadczenie o ukończeniu kursu w zakresie kwalifikowanej pierwszej pomocy i uzyskaniu tytułu ratownika. 4. osoba której stan zdrowia pozwala na udzielanie kwalifikowanej pierwszej pomocy. 5. osoba posiadająca dyplom ukończenia szkoły medycznej oraz pełną zdolność do czynności prawnych. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,3,4.",
+      "1,2,3.",
+      "3,4.",
+      "3,4,5.",
+      "2,4,5."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 104,
+    "question": "Czy osoba udzielająca pierwszej pomocy, kwalifikowanej pierwszej pomocy oraz podejmująca medyczne czynności ratunkowe korzysta z ochrony przewidzianej prawem?",
+    "answers": [
+      "zawarte jest to w prawie zwyczajowym.",
+      "tak, wynika to z Rozporządzenia MSW i A w sprawie szczegółowych zasad organizacji krajowego systemu ratowniczo-gaśniczego z 1999 roku.",
+      "nie, wynika to z Kodeksu Karnego.",
+      "tak, wynika to z Ustawy o Państwowym Ratownictwie Medycznym z 2006 roku.",
+      "nie podlega żadnej ochronie prawnej."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 105,
+    "question": "Pozycja boczna ustalona ma na celu zapewnienie drożnych dróg oddechowych oraz umożliwienie swobodnego wypływu śliny i treści z jamy ustnej. Aby spełniała swoje zadanie muszą być spełnione poniższe warunki, z wyjątkiem:",
+    "answers": [
+      "pozycja musi być stabilna.",
+      "musi być możliwe łatwe ocenianie czynności życiowych.",
+      "nie zmienia się raz przyjętego ułożenia poszkodowanego.",
+      "musi być zapewniony swobodny wypływ śliny i innych wydzielin.",
+      "należy unikać ucisku na klatkę piersiową."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 106,
+    "question": "Jesteś świadkiem jak osoba, która się krztusi traci przytomność i upada na podłogę. Dzwonisz na 112 lub 999, a następnie przystępujesz do działania w następującej kolejności:",
+    "answers": [
+      "obracasz poszkodowanego plecami ku górze i wykonujesz 5 uderzeń pomiędzy łopatkami.",
+      "wykonujesz parę szybkich i bardzo silnych oddechów usta – usta.",
+      "czekasz aż pacjent odzyska przytomność, podnosisz go, następnie stajesz za jego plecami i wykonujesz uciśnięcia Heimlicha.",
+      "usuwasz widoczne ciało obce z jamy ustnej, następnie rozpoczynasz resuscytacje krążeniowo oddechową zaczynając od 30 uciśnięć klatki piersiowej.",
+      "siadasz okrakiem na udach poszkodowanego i wykonujesz 5 uciśnięć nadbrzusza."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 107,
+    "question": "Kobieta 24-letnia połknęła garść pigułek nasennych około 30-45 minut temu. Znajdujesz ją nieprzytomną, wykonującą sporadyczne próby łapania powietrza (gasping). Jej tętno jest szybkie i dobrze wyczuwalne. Co powinieneś zrobić?",
+    "answers": [
+      "zadzwonić po pogotowie ratunkowe i rozpocząć oddechy wspomagane z częstotliwością 10 oddechów na minutę.",
+      "rozpocząć uciski klatki piersiowej, a po minucie zadzwonić po Zespół Ratownictwa Medycznego.",
+      "wykonać 2 uciśnięcia nadbrzusza, a następnie położyć pacjenta w pozycji bezpiecznej",
+      "podjąć reanimację przez 1 minutę, a następnie zadzwonić po Zespół Ratownictwa Medycznego.",
+      "wykonać 5 uciśnięć nadbrzusza, a następnie 2 wdechy."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 108,
+    "question": "Udzielasz pomocy 6-letniej ofierze wypadku samochodowego, u której podejrzewasz uraz kręgosłupa szyjnego. Dziecko jest nieprzytomne, oddycha płytko, z wysiłkiem, słychać charczenie. Częstość oddechów 30 na minutę. Aby udrożnić drogi oddechowe powinieneś wykonać następujący manewr:",
+    "answers": [
+      "maksymalnie odchylając głowę do tyłu.",
+      "wysunąć żuchwę na szczękę, odchylając głowę do tyłu.",
+      "wyciągnąć język przed żuchwę.",
+      "usiąść okrakiem na udach ratowanego dziecka i wykonywać uciśnięcia nadbrzusza.",
+      "wykluczyć obecność ciała obcego i wysunąć żuchwę na szczękę jednocześnie stabilizując kręgosłup szyjny. Rozważyć założenie rurki ustno-gardłowej."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 109,
+    "question": "Zbliżasz się do osoby dorosłej, która leży na podłodze. Nie ma nikogo innego w pobliżu. Jak powinieneś postąpić?",
+    "answers": [
+      "ocenić przytomność leżącego, sprawdzić oddech, potem wezwać Zespół Ratownictwa Medycznego.",
+      "zadzwonić po Zespół Ratownictwa Medycznego i czekać na karetkę przed domem.",
+      "usunąć ewentualne ciała obce z dróg oddechowych palcem.",
+      "prowadzić RKO przez 5 minut, a potem zadzwonić po Zespół Ratownictwa Medycznego.",
+      "zawołać o pomoc i zacząć oddechy zastępcze."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 110,
+    "question": "Wskaż fałszywe stwierdzenie dotyczące pomocy tonącym:",
+    "answers": [
+      "u tonących w pierwszej chwili po wydobyciu staramy się wylać całą wodę zgromadzoną w układzie oddechowym.",
+      "jeżeli nie ma pewności co do mechanizmu tonięcia, zakładamy kołnierz ortopedyczny.",
+      "również w porze letniej należy poszkodowanemu, wydobytemu z wody, zapewnić komfort cieplny.",
+      "resuscytację u podtopionych zaczynamy od 5 oddechów ratowniczych.",
+      "po sprawdzeniu przytomności i ocenie oddechu, woła się o pomoc."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 111,
+    "question": "U niektórych poszkodowanych nieprzytomnych, ale oddychających stosuje się pozycję bezpieczną. Wskaż stwierdzenie fałszywe:",
+    "answers": [
+      "pozycja ta może zapobiec dostaniu się treści pokarmowej do dróg oddechowych.",
+      "pozycję taką stosuje się ze względu na łatwą kontrolę tętna u poszkodowanego.",
+      "ułożenie poszkodowanego w tej pozycji nie gwarantuje przeżycia.",
+      "możliwość ułożenia poszkodowanego w tej pozycji dopuszcza na jego pozostawienie, celem udzielenia pomocy większej liczbie poszkodowanych.",
+      "pozycja ta zapewnia udrożnienie górnych dróg oddechowych u osoby nieprzytomnej."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 112,
+    "question": "Wskaż czynność, która nie jest elementem procedury udrażniania dróg oddechowych:",
+    "answers": [
+      "odessanie płynnej treści z jamy ustnej.",
+      "uciśnięcia nadbrzusza.",
+      "tlenoterapia bierna.",
+      "założenie poszkodowanemu rurki ustno-gardłowej.",
+      "rękoczyn czoło-żuchwa."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 113,
+    "question": "Jakie będzie Twoje postępowanie u poszkodowanego, który w wyniku wypadku samochodowego doznał urazu z raną tłuczoną głowy, z przejściową utratą świadomości i przebywa nadal w samochodzie?",
+    "answers": [
+      "zadzwonię po Zespół Ratownictwa Medycznego i będę czekać przy samochodzie obserwując poszkodowanego.",
+      "wezwę pomoc, sprawdzę jego podstawowe funkcje życiowe (stan świadomości, oddech, krążenie), a następnie zależnie od sytuacji podejmę decyzję o ewakuacji lub udzieleniu pomocy w samochodzie.",
+      "wyciągnę poszkodowanego z samochodu i zacznę oddechy zastępcze.",
+      "podam tlen i będę czekać na pomoc.",
+      "zacznę resuscytację w samochodzie."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 114,
+    "question": "Wskaż prawidłową kolejność czynności jakie należy wykonać po wezwaniu Zespołu Ratownictwa Medycznego u głęboko nieprzytomnego poszkodowanego, po urazie, bez widocznych obrażeń, z zachowanym własnym charczącym oddechem i oznakami krążenia: 1. okrycie kocem termoizolacyjnym. 2. tlenoterapia bierna (jeżeli są wskazania). 3. założenie rurki ustno-gardłowej (jeżeli toleruje). 4. stabilizacja kręgosłupa szyjnego. 5. udrożnienie dróg oddechowych poprzez wysunięcie żuchwy. Prawidłowa odpowiedź to:",
+    "answers": [
+      "2,5,3,1,4.",
+      "1,3,5,4,2.",
+      "3,2,4,1,5.",
+      "5,4,3,2,1.",
+      "4,2,1,3,5."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 115,
+    "question": "Postępowanie z poszkodowanym, który w czasie pożaru wyskoczył z III piętra i doznał urazu kręgosłupa w odcinku piersiowo-lędźwiowym oraz jest nieprzytomny, z zachowanym krążeniem i oddechem, w pierwszej kolejności obejmuje:",
+    "answers": [
+      "resuscytacje krążeniowo oddechową (RKO), bo podtrzymanie krążenia jest priorytetem.",
+      "oddech zastępczy z tlenoterapią o przepływie 10 l na minutę.",
+      "ręczną stabilizację kręgosłupa oraz tlenoterapię bierną (jeżeli są wskazania).",
+      "opatrzenie ran i złamań oraz oparzeń.",
+      "szybki transport do szpitala."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 116,
+    "question": "Spośród niżej wymienionych czynności ratowniczych, wskaż czynność priorytetową u osoby nieprzytomnej:",
+    "answers": [
+      "opatrzenie rany oparzeniowej.",
+      "udrożnienie dróg oddechowych.",
+      "unieruchomienie złamanej kończyny.",
+      "zaopatrzenie złamania otwartego.",
+      "okrycie kocem termoizolacyjnym."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 117,
+    "question": "Rurkę ustno-gardłową, spróbujesz zastosować:",
+    "answers": [
+      "u poszkodowanych przytomnych, ale po urazach klatki piersiowej.",
+      "u nieprzytomnych z obecną treścią pokarmową w jamie ustnej (dla udrożnienia).",
+      "zawsze u poszkodowanych przytomnych z urazem twarzoczaszki.",
+      "tylko przy bezdechu u dorosłych, zamiast tlenoterapii.",
+      "u nieprzytomnych, aby zmniejszyć zagrożenie niedrożnością dróg oddechowych."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 118,
+    "question": "W postępowaniu z nieprzytomnym dorosłym nieurazowym, wezwanie Zespołu Ratownictwa Medycznego powinno nastąpić:",
+    "answers": [
+      "po ocenie oddechu.",
+      "jeżeli poszkodowany ma poważne obrażenia.",
+      "nie należy wzywać pomocy, jeżeli strażak-ratownik wie, co należy zrobić z osobą poszkodowaną.",
+      "po pierwszej minucie resuscytacji.",
+      "po udzieleniu pierwszej pomocy i stwierdzeniu, że stan poszkodowanego nie ulega zmianie."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 119,
+    "question": "Podczas oceny stanu neurologicznego poszkodowanego korzystamy ze skali AVPU. Co oznaczają poszczególne litery tej skali:",
+    "answers": [
+      "A-alergie V-wysypki P- przyjmowane leki U- uzależnienia.",
+      "A-zorientowany, V-reaguje na głos, P- reaguje na bodźce bólowe, U- brak reakcji.",
+      "A- brak reakcji V- reaguje na bodźce bólowe P- reaguje na bodźce słowne U- zorientowany..",
+      "A- agresywny V-wulgarny P-podsypiający U- unikający kontaktu.",
+      "wszystkie powyższe są fałszywe."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 120,
+    "question": "Właściwy rozmiar rurki ustno-gardłowej dla poszkodowanego nieprzytomnego wyznacza odległość:",
+    "answers": [
+      "od brody do obojczyka.",
+      "od płatka ucha do kąta ust.",
+      "od czubka jego nosa do brody.",
+      "rurkę dobiera się tylko u osoby przytomnej.",
+      "rurki nie stosuje się u osób nieprzytomnych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 121,
+    "question": "Jeśli wystąpią trudności w prowadzeniu skutecznej wentylacji za pomocą maski i worka samorozprężalnego, należy: 1) poprawić ułożenie maski na twarzy poszkodowanego; 2) ponownie spróbować udrożnić drogi oddechowe za pomocą odpowiednich rękoczynów; 3) poczekać z decyzją co, do dalszego postępowania na przybycie lekarza, gdyż możemy zaszkodzić poszkodowanemu; 4) sprawdzić szczelność układu do wentylacji; 5) pomimo trudności kontynuować wentylację, bo każdy manewr sprawdzający to strata czasu. Prawidłowa odpowiedź to:",
+    "answers": [
+      "2,4,5.",
+      "1,3,4.",
+      "2,3,4.",
+      "3,4,5.",
+      "1,2,4."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 122,
+    "question": "W czasie prowadzenia u poszkodowanego oddechu zastępczego przy użyciu maski twarzowej i worka samorozprężalnego, należy pamiętać o dołączeniu do zestawu rezerwuaru tlenowego. Ma to na celu:",
+    "answers": [
+      "zwiększenie stężenia tlenu w mieszaninie oddechowej z 21% do około 40-50 %.",
+      "utrzymanie, przy właściwym dopływie tlenu, wysokiego stężenia tlenu w mieszaninie oddechowej, nawet na poziomie bliskim 99%. ( dbając o szczelne przyłożenie maski oddechowej do twarzy poszkodowanego)",
+      "ułatwienie prowadzenia oddechu zastępczego (w takim przypadku nie trzeba dbać o szczelne przyłożenie maski oddechowej do twarzy poszkodowanego).",
+      "stworzenie wystarczającej rezerwy tlenowej na czas, nawet do 4 minut po odłączeniu przewodu, łączącego układ z butlą tlenową (co jest niezwykle przydatne, np. przy ewakuacji poszkodowanego).",
+      "podanie prawidłowej ilości tlenu, przy jednocześnie występujących trudnościach z utrzymaniem drożności dróg oddechowych poszkodowanego."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 123,
+    "question": "Wskaż prawdziwe stwierdzenie dotyczące relacji między resuscytacją krążeniowo- oddechową (RKO) i Automatyczną Defibrylacją Zewnętrzną (AED):",
+    "answers": [
+      "pacjent z ostrym zawałem serca potrzebuje RKO, a nie AED",
+      "natychmiastowa RKO i wczesna defibrylacja (w ciągu 4-5 minut) może znacznie zwiększyć liczbę uratowanych poszkodowanych z nagłym zatrzymaniem krążenia.",
+      "jeśli defibrylacja była wykonana w ciągu 10 minut, RKO nie ma sensu.",
+      "jeśli RKO było podjęte natychmiast, defibrylacja nie jest potrzebna",
+      "RKO należy wdrożyć dopiero po podłączeniu AED i przeprowadzonej analizie przez defibrylator"
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 124,
+    "question": "Na jakiej podstawie podejmiesz decyzję o wdrożeniu resuscytacji krążeniowo-oddechowej:",
+    "answers": [
+      "szerokości źrenic poszkodowanego.",
+      "obecności tętna na obwodzie.",
+      "utracie przytomności i stwierdzeniu braku oddechu.",
+      "bladości i ochłodzeniu powłok skórnych.",
+      "obecności sinicy."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 125,
+    "question": "U dorosłych pacjentów prowadzenie resuscytacji krążeniowo-oddechowej w obserwowanym zatrzymaniu krążenia rozpoczyna się od:",
+    "answers": [
+      "30 uciśnięć klatki piersiowej oraz jak najszybszym użyciu AED.",
+      "2 oddechów ratowniczych oraz jak najszybszym użyciu AED.",
+      "15 uciśnięć klatki piersiowej oraz jak najszybszym użyciu AED.",
+      "30 uciśnięć klatki piersiowej (1 ratownik) lub 15 uciśnięć klatki piersiowej (2 ratowników).",
+      "5 oddechów zastępczych."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 126,
+    "question": "W celu uciskania klatki piersiowej podczas resuscytacji, ręce układa się:",
+    "answers": [
+      "na środku klatki piersiowej poszkodowanego.",
+      "na górnej 1/4 części mostka poszkodowanego.",
+      "na lewo od środka mostka nad sercem ratowanego.",
+      "1 cm powyżej łuku międzyżebrowego ratowanego.",
+      "w górnej 1/3 części mostka poszkodowanego."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 127,
+    "question": "Stosunek uciśnięć do oddechów ratowniczych u osoby dorosłej powinien wynosić:",
+    "answers": [
+      "50:2.",
+      "30:2.",
+      "15:2.",
+      "10:1.",
+      "15:1."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 128,
+    "question": "Podczas prowadzenia podstawowych zabiegów resuscytacyjnych, ocenę stanu poszkodowanego wykonuje się:",
+    "answers": [
+      "co jedną minutę.",
+      "co 5 cykli (30 uciśnięć klatki piersiowej i 2 oddechy zastępcze).",
+      "jeżeli u poszkodowanego pojawią się oznaki życia.",
+      "przed naklejeniem elektrod AED.",
+      "po około 15 minutach resuscytacji."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 129,
+    "question": "Jeżeli pierwszy oddech ratowniczy nie powoduje uniesienia się klatki piersiowej, należy wykonać następujące czynności, z wyjątkiem:",
+    "answers": [
+      "sprawdzenia, czy udrożnienie dróg oddechowych jest poprawnie wykonane.",
+      "wygarnięcia „na ślepo” ewentualnych ciał obcych, będących przyczyną niedrożności dróg oddechowych.",
+      "usunięcia tylko widocznych ciał obcych.",
+      "wykonania nie więcej niż 2 prób podania oddechów ratowniczych.",
+      "sprawdzenia, czy nie występują uszkodzenia (bądź anomalie) klatki piersiowej, uniemożliwiające jej prawidłowe unoszenie."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 130,
+    "question": "W przypadku stwierdzenia u pacjenta objawów łagodnej niedrożności dróg oddechowych spowodowanej prawdopodobnie obecnością ciała obcego, działania ratownika polegają na:",
+    "answers": [
+      "zachęcaniu poszkodowanego do kaszlu.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową, a następnie 5 uciśnięć nadbrzusza.",
+      "rytmicznym uderzaniu poszkodowanego w okolicę międzyłopatkową, na przemian z uciskaniem nadbrzusza."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 131,
+    "question": "Worek samorozprężalny posiada następujące zalety, z wyjątkiem:",
+    "answers": [
+      "może być podłączony do maski twarzowej, rurki dotchawiczej lub alternatywnych przyrządów do udrażniania dróg oddechowych.",
+      "jest zalecany do stosowania w przypadku zatrucia wziewnego",
+      "przy zastosowaniu maski, rezerwuaru tlenowego i przepływu tlenu 12-16 l/min pozwala osiągnąć wdechowe stężenie tlenu nie wyższe niż 75%.",
+      "zabezpiecza przed zakażeniem ratownika prowadzącego wentylację.",
+      "w razie uszkodzenia mechanicznego worka, można go zastosować tylko do tlenoterapii biernej."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 132,
+    "question": "Wykonujesz resuscytację z udziałem kolegi. Jak często powinieneś uciskać klatkę piersiową?",
+    "answers": [
+      "50-60 razy na minutę.",
+      "z częstością zależną od wielkości klatki piersiowej.",
+      "poniżej 100 razy na minutę.",
+      "wystarczająco szybko by utrzymać różowy kolor skóry twarzy.",
+      "100-120 razy na minutę."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 133,
+    "question": "Wykonujesz resuscytację u 5-letniego dziecka z zatrzymaniem czynności serca. Którą z technik ucisku klatki piersiowej powinieneś zastosować?",
+    "answers": [
+      "uciskanie jedną lub dwoma dłońmi (zależnie od gabarytów poszkodowanego), z częstością 100-120 razy na minutę.",
+      "uciskanie dwoma dłońmi tak, by odchylenie mostka nie przekraczało około 1,5 cm.",
+      "uciskanie dolnego odcinka mostka tylko dwoma palcami.",
+      "wykonanie 15 uciśnięć, a następnie 3 wolnych wdechów.",
+      "wykonywanie uciśnięć jedną ręką z częstością około 100 razy na minutę."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 134,
+    "question": "Bawisz się z dziećmi w pokoju, w którym jest dużo zabawek składających się z drobnych części. Nagle, 8-miesięczne niemowlę zaczyna się dusić. Słyszysz świst towarzyszący każdej próbie oddechu. Jego kaszel jest cichy i nieefektywny, zaczyna sinieć. Twoim zdaniem u niemowlęcia doszło do:",
+    "answers": [
+      "ostrego ataku astmy oskrzelowej.",
+      "napadu padaczki.",
+      "obrzęku strun głosowych w przebiegu infekcji.",
+      "całkowitej niedrożności dróg oddechowych spowodowanej ciałem obcym.",
+      "częściowej niedrożności dróg oddechowych."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 135,
+    "question": "Widziałeś jak koleżanka upadła na korytarzu w pracy. Podchodząc do poszkodowanej stwierdziłeś, że jest nieprzytomna. Udrożniłeś drogi oddechowe. Aby ocenić czy nieprzytomna oddycha należy:",
+    "answers": [
+      "przyłożyć lusterko do ust nieprzytomnej.",
+      "zbliżyć do ust i nosa poszkodowanej kartkę papieru lub piórko.",
+      "ocenić ruchy tchawicy (jabłko Adama).",
+      "przez 10 sekund pochylając się uchem nad ustami i nosem poszkodowanej, starasz się usłyszeć oddech i wyczuć go na swoim policzku, jednocześnie obserwując ruchy klatki piersiowej.",
+      "obserwować przez 5 sekund, czy unosi się klatka piersiowa."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 136,
+    "question": "Czynności resuscytacyjne (uciski klatki piersiowej i oddechy) przerwiesz w następującej sytuacji:",
+    "answers": [
+      "po około 10 -15 minutach prowadzenia czynności ratowniczych.",
+      "odzyskania prawidłowego oddechu przez poszkodowanego, przybycia na miejsce zdarzenia Zespołu Ratownictwa Medycznego i przejęcia poszkodowanego, fizycznego wyczerpania ratownika, niebezpieczeństwa.",
+      "w bardzo niesprzyjających warunkach atmosferycznych.",
+      "w przypadku wydobycia poszkodowanego z zimnej wody, który po 10 minutach akcji nie daje oznak życia.",
+      "po przybyciu na miejsce innych służb ratowniczych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 137,
+    "question": "U nieprzytomnego poszkodowanego nie stwierdzasz oddechu, ani tętna. Po rozpoczęciu resuscytacji krążeniowo-oddechowej (RKO) stwierdzasz, że doszło u niego do złamania kilku żeber. W takiej sytuacji:",
+    "answers": [
+      "przerywasz RKO i wykonujesz tylko oddechy ratownicze.",
+      "rozpoczynasz bezpośrednie uciski serca.",
+      "nadal prowadzisz podjęte działania ratownicze (resuscytacje krążeniowo-oddechową) zgodnie z algorytmem.",
+      "w pierwszej kolejności owijasz klatkę piersiową poszkodowanego bandażem elastycznym, dopiero wówczas rozpoczynasz wykonywanie RKO.",
+      "kontynuujesz podjęte czynności ratownicze, omijając uszkodzoną okolicę."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 138,
+    "question": "Kierownik firmy, w której pracujesz jest 50-letnim, otyłym mężczyzną. Do tej pory nie chorował na serce. Aktualnie zaczął uskarżać się na nagły, ostry ból w klatce piersiowej, promieniujący do lewej ręki i żuchwy. Jak powinieneś postąpić?",
+    "answers": [
+      "zadzwonić po Zespół Ratownictwa Medycznego.",
+      "podać nitroglicerynę pod język (1 tabletkę).",
+      "podać aspirynę 160-300 mg jeżeli jest nie uczulony.",
+      "ułożyć mężczyznę w dogodnej pozycji (opcjonalnie pozycja półsiedząca) i wezwać pogotowie ratunkowe.",
+      "prawidłowe odpowiedzi C, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 139,
+    "question": "Wykonujesz resuscytacje krążeniowo-oddechową (RKO) u półrocznego dziecka z zatrzymaniem czynności serca. Którą technikę ucisków klatki piersiowej powinieneś zastosować? 1. uciskanie klatki piersiowej jedną dłonią z częstotliwością około 100 uciśnięć na minutę. 2. uciskanie klatki piersiowej dwoma palcami jednej ręki tak, by ugiąć dolną połowę mostka na głębokość około 4 cm. 3. uciskanie górnego odcinka mostka dwoma palcami; 4. uciskanie klatki piersiowej 15x, a następnie wykonanie 3 wolnych wdechów; 5. uciskanie klatki piersiowej z częstotliwością około 100-120 razy na minutę. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,5.",
+      "2,5.",
+      "3,4.",
+      "1,3.",
+      "4,5."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 140,
+    "question": "Szybkie badanie urazowe poszkodowanego w zdarzeniu pojedynczym nie powinno trwać dłużej niż:",
+    "answers": [
+      "1min.",
+      "2 min.",
+      "5 min.",
+      "10 min.",
+      "15 min."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 141,
+    "question": "Przed przystąpieniem do badania wstępnego u poszkodowanych z obrażeniami pourazowymi z zachowanymi czynnościami życiowymi, należy:",
+    "answers": [
+      "unieruchomić złamaną kończynę.",
+      "stabilizować ręcznie kręgosłup szyjny.",
+      "podać tlen.",
+      "wykonać resuscytacje krążeniowo-oddechową (RKO).",
+      "wykonać manewr Sellicka."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 142,
+    "question": "Poszkodowanych z obrażeniami pourazowymi obraca się podczas wymiotów:",
+    "answers": [
+      "na komendę prowadzącego wstępne badanie urazowe.",
+      "tylko po założeniu kołnierza ortopedycznego.",
+      "po zastosowaniu manewru Sellicka.",
+      "w sposób zsynchronizowany na komendę ratownika trzymającego głowę.",
+      "w inny niż wymienione sposób."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 143,
+    "question": "Prowadzący wstępne badanie urazowe podchodzi w miarę możliwości do poszkodowanego:",
+    "answers": [
+      "od strony jego nóg.",
+      "od strony jego głowy.",
+      "od strony lewej.",
+      "nie ma znaczenia, z której strony podejdzie.",
+      "od strony prawej."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 144,
+    "question": "Ocenę oddechu poszkodowanego prowadzi się przez:",
+    "answers": [
+      "10 sek.",
+      "15 sek.",
+      "25 sek.",
+      "60 sek.",
+      "90 sek."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 145,
+    "question": "Kiedy można przerwać wstępne badanie urazowe?",
+    "answers": [
+      "gdy wystąpi niedrożność dróg oddechowych i zatrzymanie krążenia.",
+      "tylko po założeniu kołnierza ortopedycznego.",
+      "prawdziwe są odpowiedzi A i B.",
+      "gdy występuje masywny krwotok.",
+      "prawdziwe są odpowiedzi A i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 146,
+    "question": "Podczas wstępnego badania urazowego przy poszkodowanym powinno być, w miarę możliwości:",
+    "answers": [
+      "2 ratowników.",
+      "3 ratowników.",
+      "4 ratowników.",
+      "5 ratowników.",
+      "6 ratowników."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 147,
+    "question": "Podczas wstępnego badania urazowego poszkodowanego, który leży na brzuchu, ale ma zachowany prawidłowy oddech:",
+    "answers": [
+      "przekładamy natychmiast na plecy.",
+      "jak najszybciej wnosimy do karetki.",
+      "badamy i opatrujemy wstępnie w pozycji zastanej.",
+      "sadzamy go i podajemy tlen.",
+      "prawdziwe są odpowiedzi A i D."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 148,
+    "question": "Podczas wstępnego badania urazowego poszkodowanego z obrażeniami pourazowymi w pierwszej kolejności należy znaleźć:",
+    "answers": [
+      "złamania.",
+      "uszkodzenia skóry.",
+      "przyczyny złego samopoczucia.",
+      "obrażenia stanowiące bezpośrednie zagrożenie życia.",
+      "przyczyny podwyższenia temperatury ciała."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 149,
+    "question": "Ratownik będący liderem zespołu prowadząc wstępne badanie:",
+    "answers": [
+      "zajmuje się bezpośrednio przeprowadzeniem szybkiego badania urazowego.",
+      "wydaje wolnemu ratownikowi polecenia co do wykonania ewentualnych rękoczynów i opatrunków.",
+      "zajmuje się wykonaniem opatrunków.",
+      "prawdziwe są odpowiedzi A i B.",
+      "prawdziwe są odpowiedzi A i C."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 150,
+    "question": "Badanie powtórne (szczegółowe) chorego z obrażeniami pourazowymi rozpoczynamy po:",
+    "answers": [
+      "wykonaniu badania wstępnego i wykonaniu niezbędnych interwencji.",
+      "udrożnieniu poszkodowanego.",
+      "ułożeniu poszkodowanego w pozycji bezpiecznej.",
+      "wykonaniu defibrylacji.",
+      "ułożeniu poszkodowanego w pozycji przeciwwstrząsowej."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 151,
+    "question": "Szybkie badanie urazowe poszkodowanego z obrażeniami pourazowymi powinno być przeprowadzone:",
+    "answers": [
+      "od strony lewej ku stronie prawej.",
+      "nie ma znaczenia od której części ciała zaczniemy.",
+      "od głowy do stóp na końcu kończyny górne.",
+      "zawsze od strony złamanych kończyn.",
+      "od strony pleców, aby nie pominąć ran."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 152,
+    "question": "Badanie szyi chorego z obrażeniami pourazowymi nie obejmuje:",
+    "answers": [
+      "sprawdzenia istnienia ewentualnych ran.",
+      "oceny wyrostków kolczystych.",
+      "oceny nawrotu kapilarnego.",
+      "oceny wypełnienia żył szyjnych.",
+      "oceny ewentualnego przemieszczenia tchawicy."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 153,
+    "question": "Po wykonaniu szybkiego badania urazowego i założeniu ewentualnych opatrunków można:",
+    "answers": [
+      "sprawdzić szmer oddechowy.",
+      "sprawdzić nawrót kapilarny",
+      "założyć kołnierz ortopedyczny.",
+      "ocenić wypełnienie żył szyjnych",
+      "ułożyć poszkodowanego w pozycji bocznej ustalonej (bezpiecznej)."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 154,
+    "question": "Wypełnione żyły szyjne mogą sugerować np.:",
+    "answers": [
+      "odmę prężną.",
+      "tamponadę serca.",
+      "zaburzenia krzepliwości.",
+      "prawdziwe są odpowiedzi A i B.",
+      "prawdziwe są odpowiedzi A i C"
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 155,
+    "question": "Po założeniu kołnierza ortopedycznego osobie nieprzytomnej z cechami urazu kręgosłupa w odcinku szyjnym:",
+    "answers": [
+      "sprawdzamy istnienie ewentualnych ran na szyi.",
+      "głowa musi być nadal stabilizowana ręcznie",
+      "oceniamy nawrót kapilarny.",
+      "ratownik stabilizujący głowę puszcza ją.",
+      "poszkodowany może położyć się w wygodnej dla siebie pozycji."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 156,
+    "question": "Jeśli podczas próby stabilizacji kręgosłupa szyjnego występują opory lub bolesność, to:",
+    "answers": [
+      "sprawdzamy istnienie ewentualnych ran.",
+      "stabilizujemy go w pozycji, na którą pozwalają zaistniałe ograniczenia.",
+      "mimo to staramy się ustabilizować kręgosłup równo w osi ciała.",
+      "oceniamy wypełnienie żył szyjnych.",
+      "oceniamy ewentualne przemieszczenia tchawicy."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 157,
+    "question": "Jeśli podczas badania chorego z obrażeniami pourazowymi głowy zauważysz wyciekające płyny z uszu i nosa, to:",
+    "answers": [
+      "sprawdzisz istnienie ewentualnych ran.",
+      "polecisz wolnemu ratownikowi założenie jałowych opatrunków osłaniających na uszy i nos.",
+      "polecisz trzeciemu ratownikowi włożenie jałowych sączków do uszu i nosa.",
+      "ułożysz poszkodowanego w pozycji przeciwwstrząsowej.",
+      "prawidłowe odpowiedzi A, B, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 158,
+    "question": "Nawrót kapilarny badamy uciskając:",
+    "answers": [
+      "płytkę paznokciową.",
+      "mięsień dwugłowy.",
+      "tętnicę promieniową.",
+      "wypełnione żyły szyjne.",
+      "płatek ucha"
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 159,
+    "question": "Podczas badania poszkodowanego z obrażeniami pourazowymi klatki piersiowej należy go:",
+    "answers": [
+      "prześwietlić.",
+      "tylko osłuchać.",
+      "opukać i osłuchać.",
+      "tylko obejrzeć i opukać.",
+      "obejrzeć, obmacać, opukać."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 160,
+    "question": "Podczas badania chorego z obrażeniami pourazowymi brzucha szukamy:",
+    "answers": [
+      "powiększonych naczyń krwionośnych.",
+      "śladów obrażeń i bolesności .",
+      "potwierdzenia prawidłowego nawrotu kapilarnego.",
+      "przemieszczonych naczyń włosowatych.",
+      "potwierdzenia odmy otwartej."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 161,
+    "question": "Podczas badania poszkodowanego leżącego na wznak z obrażeniami pourazowymi, plecy powinno zbadać się, gdy:",
+    "answers": [
+      "leży on w pozycji bezpiecznej.",
+      "jest on przekładany na nosze typu deska.",
+      "zostanie unieruchomiony.",
+      "zostanie ułożony na brzuchu, pamiętając o stabilizacji głowy.",
+      "po założeniu kołnierza ortopedycznego."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 162,
+    "question": "Podczas wykonywania defibrylacji:",
+    "answers": [
+      "tylko ratownik może dotykać poszkodowanego.",
+      "sprawdzamy, czy nie powstała rozedma.",
+      "nie ma znaczenia, kto dotyka poszkodowanego.",
+      "nikt nie może dotykać poszkodowanego.",
+      "ratownik wciska przycisk „Analiza”."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 163,
+    "question": "Przed przyklejeniem elektrod defibrylatora:",
+    "answers": [
+      "skóra klatki piersiowej poszkodowanego musi być sucha.",
+      "zaleca się aby poszkodowany miał zdjętą biżuterię z szyi.",
+      "należy, w razie potrzeby, zgolić owłosienie klatki piersiowej .",
+      "prawdziwe są odpowiedzi A i B.",
+      "prawdziwe są odpowiedzi A, B i C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 164,
+    "question": "Elektrody AED:",
+    "answers": [
+      "przyklejamy do gołej klatki piersiowej po jej ewentualnym wytarciu i usunięciu zbyt obfitego owłosienia.",
+      "przyklejamy do gołej klatki piersiowej po jej ewentualnym wytarciu.",
+      "przyklejamy do gołej klatki piersiowej po usunięciu biżuterii.",
+      "delikatnie przyklejamy na wysokości brodawek sutkowych.",
+      "przyklejamy do gołej klatki piersiowej po jej ewentualnym wysuszeniu na wysokości łuków żebrowych."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 165,
+    "question": "W strefie przeprowadzania defibrylacji:",
+    "answers": [
+      "można dotykać poszkodowanego.",
+      "może być mokro.",
+      "należy odsunąć źródło tlenu.",
+      "poszkodowany może być wentylowany.",
+      "można dotykać elektrod."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 166,
+    "question": "Jeśli są wskazania u podtopionych z NZK, defibrylację wykonujemy po:",
+    "answers": [
+      "dokonaniu 5 oddechów, kontroli tętna i 5 cyklach resuscytacji zakończonej uciskami klatki piersiowej.",
+      "wykonaniu 5 cykli resuscytacji zakończonej masażem serca.",
+      "dokonaniu 5 oddechów 100% tlenem.",
+      "natychmiast po podłączeniu defibrylatora i ocenie rytmu jeżeli są wskazania.",
+      "wszystkie powyższe są fałszywe."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 167,
+    "question": "W trakcie oczekiwania na zespół ratownictwa medycznego po pomyślnym wykonaniu defibrylacji i powrocie oznak krążenia u poszkodowanego:",
+    "answers": [
+      "kontrolujemy oddech i tętno.",
+      "elektrody mogą pozostać na klatce piersiowej.",
+      "prowadzimy, w razie potrzeby, wentylację wspomaganą lub zastępczą.",
+      "dla bezpieczeństwa pacjenta elektrody należy jak najszybciej odkleić z klatki piersiowej.",
+      "prawdziwe A,B i C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 168,
+    "question": "Asystolia to:",
+    "answers": [
+      "brak czynności elektrycznej komór i przedsionków lub tylko komór.",
+      "aktywność elektryczna bez tętna.",
+      "migotanie komór.",
+      "brak tętna na tętnicach szyjnych",
+      "częstoskurcz komorowy bez tętna."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 169,
+    "question": "Elektrody AED umieszczamy:",
+    "answers": [
+      "jedną pod prawym obojczykiem, drugą w przedniej linii pachowej przedniej lewej tuż pod mięśniem piersiowym, ułożenie przednio-boczne. (zgodnie z piktogramem umieszczonym na elektrodach).",
+      "elektrody mogą pozostać na klatce piersiowej w dowolnych miejscach po obu stronach mostka poszkodowanego.",
+      "jedną pod lewym obojczykiem wzdłuż mostka, drugą nad koniuszkiem serca poszkodowanego.",
+      "elektrody należy umieścić 2 palce powyżej kąta międzyżebrowego poszkodowanego.",
+      "w taki sposób, aby ich końce stykały się nad mostkiem poszkodowanego, co ułatwi przepływ energii."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 170,
+    "question": "Wsparcie psychiczne poszkodowanego powinno być zastosowane:",
+    "answers": [
+      "w momencie przybycia do szpitala.",
+      "po umieszczeniu poszkodowanego w karetce.",
+      "po ustaleniu diagnozy w celu jasnego sprecyzowania form leczenia.",
+      "jak najwcześniej.",
+      "w obecności rodziny."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 171,
+    "question": "Wskaż, co nie jest zabronione podczas udzielania wsparcia psychicznego poszkodowanemu:",
+    "answers": [
+      "brak zainteresowania tym, co mówi poszkodowany.",
+      "prezentowanie przez ratownika postawy ,,ja wiem lepiej”.",
+      "utrzymywanie kontaktu wzrokowego.",
+      "utrzymywanie nadmiernego dystansu.",
+      "okazywanie braku akceptacji."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 172,
+    "question": "Wskaż, co jest zabronione podczas udzielania kwalifikowanej pierwszej pomocy poszkodowanemu:",
+    "answers": [
+      "okazywanie braku zainteresowania tym, co mówi poszkodowany.",
+      "prezentowanie przez ratownika postawy ,,ja wiem lepiej”.",
+      "głośne zwracanie uwagi członkom zespołu ratowniczego.",
+      "stwarzanie dodatkowego zamieszania wokół poszkodowanego.",
+      "prawidłowe są A, B, C, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 173,
+    "question": "U poszkodowanych urazowych wsparcie psychiczne może prowadzić ratownik:",
+    "answers": [
+      "z wykształceniem psychologicznym.",
+      "specjalnie do tego celu przygotowany.",
+      "trzeci, który również m.in. opatruje rany.",
+      "dokonujący ręcznej stabilizacji odcinka szyjnego kręgosłupa.",
+      "drugi, który dokonuje jednocześnie badania urazowego."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 174,
+    "question": "Od udzielających wsparcia psychicznego poszkodowany oczekuje:",
+    "answers": [
+      "okazywanie natrętnego zainteresowania jego stanem psychicznym.",
+      "akceptacji, zainteresowania, kontaktu wzrokowego i bycia otwarcie zdystansowanym.",
+      "akceptacji, zainteresowania, kontaktu wzrokowego i bycia dobrym słuchaczem.",
+      "akceptacji, zainteresowania, unikania kontaktu wzrokowego i bycia dobrym słuchaczem.",
+      "używania pod adresem poszkodowanego stwierdzeń w rodzaju „ja wiem lepiej”, co daje mu pewność wysokich kompetencji ratownika."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 175,
+    "question": "Podchodząc do poszkodowanego pozostającego po wypadku w pojeździe ratownik powinien:",
+    "answers": [
+      "zapytać, co się wydarzyło.",
+      "informować, co i w jakim celu będzie wykonywane.",
+      "powiedzieć, kim jest, zapytać, co się wydarzyło i informować, co i w jakim celu będzie wykonywane.",
+      "przedstawić się.",
+      "używać pod adresem poszkodowanego stwierdzeń w rodzaju „ja wiem lepiej”, co daje mu pewność wysokich kompetencji ratownika."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 176,
+    "question": "Po przybyciu na miejsce zdarzenia ekipy ratunkowej następuje rozpoznanie, które ma na celu:",
+    "answers": [
+      "rozpoznanie charakteru zdarzenia, jego okoliczności i udzielenie pierwszej pomocy.",
+      "rozpoznanie charakteru zdarzenia, jego okoliczności, rodzaju zagrożeń dla akcji i ustalenia dróg ewakuacji.",
+      "rozpoznanie charakteru zdarzenia, jego okoliczności, rodzaju zagrożeń dla akcji i ustalenia rodzaju sprzętu koniecznego do ewakuacji poszkodowanych.",
+      "rozpoznanie charakteru zdarzenia, jego okoliczności, rodzaju zagrożeń, ustalenie orientacyjnej liczby poszkodowanych, ustalenia priorytetów działania i ewentualne uznanie zdarzenia za masowe.",
+      "rozpoznanie charakteru zdarzenia, jego okoliczności, rodzaju zagrożeń dla akcji, ustalenie orientacyjnej liczby poszkodowanych i ich ewakuacja."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 177,
+    "question": "W badaniu wstępnym osoby poszkodowanej bierzemy pod uwagę:",
+    "answers": [
+      "istnienie ewentualnych ran.",
+      "jedynie kontrolę ABC, ponieważ tylko te parametry są istotne.",
+      "urazy w obrębie kręgosłupa.",
+      "wypełnienie żył szyjnych.",
+      "ocena miejsca zdarzenia, ocena wstępna, szybkie badanie urazowe lub badanie miejscowe."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 178,
+    "question": "Stabilizując bezprzyrządowo kręgosłup szyjny należy pamiętać, aby:",
+    "answers": [
+      "nie pociągać głowy w osi długiej i nie odchylać głowy poszkodowanego ku tyłowi",
+      "co 2 minuty sprawdzać tętno na tętnicy szyjnej.",
+      "odchylić głowę poszkodowanego ku tyłowi, aby udrożnić drogi oddechowe.",
+      "ustabilizować przemieszczoną tchawicę.",
+      "zbytnio nie pociągać za głowę w osi długiej."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 179,
+    "question": "Podczas wykonywania defibrylacji należy:",
+    "answers": [
+      "co 2 minuty sprawdzać tętno na tętnicy szyjnej.",
+      "słuchać i wykonywać polecenia AED.",
+      "podtrzymywać odchyloną ku tyłowi ku tyłowi głowę poszkodowanego, aby udrożnić drogi oddechowe.",
+      "ustabilizować przemieszczoną tchawicę.",
+      "naciskać elektrody, aby dobrze przylegały."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 180,
+    "question": "Wsparcie psychiczne poszkodowanych powinno:",
+    "answers": [
+      "rozpocząć się w momencie przyjęcia do szpitala, gdyż pozwala to na osiągnięcie lepszych efektów terapeutycznych.",
+      "trwać do czasu osiągnięcia przez poszkodowanego równowagi psychicznej.",
+      "odbywać się tylko w obecności rodziny, co ułatwi powrót do zdrowia.",
+      "rozpocząć się jak najszybciej i trwać, w miarę możliwości, do czasu osiągnięcia przez poszkodowanego równowagi psychicznej.",
+      "rozpocząć się po ustaleniu diagnozy w celu jasnego sprecyzowania form leczenia powinno zostać wstrzymane."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 181,
+    "question": "Najczęstsze objawy występujące w przypadku występowania odmy opłucnowej to:",
+    "answers": [
+      "zmniejszenie pojemności płuc.",
+      "ograniczenie ruchomości ściany klatki piersiowej.",
+      "gwałtowny ból uciskający w klatce piersiowej, pojawiają się po silnym kaszlu, większym wysiłku fizycznym lub po urazie klatki piersiowej, zazwyczaj szybko narastająca duszność, przyspieszenie tętna, bladość powłok skórnych, nadmierna potliwość, pogłębiające się ogólne osłabienie.",
+      "prawdziwe A i B.",
+      "przesunięcie tchawicy."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 182,
+    "question": "W przypadku złamania podudzia but zdejmujemy:",
+    "answers": [
+      "jak najwcześniej.",
+      "jeżeli występuje krwawienie.",
+      "przy stabilizacji ręcznej kończyny w pozycji zbliżonej do fizjologicznej.",
+      "przecinając go, dla zmniejszenia ryzyka urazów wtórnych.",
+      "prawdziwe B i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 183,
+    "question": "Przy przepływie 15 l/min zawartość butli o pojemności 2,7 litra wypełnionej tlenem sprężonym do 150 atmosfer wystarczy na:",
+    "answers": [
+      "maksimum 20 minut tlenoterapii.",
+      "maksimum 27 minut tlenoterapii.",
+      "ponad 30 minut tlenoterapii.",
+      "maksimum 37 minut tlenoterapii.",
+      "ponad 40 minut tlenoterapii."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 184,
+    "question": "Rana kłuta brzucha:",
+    "answers": [
+      "nie wyklucza odmy.",
+      "może stanowić bezpośrednie zagrożenie życia.",
+      "zawsze powoduje silny krwotok zewnętrzny.",
+      "prawdziwe A i B.",
+      "prawdziwe A, B i C."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 185,
+    "question": "U poszkodowanego nieprzytomnego w przypadku niedrożności nosa zastępczą wentylację prowadzimy:",
+    "answers": [
+      "przy użyciu worka samorozprężalnego i alternatyw takich jak maska lub rurka krtaniowa.",
+      "przy użyciu maski worka samorozprężalnego trzymanej chwytem jednoręcznym (CE) z wykorzystaniem rurki ustno-gardłowej.",
+      "przy użyciu maski worka samorozprężalnego trzymanej chwytem jednoręcznym (CE).",
+      "tylko po udrożnieniu nosa przy pomocy urządzenia ssącego.",
+      "prawdziwe A i B."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 186,
+    "question": "Skręcenie stawu skokowego:",
+    "answers": [
+      "traktuje się je jak złamanie.",
+      "traktujemy jak zwichnięcie.",
+      "stabilizujemy i unieruchamiamy w pozycji zastanej.",
+      "stabilizujemy i unieruchamiamy w pozycji zbliżonej do fizjologicznej.",
+      "prawdziwe A i C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 187,
+    "question": "Złamanie otwarte:",
+    "answers": [
+      "to złamanie, w którym zawsze kość przebija skórę.",
+      "to złamanie z przerwaniem ciągłości skóry.",
+      "to złamanie, w którym na ranę zakładamy opatrunek uciskowy.",
+      "to złamanie, w którym nie wolno ruszać kończyny.",
+      "prawdziwe B i D."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 188,
+    "question": "Gdy poszkodowany niedosłyszy:",
+    "answers": [
+      "aby nawiązać kontakt krzyczymy do niego.",
+      "aby nawiązać kontakt przybliżamy usta do jego ucha.",
+      "rezygnujemy z kontaktu głosowego na rzecz gestów.",
+      "wspomagamy wypowiedź gestami.",
+      "prawdziwe B i D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 189,
+    "question": "Utrata przytomności jest niebezpieczna, ponieważ:",
+    "answers": [
+      "zawsze jest objawem zatrzymania krążenia.",
+      "dochodzi do osłabienia i /lub zniesienia odruchów obronnych.",
+      "nieuchronnie prowadzi do zatrzymania krążenia.",
+      "prawdziwe B i C.",
+      "wszystkie fałszywe."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 190,
+    "question": "Nudności i wymioty u poszkodowanego w wypadku drogowym:",
+    "answers": [
+      "mogą być normalną reakcją na drastyczne widoki.",
+      "mogą być objawem niedotlenienia mózgu.",
+      "mogą być objawem obrażeń mózgu.",
+      "są zjawiskiem przemijającym.",
+      "prawdziwe A, B i C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 191,
+    "question": "Jaka jest prawidłowa kolejność czynności niezbędnych do skutecznej resuscytacji osób, u których doszło do nagłego zatrzymania krążenia według koncepcji zwanej „łańcuchem przeżycia”? 1) wczesna defibrylacja; 2) wczesne wezwanie pomocy; 3) wczesne rozpoczęcie RKO; 4) opieka poresuscytacyjna; 5) wczesne rozpoznanie. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,3,2,5,4.",
+      "5,2,3,1,4.",
+      "2,3,4,1,5.",
+      "1,2,3,4,5.",
+      "5,2,4,1,3."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 192,
+    "question": "Jeśli podczas oceny czynności życiowych masz wątpliwości czy doszło do zatrzymania krążenia powinieneś:",
+    "answers": [
+      "wydłużyć ocenę o kolejne 10 sekund.",
+      "rozpocząć wentylacje bez uciskania klatki piersiowej.",
+      "rozpocząć resuscytację krążeniowo-oddechową.",
+      "ułożyć poszkodowanego w pozycji bezpiecznej.",
+      "podłączyć AED i postępować zgodnie z jego poleceniami."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 193,
+    "question": "Którą z bezprzyrządowych metod udrażniania dróg oddechowych zastosujesz w pierwszej kolejności u osoby z podejrzeniem urazu szyjnego odcinka rdzenia kręgowego?",
+    "answers": [
+      "odgięcie głowy.",
+      "wysunięcie żuchwy.",
+      "odgięcie głowy połączone z wysunięciem żuchwy.",
+      "odgięcie głowy połączone z uniesieniem żuchwy.",
+      "prawidłowe są odpowiedzi A, D."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 194,
+    "question": "Która z poniższych czynności zabezpiecza dolne drogi oddechowe przed zachłyśnięciem treścią płynną?",
+    "answers": [
+      "założenie rurki ustno-gardłowej.",
+      "odessanie.",
+      "ułożenie w pozycji bezpiecznej.",
+      "prawidłowe są odpowiedzi B, C.",
+      "prawidłowe są odpowiedzi A, B, C."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 195,
+    "question": "Która z poniższych metod tlenoterapii zapewnia uzyskanie około 85% stężenia tlenu w mieszaninie oddechowej?",
+    "answers": [
+      "wąsy tlenowe zasilane tlenem o przepływie 6 l/min.",
+      "worek samorozprężalny bez rezerwuaru zasilany tlenem o przepływie 10 l/min.",
+      "maska do tlenoterapii biernej bez rezerwuaru z podłączonym tlenem o przepływie 15 l/min.",
+      "maska do tlenoterapii biernej z rezerwuarem z podłączonym tlenem o przepływie 8 l/min.",
+      "maska do tlenoterapii biernej z rezerwuarem podłączona tlenem o przepływie 15 l/min."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 196,
+    "question": "Które z poniższych działań dotyczących prowadzenia wentylacji zastępczej u osoby dorosłej w trakcie resuscytacji krążeniowo-oddechowej negatywnie wpływają na jej skuteczność?",
+    "answers": [
+      "wykonanie pojedynczego oddechu w czasie około 1 sekundy.",
+      "gwałtowne ściskanie worka samorozprężalnego.",
+      "wykonanie dwóch oddechów zastępczych w czasie nie przekraczającym 5 sekund.",
+      "stosowanie objętości pojedynczego oddechu powodującego widoczne unoszenie się klatki piersiowej.",
+      "wykonywanie uciśnięć klatki piersiowej i wentylacji płuc w stosunku 30:2."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 197,
+    "question": "Które z poniższych działań negatywnie wpływa na efektywność uciśnięć klatki piersiowej obniżając skuteczność resuscytacji krążeniowo-oddechowej?",
+    "answers": [
+      "uciskanie klatki piersiowej z częstotliwością co najmniej 100 razy na minutę.",
+      "rozpoczęcie uciskania klatki piersiowej zanim całkowicie powróci do pozycji wyjściowej.",
+      "minimalizowanie przerw pomiędzy kolejnymi seriami uciśnięć klatki piersiowej.",
+      "zmiany osoby wykonującej uciskanie klatki piersiowej co 2 minuty.",
+      "uciskanie klatki piersiowej na głębokość co najmniej 5 cm u osoby dorosłej."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 198,
+    "question": "Które z poniższych objawów występujących u osoby dorosłej, która w trakcie jedzenia zakrztusiła się pokarmem, są charakterystyczne dla ciężkiej niedrożności dróg oddechowych? 1) bezgłośny kaszel; 2) głośny kaszel; 3) niemożność oddychania; 4) postępująca utrata przytomności; 5) możliwość swobodnego mówienia. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,3,5.",
+      "1,3,4.",
+      "3,4,5.",
+      "1,4,5.",
+      "2,4,5."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 199,
+    "question": "Które z poniższych objawów występujących u dziecka, które w trakcie jedzenia zakrztusiło się pokarmem, są charakterystyczne dla łagodnej niedrożności dróg oddechowych? 1) bezgłośny kaszel; 2) głośny kaszel; 3) sinica; 4) możliwość nabrania powietrza przed kaszlem; 5) głośny płacz. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,3,4.",
+      "1,2,5.",
+      "2,4,5.",
+      "1,4,5.",
+      "3,4,5."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 200,
+    "question": "Które z poniższych stwierdzeń dotyczących użycia rurki ustno-gardłowej jest nieprawdziwe?",
+    "answers": [
+      "jest zalecana podczas wentylacji workiem samorozprężalnym z maską twarzową.",
+      "zabezpiecza przed zachłyśnięciem.",
+      "może spowodować niedrożność.",
+      "może prowokować wymioty.",
+      "jest dostępna w rozmiarach dla dzieci i dorosłych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 201,
+    "question": "Które ze stwierdzeń odnoszących się do prowadzenia resuscytacji krążeniowo-oddechowej u nieprzytomnej osoby dorosłej z całkowitą niedrożnością dróg oddechowych spowodowanej ciałem obcym są prawdziwe? 1. przed rozpoczęciem podawania oddechów ratowniczych należy podjąć próbę usunięcia palcem z jamy ustnej niewidocznych ciał obcych. 2. należy rozpocząć RKO od 30 uciśnięć klatki piersiowej bezzwłocznie jak tylko poszkodowany przestanie odpowiadać lub straci przytomność. 3. należy sprawdzić zawartość jamy ustnej w poszukiwaniu ciała obcego przed rozpoczęciem wykonywania oddechów ratowniczych. 4. należy rozpocząć uciskanie klatki piersiowej tylko w sytuacji braku tętna na tętnicy szyjnej. 5. uciśnięcia klatki piersiowej i oddechy ratownicze należy prowadzić w sekwencji 30:2. Prawidłowa odpowiedź to:",
+    "answers": [
+      "1,2,3.",
+      "2,4,5.",
+      "2,3,5.",
+      "2,3,4.",
+      "1,4,5."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 202,
+    "question": "Miejsce uciskania klatki piersiowej podczas resuscytacji krążeniowo-oddechowej to:",
+    "answers": [
+      "tuż pod linią łącząca sutki.",
+      "środek linii łączącej sutki.",
+      "górna połowa mostka.",
+      "środek mostka.",
+      "środek klatki piersiowej (dolna połowa mostka)."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 203,
+    "question": "Odgłos bulgotania u nieprzytomnej osoby leżącej na plecach jest charakterystyczny dla wystąpienia częściowej niedrożności dróg oddechowych na skutek:",
+    "answers": [
+      "kurczu krtani.",
+      "obecności treści płynnej.",
+      "obecności ciała obcego.",
+      "zapadnięcia języka na tylną ścianę gardła.",
+      "żadna z odpowiedzi nie jest prawidłowa."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 204,
+    "question": "Odgłos charczenia (chrapania) u nieprzytomnej osoby leżącej na plecach jest charakterystyczny dla wystąpienia częściowej niedrożności dróg oddechowych na skutek:",
+    "answers": [
+      "kurczu krtani.",
+      "obecności treści płynnej.",
+      "obecności ciała obcego.",
+      "opadnięcia języka na tylną ścianę gardła.",
+      "wszystkie odpowiedzi są prawidłowe."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 205,
+    "question": "Odgłos świstu lub stridoru u 4-letniego dziecka może wskazywać na częściową niedrożność dróg oddechowych spowodowaną:",
+    "answers": [
+      "obecnością ciała obcego.",
+      "obecnością treści płynnej.",
+      "kurczem krtani.",
+      "zapadnięciem języka na tylną ścianę gardła.",
+      "prawidłowe są odpowiedzi A, C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 206,
+    "question": "Podczas oceny czynności życiowych u 8-miesięcznego dziecka badanie tętna wykonasz na:",
+    "answers": [
+      "tętnicy szyjnej.",
+      "tętnicy pachowej.",
+      "tętnicy ramieniowej.",
+      "tętnicy pachwinowej.",
+      "prawidłowe są odpowiedzi B, C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 207,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej przez dwóch ratowników u 8-miesięcznego dziecka stosunek uciśnięć klatki piersiowej do wentylacji płuc powinien wynosić:",
+    "answers": [
+      "3:1.",
+      "5:1.",
+      "15:1.",
+      "15:2.",
+      "30:2."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 208,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej przez dwóch ratowników u 6 letniego dziecka stosunek uciśnięć klatki piersiowej do wentylacji płuc powinien wynosić:",
+    "answers": [
+      "10:2.",
+      "15:2.",
+      "20:2.",
+      "30:2.",
+      "30:5."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 209,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej u osoby dorosłej stosunek uciśnięć klatki piersiowej do wentylacji płuc powinien wynosić:",
+    "answers": [
+      "15:2.",
+      "20:2.",
+      "30:1.",
+      "30:2.",
+      "30:3."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 210,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej noworodka, u którego zaraz po urodzeniu (świeżorodek) nie stwierdzono oznak życia, stosunek uciśnięć klatki piersiowej do wentylacji płuc powinien wynosić:",
+    "answers": [
+      "3:1.",
+      "5:1.",
+      "15:2.",
+      "15:5.",
+      "30:2."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 211,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej u 6-letniego dziecka uciskanie klatki piersiowej powinno się wykonywać z częstotliwością:",
+    "answers": [
+      "80-100 razy na minutę.",
+      "100-120 razy na minutę.",
+      "120-130 razy na minutę.",
+      "130-140 razy na minutę.",
+      "> 140 razy na minutę."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 212,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej przez dwóch ratowników u 7-miesięcznego dziecka uciskanie klatki piersiowej powinno się wykonywać:",
+    "answers": [
+      "dwoma palcami jednej ręki.",
+      "palcem wskazującym.",
+      "dwoma kciukami, podczas gdy dłonie obejmują klatkę piersiową.",
+      "dłonią jednej ręki.",
+      "prawidłowe są odpowiedzi A, D."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 213,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej przez dwóch ratowników u 8-miesięcznego dziecka uciskanie klatki piersiowej powinno się wykonywać:",
+    "answers": [
+      "dwoma palcami jednej ręki.",
+      "palcem wskazującym.",
+      "metodą dwóch kciuków, podczas gdy dłonie obejmują klatkę piersiową.",
+      "dłonią jednej ręki.",
+      "prawidłowe są odpowiedzi A, B."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 214,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej u 8-miesięcznego dziecka uciskanie klatki piersiowej powinno się wykonywać na głębokość:",
+    "answers": [
+      "1/4 wymiaru przednio-tylnego.",
+      "1/3 wymiaru przednio-tylnego.",
+      "1/2 wymiaru przednio-tylnego.",
+      "2/3 wymiaru przednio-tylnego.",
+      "żadna z odpowiedzi nie jest prawidłowa."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 215,
+    "question": "Aby rozpoznać nagłe zatrzymanie krążenia u osoby dorosłej, która jest głęboko nieprzytomna konieczne jest stwierdzenie:",
+    "answers": [
+      "braku oddechu.",
+      "braku tętna na tętnicy szyjnej.",
+      "oddechu agonalnego.",
+      "prawidłowe są odpowiedzi A, B.",
+      "prawidłowe są odpowiedzi A, C."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 216,
+    "question": "Udzielasz pomocy dorosłej osobie potrąconej przez samochód osobowy. Ofiara leży na plecach, jest głęboko nieprzytomna, a ty utrzymujesz drożność dróg oddechowych metodą wysunięcia żuchwy. W pewnym momencie poszkodowany zaczyna wymiotować. Prawidłowe postępowanie w pierwszej kolejności będzie polegało na:",
+    "answers": [
+      "ułożeniu w pozycji bezpiecznej.",
+      "obróceniu głowy na bok.",
+      "wygarnięciu palcem wymiocin.",
+      "obróceniu na bok z utrzymaniem głowy i szyi w osi podłużnej ciała.",
+      "odgięciu głowy do tyłu."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 217,
+    "question": "Udzielasz pomocy dorosłej osobie, która jest nieprzytomna, oddycha płytko, wolno i nieregularnie. W pewnym momencie doszło do zatrzymania oddechu, tętno na tętnicy szyjnej jest wyczuwalne. Z jaką częstotliwością będziesz prowadził wentylację zastępczą za pomocą worka samorozprężalnego i maski twarzowej?",
+    "answers": [
+      "6 oddechów na minutę.",
+      "8 oddechów na minutę.",
+      "10 oddechów na minutę.",
+      "12 oddechów na minutę.",
+      "20 oddechów na minutę."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 218,
+    "question": "Udzielasz pomocy kobiecie w zaawansowanej ciąży, która nagle osunęła się na ziemię, jest nieprzytomna, oddycha prawidłowo z częstością 15 razy na minutę. W tej sytuacji najwłaściwsze będzie ułożenie pacjentki w pozycji:",
+    "answers": [
+      "leżącej na plecach z nogami uniesionymi 30 cm powyżej tułowia.",
+      "bezpiecznej na lewym boku.",
+      "bezpiecznej na prawym boku.",
+      "półleżącej z pochyleniem tułowia o 30%.",
+      "leżącej na plecach z nogami zgiętymi w stawach kolanowych."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 219,
+    "question": "W przypadku 2-letniego dziecka, które podczas jedzenia zakrztusiło się pokarmem i pomimo prób usunięcia ciała obcego nie może nabrać powietrza, straciło przytomność i upadło na ziemię, prawidłowe postępowanie polega na:",
+    "answers": [
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "wykonaniu 5 uciśnięć nadbrzusza oraz 5 oddechów ratowniczych.",
+      "wykonaniu 5 uciśnięć klatki piersiowej.",
+      "wykonaniu 5 oddechów ratowniczych, a następnie rozpoczęciu resuscytacji krążeniowo-oddechowej.",
+      "próbie usunięcia palcem niewidocznego ciała obcego z jamy ustnej."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 220,
+    "question": "W przypadku 2-letniego dziecka, które podczas jedzenia zakrztusiło się pokarmem, jest przytomne, głośno kaszle, prawidłowe postępowanie polega na:",
+    "answers": [
+      "ocenie stanu dziecka.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "wykonaniu 5 uciśnięć klatki piersiowej.",
+      "próbie usunięcia palcem niewidocznego ciała obcego z jamy ustnej."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 221,
+    "question": "W przypadku 2-letniego dziecka, które podczas jedzenia zakrztusiło się pokarmem, jest przytomne, nie może nabrać powietrza, bezgłośnie kaszle, prawidłowe postępowanie polega na:",
+    "answers": [
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "wykonaniu 5 uciśnięć klatki piersiowej.",
+      "prawidłowe są odpowiedzi A i B.",
+      "prawidłowe są odpowiedzi A i C."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 222,
+    "question": "W przypadku 6-miesięcznego dziecka, które podczas jedzenia zakrztusiło się pokarmem i pomimo prób usunięcia ciała obcego nie może nabrać powietrza, straciło przytomność, jest wiotkie, prawidłowe postępowanie polega na:",
+    "answers": [
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "próbie usunięcia palcem niewidocznego ciała obcego z jamy ustnej.",
+      "wykonaniu 5 uciśnięć klatki piersiowej.",
+      "wykonaniu 5 oddechów ratowniczych, a następnie rozpoczęciu resuscytacji krążeniowo-oddechowej.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 223,
+    "question": "W przypadku 6-miesięcznego dziecka, które podczas jedzenia zakrztusiło się pokarmem, jest przytomne, głośno kaszle, prawidłowe postępowanie polega na:",
+    "answers": [
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "ocenie stanu dziecka.",
+      "wykonaniu 5 uciśnięć klatki piersiowej.",
+      "próbie usunięcia palcem niewidocznego ciała obcego z jamy ustnej."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 224,
+    "question": "W przypadku 6-miesięcznego dziecka, które podczas jedzenia zakrztusiło się pokarmem, jest przytomne, nie może nabrać powietrza, bezgłośnie kaszle, prawidłowe postępowanie polega na:",
+    "answers": [
+      "w pozycji stojącej wykonaniu 5 uciśnięć nadbrzusza.",
+      "ułożeniu na przedramieniu główką w dół, następnie wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "ułożeniu na przedramieniu główką w dół, następnie wykonaniu 5 uciśnięć klatki piersiowej.",
+      "prawidłowe są odpowiedzi A i B.",
+      "prawidłowe są odpowiedzi B i C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 225,
+    "question": "W przypadku dorosłej osoby, która podczas jedzenia zakrztusiła się pokarmem i pomimo prób usunięcia ciała obcego z dróg oddechowych nie może nabrać powietrza, straciła przytomność i upadła na ziemię, prawidłowe postępowanie polega na:",
+    "answers": [
+      "zbadaniu tętna na tętnicy szyjnej.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "wykonaniu 5 oddechów ratowniczych.",
+      "wykonaniu 30 uciśnięć klatki piersiowej.",
+      "próbie usunięcia niewidocznego ciała obcego z jamy ustnej."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 226,
+    "question": "W przypadku dorosłej osoby, która podczas jedzenia zakrztusiła się pokarmem, jest przytomna i głośno kaszle, prawidłowe postępowanie polega na:",
+    "answers": [
+      "zachęcaniu do spontanicznego kaszlu.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "próbie wygarnięcia palcem ciała obcego z jamy ustnej.",
+      "prawidłowe są odpowiedzi B i C."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 227,
+    "question": "W przypadku dorosłej osoby, która podczas jedzenia zakrztusiła się pokarmem, jest przytomna, nie może nabrać powietrza, bezgłośnie kaszle, prawidłowe postępowanie polega na:",
+    "answers": [
+      "zachęcaniu do spontanicznego kaszlu.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "próbie wygarnięcia palcem ciała obcego z jamy ustnej.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową, a następnie 5 uciśnięć nadbrzusza."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 228,
+    "question": "W przypadku kobiety będącej w 8. miesiącu ciąży, która podczas jedzenia zakrztusiła się pokarmem, jest przytomna, nie może nabrać powietrza, bezgłośnie kaszle, prawidłowe postępowanie polega na:",
+    "answers": [
+      "zachęcaniu do spontanicznego kaszlu.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową.",
+      "wykonaniu 5 uciśnięć nadbrzusza.",
+      "wykonaniu 5 uderzeń w okolicę międzyłopatkową, a następnie 5 uciśnięć na wysokości klatki piersiowej.",
+      "wykonaniu 5 uderzeń w okolice międzyłopatkową, a następnie 5 uciśnięć nadbrzusza."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 229,
+    "question": "W trakcie resuscytacji krążeniowo-oddechowej kobiety w zaawansowanej ciąży, aby zmniejszyć ucisk macicy na aortę i żyłę główną dolną zaleca się:",
+    "answers": [
+      "ręczne przesunięcie macicy na lewą stronę.",
+      "ręczne przesunięcie macicy na prawą stronę.",
+      "pochylenie na prawą stronę pod kątem 30° w osi długiej ciała.",
+      "przechylenie na lewą stronę w osi długiej ciała.",
+      "uniesienie nóg 30 cm powyżej tułowia."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 230,
+    "question": "W trakcie resuscytacji krążeniowo-oddechowej podczas uciskania klatki piersiowej doszło do złamania żeber. Właściwe postępowanie polega na:",
+    "answers": [
+      "zmniejszeniu głębokości uciśnięć.",
+      "zmniejszeniu częstości uciśnięć.",
+      "zmianie miejsca uciskania klatki piersiowej.",
+      "sprawdzeniu poprawności ułożenia rąk na klatce piersiowej.",
+      "zaprzestaniu uciskania klatki piersiowej."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 231,
+    "question": "Wybierając odpowiedni rozmiar rurki ustno-gardłowej należy kierować się:",
+    "answers": [
+      "masą ciała poszkodowanego.",
+      "wzrostem poszkodowanego.",
+      "grubością małego palca u ręki.",
+      "odległością od skrzydełek nosa do kąta żuchwy.",
+      "odległością od płatka ucha do kącika ust."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 232,
+    "question": "Zgodnie z wytycznymi ERC termin dziecko dotyczy osób:",
+    "answers": [
+      "o masie ciała < 50 kg.",
+      "w wieku od narodzin do 18 roku życia.",
+      "w wieku od 1 roku życia do 8 roku życia.",
+      "w wieku od 1 roku do momentu przed osiągnięciem widocznych cech pokwitania.",
+      "żadna z odpowiedzi nie jest prawidłowa."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 233,
+    "question": "Zastosowanie rurki ustno-gardłowej w celu utrzymania drożności dróg oddechowych jest wskazane u osoby:",
+    "answers": [
+      "tylko głęboko nieprzytomnej.",
+      "z zachowanym odruchem wymiotnym.",
+      "w trakcie napadu drgawek z towarzyszącym szczękościskiem.",
+      "ze świstami oddechowymi podczas oddychania.",
+      "z urazem twarzoczaszki."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 234,
+    "question": "Defibrylację, przy pomocy AED, wykonuje się w:",
+    "answers": [
+      "migotaniu komór i częstoskurczu komorowym bez tętna.",
+      "asystolii.",
+      "częstoskurczu nadkomorowym.",
+      "migotaniu przedsionków.",
+      "nadkomorowych zaburzeniach rytmu serca."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 235,
+    "question": "Krwawiącą ranę kłutą klatki piersiowej zabezpieczysz:",
+    "answers": [
+      "opatrunkiem zastawkowym.",
+      "zabezpieczę opatrunkiem uciskowym.",
+      "pozostawię bez opatrunku oraz zastosuję ucisk bezpośredni w miejscu krwawienia.",
+      "zastosuje opatrunek hemostatyczny.",
+      "prawidłowa odpowiedź A, C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 236,
+    "question": "Opatrunek hemostatyczny stosuje się gdy:",
+    "answers": [
+      "bezpośredni ucisk nie tamuje silnego krwawienia.",
+      "w miejscu gdzie bezpośredni ucisk nie jest możliwy.",
+      "obrażeniem jest kłuta rana klatki piersiowej.",
+      "obrażeniem jest głęboka krwawiąca rana penetrująca.",
+      "prawidłowa odpowiedz to A, B, D."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 237,
+    "question": "Właściwy rozmiar maski krtaniowej dobiera się na podstawie:",
+    "answers": [
+      "wzrostu",
+      "masy ciała",
+      "masy ciała i wzrostu",
+      "od kącika ust do górnego uzębienia.",
+      "wzoru."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 238,
+    "question": "Prawidłowy rozmiar rurki krtaniowej (dotyczy rozmiarów 5, 4, 3) dobiera się na podstawie:",
+    "answers": [
+      "wzrostu",
+      "masy ciała",
+      "masy ciała i Wzrostu",
+      "od kącika ust do górnego uzębienia.",
+      "wzoru."
+    ],
+    "correctAnswerIndex": 0
+  },
+  {
+    "id": 239,
+    "question": "Odma opłucnowa może występować w następujących postaciach:",
+    "answers": [
+      "otwartej.",
+      "zamkniętej.",
+      "prężnej.",
+      "poprawne odpowiedzi A, C.",
+      "poprawne odpowiedzi A, B, C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 240,
+    "question": "Podczas prowadzenia resuscytacji krążeniowo-oddechowej przez jednego ratownika u 6-miesięcznego dziecka stosunek uciśnięć klatki piersiowej do wentylacji płuc powinien wynosić:",
+    "answers": [
+      "3:1.",
+      "5:1.",
+      "15:1.",
+      "15:2.",
+      "30:2."
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 241,
+    "question": "Zgodnie z wytycznymi ERC termin niemowlę dotyczy osób:",
+    "answers": [
+      "o masie ciała < 50 kg.",
+      "w wieku od narodzin do 18 roku życia.",
+      "w wieku od pierwszego miesiąca do 1 roku życia.",
+      "w wieku od 1 roku do momentu przed osiągnięciem widocznych cech pokwitania.",
+      "żadna z odpowiedzi nie jest prawidłowa."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 242,
+    "question": "Zgodnie z wytycznymi ERC termin noworodek dotyczy osób:",
+    "answers": [
+      "w wieku od pierwszego miesiąca do 1 roku życia.",
+      "w wieku od narodzin do 18 roku życia.",
+      "w wieku od miesiąca do 2 roku życia.",
+      "w wieku od narodzin do pierwszego miesiąca życia.",
+      "żadna z odpowiedzi nie jest prawidłowa"
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "id": 243,
+    "question": "Zgodnie z wytycznymi ERC termin „świeżorodek\" dotyczy osób:",
+    "answers": [
+      "w wieku od pierwszego miesiąca do 1 roku życia.",
+      "w wieku od narodzin do 18 roku życia.",
+      "w wieku od miesiąca do 2 roku życia.",
+      "w wieku od narodzin do pierwszego miesiąca życia.",
+      "noworodka od narodzin do kilku godzin po porodzie."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 244,
+    "question": "Wykonując defibrylacje u kobiety w zaawansowanej ciąży, należy pamiętać aby:",
+    "answers": [
+      "ułożyć poszkodowaną na prawym boku.",
+      "ułożyć poszkodowaną na plecach.",
+      "przyklejając elektrody jedną umieścić pod prawym obojczykiem drugą wysoko pod lewą pachą.",
+      "wszystkie czynności wykonujemy jak u poszkodowanej nie będącej w ciąży.",
+      "przed wykonaniem defibrylacji należy zmienić elektrody na pediatryczne."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 245,
+    "question": "Dla dziecka powyżej pierwszego roku życia chcąc użyć AED należy:",
+    "answers": [
+      "użyć elektrod pediatrycznych.",
+      "przełączyć urządzenie na tryb pediatryczny celem zmiany energii defibrylacji do 4kJ/kg/mc.",
+      "jeżeli nie posiadasz AED z kluczem pediatrycznym, możesz użyć AED dla osoby dorosłej.",
+      "poprawne odpowiedzi to A, B.",
+      "poprawne odpowiedzi to A, B, C."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 246,
+    "question": "Przyrządowe udrożnienie dróg oddechowych stosowane dla osoby poszkodowanej mogące być zastosowane przez ratownika kpp to:",
+    "answers": [
+      "rurka ustno-gardłowa.",
+      "maska krtaniowa.",
+      "rurka krtaniowa.",
+      "rurka nosowo-gardłowa.",
+      "poprawne odpowiedzi to A, B, C"
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 247,
+    "question": "Typowe objawy udaru to:",
+    "answers": [
+      "bełkotliwa mowa",
+      "zaburzenia równowagi.",
+      "opadnięty kącik ust.",
+      "połowiczne porażenie ciała, częściowe lub całkowite.",
+      "wszystkie odpowiedzi są poprawne."
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "id": 248,
+    "question": "Najbardziej prawdopodobną przyczyną nagłego zatrzymania krążenia u osób dorosłych jest/ są:",
+    "answers": [
+      "uraz głowy.",
+      "niewydolność krążeniowa.",
+      "niewydolność oddechowa.",
+      "przedawkowanie leków .",
+      "prawidłowe A, B."
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "id": 249,
+    "question": "Najbardziej prawdopodobną przyczyną nagłego zatrzymania krążenia u dzieci jest/ są:",
+    "answers": [
+      "uraz głowy.",
+      "niewydolność krążeniowa.",
+      "niewydolność oddechowa.",
+      "przedawkowanie leków .",
+      "prawidłowe są A, B."
+    ],
+    "correctAnswerIndex": 2
+  },
+  {
+    "id": 250,
+    "question": "Algorytm resuscytacji osoby dorosłej rozpoczniesz od próby wykonania 5 oddechów ratowniczych w sytuacji rozpoznanego:",
+    "answers": [
+      "uduszenia.",
+      "utonięcia.",
+      "porażenia prądem.",
+      "zatrucie tlenkiem węgla.",
+      "prawidłowe są A,B"
+    ],
+    "correctAnswerIndex": 4
+  }
+]

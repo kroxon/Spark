@@ -15,6 +15,8 @@ import 'package:iskra/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:iskra/features/home/presentation/pages/home_page.dart';
 import 'package:iskra/features/extras/presentation/pages/extras_page.dart';
 import 'package:iskra/features/games/game_2048/presentation/pages/game_2048_page.dart';
+import 'package:iskra/features/kpp/presentation/pages/kpp_menu_page.dart';
+import 'package:iskra/features/kpp/presentation/pages/kpp_flashcards_page.dart';
 import 'package:iskra/features/profile/presentation/pages/profile_page.dart';
 import 'package:iskra/features/reports/presentation/pages/reports_page.dart';
 import 'package:iskra/features/subscription/presentation/pages/subscription_page.dart';
@@ -234,6 +236,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             );
           },
         ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.kppMenu,
+        name: AppRouteName.kppMenu,
+        builder: (context, state) => const KppMenuPage(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.kppFlashcards,
+        name: AppRouteName.kppFlashcards,
+        builder: (context, state) => const KppFlashcardsPage(),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,

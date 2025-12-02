@@ -63,3 +63,6 @@ windows/runner/GoogleService-Info.json
 
 # Project context file
 CONTEXT.md
+
+# Data files
+assets/data/kpp_questions.json

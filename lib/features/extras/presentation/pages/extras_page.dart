@@ -72,6 +72,54 @@ class ExtrasPage extends StatelessWidget {
           ),
           
           const SizedBox(height: 16),
+
+          // KPP Learning Module Card
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => context.pushNamed(AppRouteName.kppMenu),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD32F2F), // Red color for medical/emergency
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.medical_services_outlined,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Nauka KPP',
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Baza pytań, fiszki i tryb nauki do egzaminu KPP.',
+                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
           
           Card(
             child: Padding(

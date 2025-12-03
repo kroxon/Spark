@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +30,32 @@ enum AgeGroup {
   const AgeGroup(this.minAge, this.maxAge, this.displayName);
 }
 
+// --- Beep Test Configuration ---
+class BeepLevelConfig {
+  final int level;
+  final int shuttles;
+  final double timePerShuttle;
+
+  const BeepLevelConfig(this.level, this.shuttles, this.timePerShuttle);
+
+  double get speedKmh => (20.0 / timePerShuttle) * 3.6;
+}
+
+const List<BeepLevelConfig> _beepConfig = [
+  BeepLevelConfig(1, 7, 9.0),
+  BeepLevelConfig(2, 8, 8.0),
+  BeepLevelConfig(3, 8, 7.5),
+  BeepLevelConfig(4, 9, 7.2),
+  BeepLevelConfig(5, 9, 6.8),
+  BeepLevelConfig(6, 10, 6.5),
+  BeepLevelConfig(7, 10, 6.2),
+  BeepLevelConfig(8, 11, 6.0),
+  BeepLevelConfig(9, 11, 5.7),
+  BeepLevelConfig(10, 11, 5.5),
+  BeepLevelConfig(11, 12, 5.3),
+  BeepLevelConfig(12, 5, 5.1),
+];
+
 class FitnessTestPage extends ConsumerStatefulWidget {
   const FitnessTestPage({super.key});
 
@@ -44,6 +71,14 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
   // Beep Test
   int _beepLevel = 1;
   int _beepShuttle = 1;
+  
+  // Beep Test Player State
+  bool _isPlayerExpanded = false;
+  bool _isPlaying = false;
+  Timer? _testTimer;
+  double _totalElapsedTime = 0.0;
+  double _currentShuttleElapsed = 0.0;
+  double _currentShuttleDuration = 9.0;
   
   // Cone Run
   final TextEditingController _coneRunController = TextEditingController();
@@ -94,12 +129,122 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
 
   @override
   void dispose() {
+    _testTimer?.cancel();
     _animController.dispose();
     _coneRunController.dispose();
     _ballThrowController.dispose();
     _strengthController.dispose();
     super.dispose();
   }
+
+  // --- Beep Test Player Logic ---
+
+  void _togglePlayer() {
+    setState(() {
+      _isPlayerExpanded = !_isPlayerExpanded;
+    });
+  }
+
+  void _togglePlayPause() {
+    if (_isPlaying) {
+      _pauseTest();
+    } else {
+      _startTest();
+    }
+  }
+
+  void _startTest() {
+    setState(() {
+      _isPlaying = true;
+      // Ensure duration is set correctly
+      if (_currentShuttleDuration <= 0) {
+        _updateShuttleDuration();
+      }
+    });
+
+    _testTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      setState(() {
+        _totalElapsedTime += 0.1;
+        _currentShuttleElapsed += 0.1;
+        
+        if (_currentShuttleElapsed >= _currentShuttleDuration) {
+          _nextShuttle();
+        }
+      });
+    });
+  }
+
+  void _pauseTest() {
+    _testTimer?.cancel();
+    setState(() {
+      _isPlaying = false;
+    });
+  }
+
+  void _resetTest() {
+    _pauseTest();
+    setState(() {
+      _beepLevel = 1;
+      _beepShuttle = 1;
+      _totalElapsedTime = 0.0;
+      _currentShuttleElapsed = 0.0;
+      _updateShuttleDuration();
+      _updateScore();
+    });
+  }
+
+  void _updateShuttleDuration() {
+    final config = _beepConfig.firstWhere((c) => c.level == _beepLevel, orElse: () => _beepConfig.last);
+    _currentShuttleDuration = config.timePerShuttle;
+  }
+
+  void _nextShuttle() {
+    // Play beep sound logic here
+    
+    int maxShuttles = _getMaxShuttles(_beepLevel);
+    
+    if (_beepShuttle < maxShuttles) {
+      _beepShuttle++;
+    } else {
+      // Next Level
+      if (_beepLevel < 12) {
+        _beepLevel++;
+        _beepShuttle = 1;
+      } else {
+        // End of test
+        _pauseTest();
+        return;
+      }
+    }
+    
+    _currentShuttleElapsed = 0.0;
+    _updateShuttleDuration();
+    _updateScore();
+  }
+
+  int _calculateTotalDistance() {
+    int distance = 0;
+    // Add full levels
+    for (int i = 1; i < _beepLevel; i++) {
+      distance += _getMaxShuttles(i) * 20;
+    }
+    // Add completed shuttles in current level
+    distance += (_beepShuttle - 1) * 20;
+    return distance;
+  }
+
+  double _getCurrentSpeed() {
+    final config = _beepConfig.firstWhere((c) => c.level == _beepLevel, orElse: () => _beepConfig.last);
+    return config.speedKmh;
+  }
+
+  String _formatTime(double totalSeconds) {
+    int minutes = totalSeconds ~/ 60;
+    int seconds = (totalSeconds % 60).floor();
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  // --- End Logic ---
 
   void _updateScore() {
     final test = _calculateCurrentState();
@@ -148,20 +293,11 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
   // --- Logic Helpers ---
 
   int _getMaxShuttles(int level) {
-    if (level < 1) return 7;
-    if (level == 1) return 7;
-    if (level == 2) return 8;
-    if (level == 3) return 8;
-    if (level == 4) return 9;
-    if (level == 5) return 9;
-    if (level == 6) return 10;
-    if (level == 7) return 10;
-    if (level == 8) return 11;
-    if (level == 9) return 11;
-    if (level == 10) return 11;
-    if (level == 11) return 12;
-    if (level == 12) return 5;
-    return 5; 
+    final config = _beepConfig.firstWhere(
+      (c) => c.level == level, 
+      orElse: () => _beepConfig.last
+    );
+    return config.shuttles;
   }
 
   void _updateBeepTest(int? newLevel, int? newShuttle) {
@@ -187,26 +323,277 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF2F4F7),
-      body: Column(
+      body: Stack(
         children: [
-          _buildCompactHeader(test, theme),
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+          Column(
+            children: [
+              _buildCompactHeader(test, theme),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Extra padding for player
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildSettingsCard(theme),
+                        const SizedBox(height: 16),
+                        _buildMeasurementsCard(theme),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          _buildAudioPlayer(theme),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAudioPlayer(ThemeData theme) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    // Increased height to prevent overflow and ensure comfort
+    final height = _isPlayerExpanded ? 480.0 : 80.0 + bottomPadding;
+
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: height,
+      child: GestureDetector(
+        onVerticalDragEnd: (details) {
+          if (details.primaryVelocity! < 0) {
+            setState(() => _isPlayerExpanded = true);
+          } else if (details.primaryVelocity! > 0) {
+            setState(() => _isPlayerExpanded = false);
+          }
+        },
+        onTap: _isPlayerExpanded ? null : _togglePlayer,
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1E1E),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Handle / Mini Player
+              Container(
+                height: 60,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
                   children: [
-                    _buildSettingsCard(theme),
-                    const SizedBox(height: 16),
-                    _buildMeasurementsCard(theme),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: theme.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Odtwarzacz Beep Test',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (!_isPlayerExpanded)
+                            Text(
+                              'Poziom $_beepLevel • Odcinek $_beepShuttle',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.6),
+                                fontSize: 12,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        _isPlayerExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                        color: Colors.white70,
+                      ),
+                      onPressed: _togglePlayer,
+                    ),
                   ],
                 ),
               ),
+              
+              // Expanded Content
+              if (_isPlayerExpanded)
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                      child: Column(
+                        children: [
+                          const Divider(color: Colors.white10),
+                          const SizedBox(height: 10),
+                          // Timer
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                height: 120,
+                                child: CircularProgressIndicator(
+                                  value: (_currentShuttleElapsed / _currentShuttleDuration).clamp(0.0, 1.0),
+                                  strokeWidth: 8,
+                                  backgroundColor: Colors.white10,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    theme.primaryColor,
+                                  ),
+                                ),
+                              ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    _formatTime(_totalElapsedTime),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'monospace',
+                                    ),
+                                  ),
+                                  const Text(
+                                    'czas całkowity',
+                                    style: TextStyle(
+                                      color: Colors.white54,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          // Stats Grid
+                          Row(
+                            children: [
+                              _buildPlayerStat('POZIOM', '$_beepLevel'),
+                              _buildPlayerStat('ODCINEK', '$_beepShuttle'),
+                              _buildPlayerStat('DYSTANS', '${_calculateTotalDistance()}m'),
+                              _buildPlayerStat('PRĘDKOŚĆ', '${_getCurrentSpeed().toStringAsFixed(1)} km/h'),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                          // Controls
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildPlayerControlBtn(
+                                Icons.refresh, 
+                                Colors.white24, 
+                                _resetTest,
+                              ),
+                              const SizedBox(width: 24),
+                              GestureDetector(
+                                onTap: _togglePlayPause,
+                                child: Container(
+                                  width: 64,
+                                  height: 64,
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryColor,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: theme.primaryColor.withOpacity(0.4),
+                                        blurRadius: 15,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    _isPlaying ? Icons.pause : Icons.play_arrow,
+                                    color: Colors.white,
+                                    size: 32,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              _buildPlayerControlBtn(
+                                Icons.skip_next, 
+                                Colors.white24, 
+                                _nextShuttle,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: bottomPadding > 0 ? bottomPadding : 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlayerStat(String label, String value) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white38,
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlayerControlBtn(IconData icon, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 24),
       ),
     );
   }

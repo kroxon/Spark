@@ -49,7 +49,10 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
   final TextEditingController _coneRunController = TextEditingController();
   
   // Strength
-  int _strengthReps = 0; // Pull-ups or Throw distance (m)
+  final TextEditingController _ballThrowController = TextEditingController();
+  int _strengthReps = 13; // Pull-ups
+  late PageController _strengthController;
+  double _strengthPage = 13.0;
 
   // Animation
   late AnimationController _animController;
@@ -60,6 +63,13 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
   @override
   void initState() {
     super.initState();
+    _strengthController = PageController(viewportFraction: 0.18, initialPage: 13);
+    _strengthController.addListener(() {
+      setState(() {
+        _strengthPage = _strengthController.page ?? 0;
+      });
+    });
+
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -71,12 +81,23 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
           _displayedScore = _scoreAnimation.value;
         });
       });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScore());
+  }
+
+  String _formatScore(double score) {
+    if (score % 1 == 0) {
+      return score.toInt().toString();
+    }
+    return score.toStringAsFixed(2);
   }
 
   @override
   void dispose() {
     _animController.dispose();
     _coneRunController.dispose();
+    _ballThrowController.dispose();
+    _strengthController.dispose();
     super.dispose();
   }
 
@@ -98,8 +119,19 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
   }
 
   FitnessTest _calculateCurrentState() {
-    double? coneTime = double.tryParse(_coneRunController.text.replaceAll(',', '.'));
+    String text = _coneRunController.text.replaceAll(',', '.');
+    double? coneTime = double.tryParse(text);
     
+    // If empty or invalid, treat as 30.0 (0 points)
+    double effectiveTime = coneTime ?? 30.0;
+    if (effectiveTime == 0) effectiveTime = 30.0;
+
+    double? ballThrowDist;
+    if (_gender == Gender.female) {
+      String ballText = _ballThrowController.text.replaceAll(',', '.');
+      ballThrowDist = double.tryParse(ballText) ?? 0.0;
+    }
+
     return FitnessTest.create(
       firefighterName: 'Kalkulator',
       firefighterAge: _ageGroup.minAge,
@@ -107,9 +139,9 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
       testDate: DateTime.now(),
       beepTestLevel: _beepLevel,
       beepTestShuttles: _beepShuttle,
-      coneRunTime: coneTime ?? 0,
+      coneRunTime: effectiveTime,
       pullUps: _gender == Gender.male ? _strengthReps : null,
-      ballThrowDistance: _gender == Gender.female ? _strengthReps.toDouble() : null,
+      ballThrowDistance: ballThrowDist,
     );
   }
 
@@ -128,15 +160,14 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
     if (level == 9) return 11;
     if (level == 10) return 11;
     if (level == 11) return 12;
-    if (level == 12) return 12;
-    if (level == 13) return 13;
-    return 16; 
+    if (level == 12) return 5;
+    return 5; 
   }
 
   void _updateBeepTest(int? newLevel, int? newShuttle) {
     setState(() {
       if (newLevel != null) {
-        _beepLevel = newLevel.clamp(1, 21);
+        _beepLevel = newLevel.clamp(1, 12);
         int maxS = _getMaxShuttles(_beepLevel);
         if (_beepShuttle > maxS) _beepShuttle = maxS;
       }
@@ -187,8 +218,8 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
 
     return Container(
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 12,
-        bottom: 20,
+        top: MediaQuery.of(context).padding.top + 8,
+        bottom: 16,
         left: 20,
         right: 20,
       ),
@@ -215,7 +246,7 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
                 constraints: const BoxConstraints(),
               ),
               const Text(
-                'Kalkulator Sprawności',
+                'Test Sprawności Fizycznej',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -226,62 +257,146 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
               const SizedBox(width: 20),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(
-                _displayedScore.toStringAsFixed(0),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 56,
-                  fontWeight: FontWeight.bold,
-                  height: 1,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(
-                  'pkt',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
+              Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _formatScore(_displayedScore),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 52,
+                          fontWeight: FontWeight.bold,
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          'pkt',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: Text(
+                      test.gradeLabel,
+                      style: TextStyle(
+                        color: gradeColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Container(width: 1, height: 50, color: Colors.white12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _buildMiniScoreRow(
+                    _gender == Gender.male ? Icons.fitness_center : Icons.sports_handball,
+                    test.pullUpScore,
+                  ),
+                  const SizedBox(height: 4),
+                  _buildMiniScoreRow(Icons.timer_outlined, test.coneRunScore),
+                  const SizedBox(height: 4),
+                  _buildMiniScoreRow(Icons.directions_run, test.beepTestScore),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    height: 1,
+                    width: 80,
+                    color: Colors.white30,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Średnia',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _formatScore(test.averageScore),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (test.preferentialPoints > 0) ...[
+                    const SizedBox(height: 2),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Wiek',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '+${test.preferentialPoints}',
+                          style: const TextStyle(
+                            color: Colors.lightGreenAccent,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Ocena: ',
-                  style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 14),
-                ),
-                Text(
-                  test.gradeLabel,
-                  style: TextStyle(
-                    color: gradeColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMiniScoreRow(IconData icon, num score, {bool isDouble = false}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white70, size: 14),
+        const SizedBox(width: 8),
+        Text(
+          isDouble ? score.toStringAsFixed(1) : score.toString(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      ],
     );
   }
 
@@ -469,7 +584,7 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
                   value: _beepLevel,
                   onChanged: (val) => _updateBeepTest(val, null),
                   min: 1,
-                  max: 21,
+                  max: 12,
                 ),
               ),
               const SizedBox(width: 16),
@@ -562,12 +677,15 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
             child: TextField(
               controller: _coneRunController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                DecimalInputFormatter(),
+              ],
               textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 isDense: true,
-                hintText: '00.00',
+                hintText: '23,50',
                 hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
                 filled: true,
                 fillColor: Colors.grey.withOpacity(0.1),
@@ -589,6 +707,63 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
     final label = isPullUps ? 'Podciąganie' : 'Rzut piłką';
     final subLabel = isPullUps ? 'Liczba powtórzeń' : 'Odległość (m)';
     final icon = isPullUps ? Icons.fitness_center : Icons.sports_handball;
+
+    if (!isPullUps) {
+      // Female: Ball Throw (TextField)
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Icon(icon, color: theme.primaryColor, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    subLabel,
+                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 100,
+              child: TextField(
+                controller: _ballThrowController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  DecimalInputFormatter(),
+                ],
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  isDense: true,
+                  hintText: '9,50',
+                  hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                  filled: true,
+                  fillColor: Colors.grey.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onChanged: (_) => _updateScore(),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Male: Pull-ups (Spinner)
+    // Range: 0-26 for pullups (26 is 26+)
+    const itemCount = 27;
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -615,7 +790,7 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
                 ),
               ),
               Text(
-                '$_strengthReps',
+                _strengthReps >= 26 ? '26+' : '$_strengthReps',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -624,39 +799,56 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           SizedBox(
-            height: 50,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
+            height: 80,
+            child: PageView.builder(
+              controller: _strengthController,
+              itemCount: itemCount,
               physics: const BouncingScrollPhysics(),
-              itemCount: 51, // 0 to 50
+              onPageChanged: (index) {
+                setState(() {
+                  _strengthReps = index;
+                  _updateScore();
+                });
+              },
               itemBuilder: (context, index) {
-                final val = index;
-                final isSelected = _strengthReps == val;
-                return Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _strengthReps = val;
-                        _updateScore();
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      width: 40,
-                      height: 40,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        color: isSelected ? theme.primaryColor : Colors.grey.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        val.toString(),
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black87,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                // Calculate scale and opacity based on distance from center
+                double distance = (_strengthPage - index).abs();
+                double scale = (1.0 - (distance * 0.3)).clamp(0.4, 1.2);
+                double opacity = (1.0 - (distance * 0.4)).clamp(0.2, 1.0);
+                
+                String text = index.toString();
+                if (index == 26) text = "26+";
+
+                final isSelected = index == _strengthReps;
+
+                return Transform.scale(
+                  scale: scale,
+                  child: Opacity(
+                    opacity: opacity,
+                    child: Center(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: isSelected ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.primaryColor.withOpacity(0.3),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            )
+                          ]
+                        ) : null,
+                        child: Text(
+                          text,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: TextStyle(
+                            fontSize: isSelected ? (text.length > 2 ? 28 : 36) : 24,
+                            fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
+                            color: isSelected ? theme.primaryColor : Colors.grey,
+                          ),
                         ),
                       ),
                     ),
@@ -668,5 +860,38 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
         ],
       ),
     );
+  }
+}
+
+class DecimalInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    // Check for invalid characters (anything not digit, dot, or comma)
+    if (RegExp(r'[^0-9.,]').hasMatch(newValue.text)) {
+      return oldValue;
+    }
+
+    // Check for multiple separators
+    int dots = newValue.text.split('.').length - 1;
+    int commas = newValue.text.split(',').length - 1;
+    
+    if (dots + commas > 1) {
+      return oldValue;
+    }
+
+    // Validate format (max 2 decimal places)
+    String checkText = newValue.text.replaceAll(',', '.');
+    if (!RegExp(r'^\d*\.?\d{0,2}$').hasMatch(checkText)) {
+      return oldValue;
+    }
+
+    return newValue;
   }
 }

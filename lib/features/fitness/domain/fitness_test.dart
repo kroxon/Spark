@@ -99,217 +99,100 @@ class FitnessTest {
     if (gender == 'M') {
       if (pullUps == null) return 0;
       if (pullUps >= 26) return 75;
-      if (pullUps >= 25) return 74;
-      if (pullUps >= 24) return 73;
-      if (pullUps >= 23) return 72;
-      if (pullUps >= 22) return 71;
-      if (pullUps >= 21) return 70;
-      if (pullUps >= 20) return 69;
-      if (pullUps >= 19) return 68;
-      if (pullUps >= 18) return 67;
-      if (pullUps >= 17) return 66;
-      if (pullUps >= 16) return 65;
-      if (pullUps >= 15) return 63;
-      if (pullUps >= 14) return 61;
-      if (pullUps >= 13) return 58;
-      if (pullUps >= 12) return 55;
-      if (pullUps >= 11) return 50;
-      if (pullUps >= 10) return 45;
-      if (pullUps >= 9) return 40;
-      if (pullUps >= 8) return 35;
-      if (pullUps >= 7) return 30;
-      if (pullUps >= 6) return 25;
-      if (pullUps >= 5) return 20;
-      if (pullUps >= 4) return 15;
-      if (pullUps >= 3) return 10;
-      if (pullUps >= 2) return 5;
+      if (pullUps == 25) return 74;
+      if (pullUps == 24) return 73;
+      if (pullUps == 23) return 72;
+      if (pullUps == 22) return 71;
+      if (pullUps == 21) return 70;
+      if (pullUps == 20) return 69;
+      if (pullUps == 19) return 68;
+      if (pullUps == 18) return 67;
+      if (pullUps == 17) return 66;
+      if (pullUps == 16) return 65;
+      if (pullUps == 15) return 63;
+      if (pullUps == 14) return 61;
+      if (pullUps == 13) return 58;
+      if (pullUps == 12) return 55;
+      if (pullUps == 11) return 50;
+      if (pullUps == 10) return 45;
+      if (pullUps == 9) return 40;
+      if (pullUps == 8) return 35;
+      if (pullUps == 7) return 30;
+      if (pullUps == 6) return 25;
+      if (pullUps == 5) return 20;
+      if (pullUps == 4) return 15;
+      if (pullUps == 3) return 10;
+      if (pullUps == 2) return 5;
+      if (pullUps == 1) return 1;
       return 0;
     } else {
       if (distance == null) return 0;
-      if (distance >= 10.00) return 75;
-      if (distance >= 9.50) return 70;
-      if (distance >= 9.40) return 69;
-      if (distance >= 9.30) return 68;
-      if (distance >= 9.20) return 67;
-      if (distance >= 9.10) return 66;
-      if (distance >= 9.00) return 65;
-      if (distance >= 8.90) return 64;
-      if (distance >= 8.80) return 63;
-      if (distance >= 8.70) return 62;
-      if (distance >= 8.60) return 61;
-      if (distance >= 8.50) return 60;
-      if (distance >= 8.40) return 59;
-      if (distance >= 8.30) return 58;
-      if (distance >= 8.20) return 57;
-      if (distance >= 8.10) return 56;
-      if (distance >= 8.00) return 55;
-      if (distance >= 7.90) return 53;
-      if (distance >= 7.80) return 51;
-      if (distance >= 7.50) return 45;
-      if (distance >= 7.40) return 43;
-      if (distance >= 7.30) return 41;
-      if (distance >= 7.20) return 39;
-      if (distance >= 7.10) return 37;
-      if (distance >= 7.00) return 35;
-      if (distance >= 6.90) return 33;
-      if (distance >= 6.80) return 31;
-      if (distance >= 6.70) return 29;
-      if (distance >= 6.60) return 25;
-      if (distance >= 6.40) return 20;
-      if (distance >= 6.20) return 19;
-      if (distance >= 6.10) return 17;
-      if (distance >= 6.00) return 15;
-      if (distance >= 5.90) return 13;
-      if (distance >= 5.80) return 11;
-      if (distance >= 5.70) return 9;
-      if (distance >= 5.60) return 7;
-      if (distance >= 5.40) return 5; // Table says 5.40 is 5 pkt, also 5.20 is 3 pkt.
-      if (distance >= 5.20) return 3;
+      // Round to 1 decimal place for comparison safety
+      double d = (distance * 10).round() / 10.0;
+      
+      if (d >= 10.0) return 75;
+      if (d >= 8.0) {
+        // 8.0 -> 55. 10.0 -> 75. (2.0m diff = 20 pts). 1 pt per 0.1m.
+        return 55 + ((d - 8.0) * 10).round();
+      }
+      if (d >= 6.0) {
+        // 6.0 -> 15. 7.9 -> 53. (1.9m diff = 38 pts). 2 pts per 0.1m.
+        return 15 + ((d - 6.0) * 20).round();
+      }
+      if (d >= 5.6) {
+        // 5.6 -> 7. 5.9 -> 13. (0.3m diff = 6 pts). 2 pts per 0.1m.
+        return 7 + ((d - 5.6) * 20).round();
+      }
+      if (d >= 5.0) {
+        // 5.0 -> 1. 5.5 -> 6. (0.5m diff = 5 pts). 1 pt per 0.1m.
+        return 1 + ((d - 5.0) * 10).round();
+      }
       return 0;
     }
   }
 
   static int _calculateConeRunScore(double time) {
     if (time <= 22.00) return 75;
-    if (time <= 22.25) return 70;
-    if (time <= 22.30) return 69;
-    if (time <= 22.35) return 68;
-    if (time <= 22.40) return 67;
-    if (time <= 22.45) return 66;
-    if (time <= 22.50) return 65;
-    if (time <= 22.55) return 64;
-    if (time <= 22.60) return 63;
-    if (time <= 22.65) return 62;
-    if (time <= 22.70) return 61;
-    if (time <= 22.75) return 60;
-    if (time <= 22.80) return 59;
-    if (time <= 22.85) return 58;
-    if (time <= 22.90) return 57;
-    if (time <= 22.95) return 56;
-    if (time <= 23.00) return 55;
-    if (time <= 23.05) return 54;
-    if (time <= 23.10) return 53;
-    if (time <= 23.15) return 52;
-    if (time <= 23.20) return 51;
-    if (time <= 23.25) return 50;
-    if (time <= 23.30) return 49;
-    if (time <= 23.35) return 48;
-    if (time <= 23.40) return 47;
-    if (time <= 23.45) return 46;
-    if (time <= 23.50) return 45;
-    if (time <= 23.60) return 44;
-    if (time <= 23.70) return 43;
-    if (time <= 23.80) return 42;
-    if (time <= 23.90) return 41;
-    if (time <= 24.00) return 40;
-    if (time <= 24.10) return 39;
-    if (time <= 24.20) return 38;
-    if (time <= 24.30) return 37;
-    if (time <= 24.40) return 36;
-    if (time <= 24.50) return 35;
-    if (time <= 24.60) return 34;
-    if (time <= 24.70) return 33;
-    if (time <= 24.80) return 32;
-    if (time <= 24.90) return 31;
-    if (time <= 25.00) return 30;
-    if (time <= 25.70) return 25;
-    if (time <= 25.80) return 24;
-    if (time <= 25.90) return 23;
-    if (time <= 26.10) return 21;
-    if (time <= 26.20) return 20;
-    if (time <= 26.30) return 19;
-    if (time <= 26.40) return 18;
-    if (time <= 26.50) return 17;
-    if (time <= 26.60) return 16;
-    if (time <= 26.70) return 15;
-    if (time <= 26.80) return 14;
-    if (time <= 26.90) return 13;
-    if (time <= 27.00) return 12;
-    if (time <= 27.10) return 11;
-    if (time <= 27.20) return 10;
-    if (time <= 27.30) return 9;
-    if (time <= 27.40) return 8;
-    if (time <= 27.50) return 7;
-    if (time <= 27.60) return 6;
-    if (time <= 27.70) return 5;
+    
+    // 22.00 - 23.50: 1 pt per 0.05s
+    // 22.00 is 75. 23.50 is 45.
+    // Diff 1.5s = 30 steps of 0.05s. Points diff 30. Correct.
+    if (time <= 23.50) {
+      double diff = time - 22.00;
+      int steps = (diff / 0.05).ceil(); // ceil because lower time is better, so slightly above 22.00 drops a point
+      // Example: 22.01 -> steps=1 -> 74. Correct.
+      // Example: 22.05 -> steps=1 -> 74. Correct.
+      // Example: 22.06 -> steps=2 -> 73. Correct.
+      return 75 - steps;
+    }
+    
+    // 23.50 - 27.90: 1 pt per 0.10s
+    // 23.50 is 45. 27.90 is 1.
+    // Diff 4.4s = 44 steps of 0.10s. Points diff 44. Correct.
+    if (time <= 27.90) {
+      double diff = time - 23.50;
+      int steps = (diff / 0.10).ceil();
+      return 45 - steps;
+    }
+    
     return 0;
   }
 
   static int _calculateBeepTestScore(int level, int shuttles) {
-    // Convert level-shuttles to a comparable value or just use if-else logic
-    // Since the table is not linear, we'll use a lookup or a series of checks.
-    // A simple way is to convert to total shuttles if we knew the shuttles per level,
-    // but the table gives specific X-Y values.
-    // We can implement a comparator or just a long list of checks.
-    
-    // Helper to compare (level, shuttles) >= (targetLevel, targetShuttles)
-    bool gte(int l, int s) {
-      if (level > l) return true;
-      if (level == l && shuttles >= s) return true;
-      return false;
+    if (level < 5) return 0;
+    if (level == 5) {
+      // 5-5 is 1 pt. 5-9 is 5 pts.
+      if (shuttles < 5) return 0;
+      return shuttles - 4;
     }
-
-    if (gte(12, 5)) return 75;
-    if (gte(11, 12)) return 70;
-    if (gte(11, 11)) return 69;
-    if (gte(11, 10)) return 68;
-    if (gte(11, 9)) return 67;
-    if (gte(11, 8)) return 66;
-    if (gte(11, 7)) return 65;
-    if (gte(11, 6)) return 64;
-    if (gte(11, 5)) return 63;
-    if (gte(11, 4)) return 62;
-    if (gte(11, 3)) return 61;
-    if (gte(11, 2)) return 60;
-    if (gte(11, 1)) return 59;
-    if (gte(10, 11)) return 58;
-    if (gte(10, 10)) return 57;
-    if (gte(10, 9)) return 56;
-    if (gte(10, 8)) return 55;
-    if (gte(10, 7)) return 54;
-    if (gte(10, 6)) return 53;
-    if (gte(10, 5)) return 52;
-    if (gte(10, 4)) return 51;
-    if (gte(10, 3)) return 50;
-    if (gte(10, 2)) return 49;
-    if (gte(10, 1)) return 47;
-    if (gte(9, 10)) return 46;
-    if (gte(9, 9)) return 45;
-    if (gte(9, 8)) return 44;
-    if (gte(9, 7)) return 43;
-    if (gte(9, 6)) return 42;
-    if (gte(9, 5)) return 41;
-    if (gte(9, 4)) return 40;
-    if (gte(9, 3)) return 39;
-    if (gte(9, 2)) return 38;
-    if (gte(9, 1)) return 37;
-    if (gte(8, 11)) return 36;
-    if (gte(8, 10)) return 35;
-    if (gte(8, 9)) return 34;
-    if (gte(8, 8)) return 33;
-    if (gte(8, 7)) return 32;
-    if (gte(8, 6)) return 31;
-    if (gte(8, 5)) return 30;
-    if (gte(7, 2)) return 25;
-    if (gte(7, 1)) return 23;
-    if (gte(6, 11)) return 22;
-    if (gte(6, 10)) return 21;
-    if (gte(6, 9)) return 20;
-    if (gte(6, 8)) return 19;
-    if (gte(6, 7)) return 18;
-    if (gte(6, 6)) return 17;
-    if (gte(6, 5)) return 16;
-    if (gte(6, 4)) return 15;
-    if (gte(6, 3)) return 14;
-    if (gte(6, 2)) return 13;
-    if (gte(6, 1)) return 12;
-    if (gte(5, 9)) return 11;
-    if (gte(5, 8)) return 10;
-    if (gte(5, 7)) return 9;
-    if (gte(5, 6)) return 8;
-    if (gte(5, 5)) return 7;
-    if (gte(5, 4)) return 6;
-    if (gte(5, 3)) return 5;
+    if (level == 6) return 5 + shuttles;   // 6-1 -> 6
+    if (level == 7) return 15 + shuttles;  // 7-1 -> 16
+    if (level == 8) return 25 + shuttles;  // 8-1 -> 26
+    if (level == 9) return 36 + shuttles;  // 9-1 -> 37
+    if (level == 10) return 47 + shuttles; // 10-1 -> 48
+    if (level == 11) return 58 + shuttles; // 11-1 -> 59
+    if (level == 12) return 70 + shuttles; // 12-1 -> 71
+    
     return 0;
   }
 

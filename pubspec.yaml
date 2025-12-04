@@ -53,6 +53,7 @@ dependencies:
   flutter_animate: ^4.5.2
   pdf: ^3.11.3
   printing: ^5.14.2
+  audioplayers: ^6.5.1
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +86,7 @@ flutter:
   # https://flutter.dev/to/resolution-aware-images
   assets:
     - assets/data/kpp_questions.json
+    - assets/data/Beep_Test_Dzwiek.mp3
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package

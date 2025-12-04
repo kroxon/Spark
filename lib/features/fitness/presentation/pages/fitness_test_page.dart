@@ -144,10 +144,7 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
         final position = await _audioPlayer.getCurrentPosition();
         if (position == null) return;
 
-        final double audioTime = position.inMilliseconds / 1000.0;
-        final double testTime = audioTime - _introDuration;
-
-        _syncStateFromTime(testTime);
+        _syncStateFromTime(position.inMilliseconds);
       });
     } catch (e) {
       debugPrint("Error starting playback: $e");
@@ -194,62 +191,117 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
     _seekTo(target);
   }
 
-  void _syncStateFromTime(double time) {
-    if (time < 0) {
-       // Intro logic
-       setState(() {
-         _totalElapsedTime = time;
-         _playerLevel = 1;
-         _playerShuttle = 1;
-         _currentShuttleElapsed = 0;
-       });
-       return;
-    }
+  void _syncStateFromTime(int curTime) {
+    int level = 1;
+    int shuttle = 1;
+    double shuttleDuration = 9.0;
+    double shuttleElapsed = 0.0;
 
-    double accumulatedTime = 0;
-    int newLevel = 1;
-    int newShuttle = 1;
-    double shuttleElapsed = 0;
-    bool isFinished = true;
-    
-    for (final config in beepConfig) {
-      double levelDuration = config.shuttles * config.timePerShuttle;
-      
-      if (time < accumulatedTime + levelDuration) {
-        newLevel = config.level;
-        double timeInLevel = time - accumulatedTime;
-        int shuttleIndex = (timeInLevel / config.timePerShuttle).floor();
-        newShuttle = shuttleIndex + 1;
-        shuttleElapsed = timeInLevel - (shuttleIndex * config.timePerShuttle);
-        
-        // Clamp shuttle
-        if (newShuttle > config.shuttles) {
-           newShuttle = config.shuttles;
-           shuttleElapsed = config.timePerShuttle; 
-        }
-        isFinished = false;
-        break;
-      }
-      
-      accumulatedTime += levelDuration;
-      newLevel = config.level; 
-    }
-    
-    // Handle end of test
-    if (isFinished) {
-       newLevel = 12;
-       newShuttle = 5;
-       shuttleElapsed = 0; 
-       _pauseTest(); // Stop if finished
+    // Logic based on provided Java code
+    if (curTime < 9000) {
+      level = 1;
+      shuttle = 1;
+      shuttleDuration = 9.0;
+      shuttleElapsed = 0.0;
+    } else if (curTime >= 9000 && curTime < 72000) {
+      level = 1;
+      int start = 9000;
+      int duration = 9000;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 72000 && curTime < 136000) {
+      level = 2;
+      int start = 72000;
+      int duration = 8000;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 136000 && curTime < 196000) {
+      level = 3;
+      int start = 136000;
+      int duration = 7500;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 196000 && curTime < 260800) {
+      level = 4;
+      int start = 196000;
+      int duration = 7200;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 260800 && curTime < 322000) {
+      level = 5;
+      int start = 260800;
+      int duration = 6800;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 322600 && curTime < 387000) {
+      level = 6;
+      int start = 322600;
+      int duration = 6500;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 387700 && curTime < 449000) {
+      level = 7;
+      int start = 387800;
+      int duration = 6200;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 450300 && curTime < 515000) {
+      level = 8;
+      int start = 450500;
+      int duration = 6000;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 517000 && curTime < 577700) {
+      level = 9;
+      int start = 517000;
+      int duration = 5700;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 579700 && curTime < 638200) {
+      level = 10;
+      int start = 580200;
+      int duration = 5500;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 641000 && curTime < 701800) {
+      level = 11;
+      int start = 641200;
+      int duration = 5300;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else if (curTime >= 704600) {
+      level = 12;
+      int start = 704800;
+      int duration = 5100;
+      shuttle = ((curTime - start) / duration).floor() + 1;
+      shuttleDuration = duration / 1000.0;
+      shuttleElapsed = ((curTime - start) % duration) / 1000.0;
+    } else {
+      // In a gap
+      setState(() {
+        _totalElapsedTime = (curTime - 9000) / 1000.0;
+      });
+      return;
     }
 
     setState(() {
-      _playerLevel = newLevel;
-      _playerShuttle = newShuttle;
+      _playerLevel = level;
+      _playerShuttle = shuttle;
+      _currentShuttleDuration = shuttleDuration;
       _currentShuttleElapsed = shuttleElapsed;
-      _totalElapsedTime = time;
-      _updateShuttleDuration();
-      
+      _totalElapsedTime = (curTime - 9000) / 1000.0;
+
       if (_autoSyncResult) {
         _beepLevel = _playerLevel;
         _beepShuttle = _playerShuttle;
@@ -353,6 +405,23 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
     return shuttlesBefore + (_playerShuttle - 1) + currentShuttleProgress;
   }
 
+  int _getTimeForLevelShuttle(int level, int shuttle) {
+      int time = 0;
+      if (level == 1) time = 9000 + (shuttle - 1) * 9000;
+      else if (level == 2) time = 72000 + (shuttle - 1) * 8000;
+      else if (level == 3) time = 136000 + (shuttle - 1) * 7500;
+      else if (level == 4) time = 196000 + (shuttle - 1) * 7200;
+      else if (level == 5) time = 260800 + (shuttle - 1) * 6800;
+      else if (level == 6) time = 322600 + (shuttle - 1) * 6500;
+      else if (level == 7) time = 387800 + (shuttle - 1) * 6200;
+      else if (level == 8) time = 450500 + (shuttle - 1) * 6000;
+      else if (level == 9) time = 517000 + (shuttle - 1) * 5700;
+      else if (level == 10) time = 580200 + (shuttle - 1) * 5500;
+      else if (level == 11) time = 641200 + (shuttle - 1) * 5300;
+      else if (level == 12) time = 704800 + (shuttle - 1) * 5100;
+      return time;
+  }
+
   void _seekTo(double globalValue) {
     // We interpret the value as "completed shuttles so far".
     // So 0.0 means start of 1st shuttle.
@@ -385,10 +454,12 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
       _playerShuttle = targetShuttle;
       _updateShuttleDuration();
       _currentShuttleElapsed = 0.0; // Always start at 0
-      _recalculateTotalTime();
+      
+      // Calculate time using Java logic
+      int seekMs = _getTimeForLevelShuttle(targetLevel, targetShuttle);
+      _totalElapsedTime = (seekMs - 9000) / 1000.0;
       
       // Seek audio
-      final seekMs = ((_totalElapsedTime + _introDuration) * 1000).round();
       _audioPlayer.seek(Duration(milliseconds: seekMs));
 
       if (_autoSyncResult) {
@@ -397,22 +468,6 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
         _updateScore();
       }
     });
-  }
-
-  void _recalculateTotalTime() {
-    double totalTime = 0.0;
-    
-    for (final config in beepConfig) {
-      if (config.level < _playerLevel) {
-        totalTime += config.shuttles * config.timePerShuttle;
-      } else if (config.level == _playerLevel) {
-        totalTime += (_playerShuttle - 1) * config.timePerShuttle;
-        break;
-      }
-    }
-    
-    totalTime += _currentShuttleElapsed;
-    _totalElapsedTime = totalTime;
   }
 
   void _updateBeepTest(int? newLevel, int? newShuttle) {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,13 @@ import 'package:iskra/features/system_settings/presentation/pages/appearance_set
 import 'package:iskra/features/system_settings/presentation/pages/schedule_settings_page.dart';
 import 'package:iskra/features/system_settings/presentation/pages/balances_settings_page.dart';
 import 'package:iskra/features/onboarding/presentation/pages/onboarding_page.dart';
+
+import 'package:iskra/features/reports/presentation/pages/manage_persons_page.dart';
+import 'package:iskra/features/reports/presentation/pages/manage_templates_page.dart';
+import 'package:iskra/features/reports/presentation/pages/report_template_selector_page.dart';
+import 'package:iskra/features/reports/presentation/pages/report_editor_page.dart';
+import 'package:iskra/features/reports/presentation/pages/pdf_preview_page.dart';
+import 'package:iskra/features/reports/domain/report_template.dart';
 
 import 'package:iskra/features/auth/data/user_profile_repository.dart';
 
@@ -256,6 +264,45 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutePath.kppExam,
         name: AppRouteName.kppExam,
         builder: (context, state) => const KppExamPage(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.reportTemplateSelector,
+        name: AppRouteName.reportTemplateSelector,
+        builder: (context, state) => const ReportTemplateSelectorPage(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.reportManagePersons,
+        name: AppRouteName.reportManagePersons,
+        builder: (context, state) => const ManagePersonsPage(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.reportManageTemplates,
+        name: AppRouteName.reportManageTemplates,
+        builder: (context, state) => const ManageTemplatesPage(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.reportEditor,
+        name: AppRouteName.reportEditor,
+        builder: (context, state) {
+          final template = state.extra as ReportTemplate;
+          return ReportEditorPage(template: template);
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutePath.reportPdfPreview,
+        name: AppRouteName.reportPdfPreview,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return PdfPreviewPage(
+            pdfData: extra['pdfData'] as Uint8List,
+            fileName: extra['fileName'] as String,
+          );
+        },
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,

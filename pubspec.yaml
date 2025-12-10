@@ -54,6 +54,7 @@ dependencies:
   pdf: ^3.11.3
   printing: ^5.14.2
   audioplayers: ^6.5.1
+  google_generative_ai: ^0.4.7
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,9 @@ flutter:
   assets:
     - assets/data/kpp_questions.json
     - assets/data/Beep_Test_Dzwiek.mp3
+    - assets/fonts/Carlito-Regular.ttf
+    - assets/fonts/Tinos-Regular.ttf
+    - assets/fonts/Roboto-Regular.ttf
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package

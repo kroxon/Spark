@@ -41,6 +41,16 @@ class ExtrasPage extends StatelessWidget {
             route: AppRouteName.fitnessMenu,
             delay: 300,
           ),
+          const SizedBox(height: 20),
+          _buildExtraTile(
+            context,
+            title: 'Generator Raportów',
+            description: 'Twórz profesjonalne raporty i notatki z pomocą AI.',
+            icon: Icons.description_outlined,
+            color: const Color(0xFFF57C00), // Orange 700
+            route: AppRouteName.reportTemplateSelector,
+            delay: 400,
+          ),
         ],
       ),
     );

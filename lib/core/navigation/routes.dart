@@ -22,6 +22,12 @@ class AppRouteName {
   static const kppFlashcards = 'kpp-flashcards';
   static const kppExam = 'kpp-exam';
 
+  static const reportTemplateSelector = 'report-template-selector';
+  static const reportManagePersons = 'report-manage-persons';
+  static const reportManageTemplates = 'report-manage-templates';
+  static const reportEditor = 'report-editor';
+  static const reportPdfPreview = 'report-pdf-preview';
+
   static const fitnessMenu = 'fitness-menu';
   static const fitnessTestNew = 'fitness-test-new';
 
@@ -51,6 +57,13 @@ class AppRoutePath {
   static const kppMenu = '/extras/kpp';
   static const kppFlashcards = '/extras/kpp/flashcards';
   static const kppExam = '/extras/kpp/exam';
+
+  static const reportTemplateSelector = '/extras/reports/templates';
+  static const reportManagePersons = '/extras/reports/manage-persons';
+  static const reportManageTemplates = '/extras/reports/manage-templates';
+  static const reportEditor = '/extras/reports/editor';
+  static const reportPdfPreview = '/extras/reports/preview';
+
   static const fitnessMenu = '/extras/fitness';
   static const fitnessTestNew = '/extras/fitness/new';
 

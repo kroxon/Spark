@@ -20,5 +20,5 @@ const List<BeepLevelConfig> beepConfig = [
   BeepLevelConfig(9, 11, 5.7),
   BeepLevelConfig(10, 11, 5.5),
   BeepLevelConfig(11, 12, 5.3),
-  BeepLevelConfig(12, 5, 5.1),
+  BeepLevelConfig(12, 6, 5.1),
 ];

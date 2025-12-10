@@ -20,117 +20,118 @@ class FitnessTestPage extends ConsumerStatefulWidget {
 class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTickerProviderStateMixin {
   // Generated timestamps from audio analysis
   static const Map<String, int> _beepTimestamps = {
-  '1-1': 9024,
-  '1-2': 18026,
-  '1-3': 27029,
-  '1-4': 36032,
-  '1-5': 45013,
-  '1-6': 54037,
-  '1-7': 63018,
-  '2-1': 72021,
-  '2-2': 80021,
-  '2-3': 88021,
-  '2-4': 96021,
-  '2-5': 104021,
-  '2-6': 112021,
-  '2-7': 120021,
-  '2-8': 128021,
-  '3-1': 136021,
-  '3-2': 143616,
-  '3-3': 151189,
-  '3-4': 158762,
-  '3-5': 166336,
-  '3-6': 173930,
-  '3-7': 181504,
-  '3-8': 189077,
-  '4-1': 196672,
-  '4-2': 203861,
-  '4-3': 211072,
-  '4-4': 218261,
-  '4-5': 225472,
-  '4-6': 232661,
-  '4-7': 239872,
-  '4-8': 247061,
-  '4-9': 254272,
-  '5-1': 261461,
-  '5-2': 268330,
-  '5-3': 275178,
-  '5-4': 282048,
-  '5-5': 288896,
-  '5-6': 295765,
-  '5-7': 302634,
-  '5-8': 309482,
-  '5-9': 316352,
-  '6-1': 323221,
-  '6-2': 329749,
-  '6-3': 336298,
-  '6-4': 342848,
-  '6-5': 349397,
-  '6-6': 355946,
-  '6-7': 362496,
-  '6-8': 369045,
-  '6-9': 375616,
-  '6-10': 382165,
-  '7-1': 388714,
-  '7-2': 394965,
-  '7-3': 401216,
-  '7-4': 407488,
-  '7-5': 413738,
-  '7-6': 420010,
-  '7-7': 426261,
-  '7-8': 432533,
-  '7-9': 438784,
-  '7-10': 445056,
-  '8-1': 451306,
-  '8-2': 457301,
-  '8-3': 463296,
-  '8-4': 469312,
-  '8-5': 475306,
-  '8-6': 481301,
-  '8-7': 487296,
-  '8-8': 493312,
-  '8-9': 499306,
-  '8-10': 505301,
-  '8-11': 511424,
-  '9-1': 517312,
-  '9-2': 523904,
-  '9-3': 528832,
-  '9-4': 534592,
-  '9-5': 540608,
-  '9-6': 546112,
-  '9-7': 551872,
-  '9-8': 557632,
-  '9-9': 563648,
-  '9-10': 569152,
-  '9-11': 574912,
-  '10-1': 580928,
-  '10-2': 587114,
-  '10-3': 591744,
-  '10-4': 597290,
-  '10-5': 602816,
-  '10-6': 608362,
-  '10-7': 613909,
-  '10-8': 619456,
-  '10-9': 624981,
-  '10-10': 631296,
-  '10-11': 636074,
-  '11-1': 642090,
-  '11-2': 646933,
-  '11-3': 652266,
-  '11-4': 657600,
-  '11-5': 663744,
-  '11-6': 668245,
-  '11-7': 674410,
-  '11-8': 678912,
-  '11-9': 685312,
-  '11-10': 689578,
-  '11-11': 695658,
-  '11-12': 700245,
-  '12-1': 706304,
-  '12-2': 710698,
-  '12-3': 715840,
-  '12-4': 720981,
-  '12-5': 727104,
+  '1-1': 9066, // 9.003s
+  '1-2': 18069, // 9.003s
+  '1-3': 27072, // 9.002s
+  '1-4': 36074, // 8.982s
+  '1-5': 45056, // 9.024s
+  '1-6': 54080, // 9.002s
+  '1-7': 63082, // 9.003s
+  '2-1': 72085, // 7.979s
+  '2-2': 80064, // 8.000s
+  '2-3': 88064, // 8.000s
+  '2-4': 96064, // 8.000s
+  '2-5': 104064, // 8.000s
+  '2-6': 112064, // 8.000s
+  '2-7': 120064, // 8.000s
+  '2-8': 128064, // 8.021s
+  '3-1': 136085, // 7.573s
+  '3-2': 143658, // 7.574s
+  '3-3': 151232, // 7.573s
+  '3-4': 158805, // 7.595s
+  '3-5': 166400, // 7.573s
+  '3-6': 173973, // 7.573s
+  '3-7': 181546, // 7.595s
+  '3-8': 189141, // 7.573s
+  '4-1': 196714, // 7.190s
+  '4-2': 203904, // 7.210s
+  '4-3': 211114, // 7.190s
+  '4-4': 218304, // 7.210s
+  '4-5': 225514, // 7.190s
+  '4-6': 232704, // 7.210s
+  '4-7': 239914, // 7.190s
+  '4-8': 247104, // 7.210s
+  '4-9': 254314, // 7.190s
+  '5-1': 261504, // 6.869s
+  '5-2': 268373, // 6.869s
+  '5-3': 275242, // 6.848s
+  '5-4': 282090, // 6.870s
+  '5-5': 288960, // 6.848s
+  '5-6': 295808, // 6.869s
+  '5-7': 302677, // 6.848s
+  '5-8': 309525, // 6.869s
+  '5-9': 316394, // 6.870s
+  '6-1': 323264, // 6.528s
+  '6-2': 329792, // 6.570s
+  '6-3': 336362, // 6.550s
+  '6-4': 342912, // 6.549s
+  '6-5': 349461, // 6.549s
+  '6-6': 356010, // 6.550s
+  '6-7': 362560, // 6.549s
+  '6-8': 369109, // 6.549s
+  '6-9': 375658, // 6.550s
+  '6-10': 382208, // 6.549s
+  '7-1': 388757, // 6.251s
+  '7-2': 395008, // 6.272s
+  '7-3': 401280, // 6.250s
+  '7-4': 407530, // 6.272s
+  '7-5': 413802, // 6.251s
+  '7-6': 420053, // 6.251s
+  '7-7': 426304, // 6.272s
+  '7-8': 432576, // 6.250s
+  '7-9': 438826, // 6.272s
+  '7-10': 445098, // 6.251s
+  '8-1': 451349, // 5.995s
+  '8-2': 457344, // 6.016s
+  '8-3': 463360, // 5.994s
+  '8-4': 469354, // 5.995s
+  '8-5': 475349, // 5.995s
+  '8-6': 481344, // 6.016s
+  '8-7': 487360, // 5.994s
+  '8-8': 493354, // 5.995s
+  '8-9': 499349, // 5.995s
+  '8-10': 505344, // 6.144s
+  '8-11': 511488, // 5.866s
+  '9-1': 517354, // 5.760s
+  '9-2': 523114, // 5.760s
+  '9-3': 528874, // 5.760s
+  '9-4': 534634, // 5.760s
+  '9-5': 540394, // 5.760s
+  '9-6': 546154, // 5.760s
+  '9-7': 551914, // 5.760s
+  '9-8': 557674, // 5.760s
+  '9-9': 563434, // 5.760s
+  '9-10': 569194, // 5.760s
+  '9-11': 574954, // 5.760s
+  '10-1': 580714, // 5.547s
+  '10-2': 586261, // 5.525s
+  '10-3': 591786, // 5.547s
+  '10-4': 597333, // 5.547s
+  '10-5': 602880, // 5.525s
+  '10-6': 608405, // 5.547s
+  '10-7': 613952, // 5.546s
+  '10-8': 619498, // 5.526s
+  '10-9': 625024, // 5.546s
+  '10-10': 630570, // 5.547s
+  '10-11': 636117, // 5.547s
+  '11-1': 641664, // 5.312s
+  '11-2': 646976, // 5.333s
+  '11-3': 652309, // 5.333s
+  '11-4': 657642, // 5.334s
+  '11-5': 662976, // 5.333s
+  '11-6': 668309, // 5.333s
+  '11-7': 673642, // 5.312s
+  '11-8': 678954, // 5.334s
+  '11-9': 684288, // 5.333s
+  '11-10': 689621, // 5.333s
+  '11-11': 694954, // 5.334s
+  '11-12': 700288, // 5.333s
+  '12-1': 705621, // 5.141s
+  '12-2': 710762, // 5.120s
+  '12-3': 715882, // 5.142s
+  '12-4': 721024, // 6.080s
+  '12-5': 727104, // 4.202s
+  '12-6': 731306, // End
   };
 
   // State
@@ -146,7 +147,7 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
   static const double _introDuration = 9.0;
   bool _isPlayerExpanded = false;
   bool _isPlaying = false;
-  bool _autoSyncResult = true;
+  bool _autoSyncResult = false;
   int _playerLevel = 1;
   int _playerShuttle = 1;
   Timer? _testTimer;
@@ -295,8 +296,24 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
   }
 
   void _updateShuttleDuration() {
-    final config = beepConfig.firstWhere((c) => c.level == _playerLevel, orElse: () => beepConfig.last);
-    _currentShuttleDuration = config.timePerShuttle;
+    int startTime = _getTimeForLevelShuttle(_playerLevel, _playerShuttle);
+    
+    int nextL = _playerLevel;
+    int nextS = _playerShuttle + 1;
+    int maxS = _getMaxShuttles(_playerLevel);
+    if (nextS > maxS) {
+      nextL++;
+      nextS = 1;
+    }
+    
+    String nextK = '$nextL-$nextS';
+    if (_beepTimestamps.containsKey(nextK)) {
+      int nextTime = _beepTimestamps[nextK]!;
+      _currentShuttleDuration = (nextTime - startTime) / 1000.0;
+    } else {
+      final config = beepConfig.firstWhere((c) => c.level == _playerLevel, orElse: () => beepConfig.last);
+      _currentShuttleDuration = config.timePerShuttle;
+    }
   }
 
   void _nextShuttle() {
@@ -511,15 +528,37 @@ class _FitnessTestPageState extends ConsumerState<FitnessTestPage> with SingleTi
     setState(() {
       _playerLevel = targetLevel;
       _playerShuttle = targetShuttle;
-      _updateShuttleDuration();
-      _currentShuttleElapsed = 0.0; // Always start at 0
       
-      // Calculate time using generated map
-      int seekMs = _getTimeForLevelShuttle(targetLevel, targetShuttle);
-      _totalElapsedTime = (seekMs - 9024) / 1000.0;
+      // Calculate start time
+      int startTime = _getTimeForLevelShuttle(targetLevel, targetShuttle);
       
-      // Seek audio
-      _audioPlayer.seek(Duration(milliseconds: seekMs));
+      // Calculate duration
+      int nextL = targetLevel;
+      int nextS = targetShuttle + 1;
+      int maxS = _getMaxShuttles(targetLevel);
+      if (nextS > maxS) {
+        nextL++;
+        nextS = 1;
+      }
+      
+      double durationMs = 0;
+      String nextK = '$nextL-$nextS';
+      
+      if (_beepTimestamps.containsKey(nextK)) {
+        int nextTime = _beepTimestamps[nextK]!;
+        durationMs = (nextTime - startTime).toDouble();
+      } else {
+        final config = beepConfig.firstWhere((c) => c.level == targetLevel, orElse: () => beepConfig.last);
+        durationMs = config.timePerShuttle * 1000;
+      }
+      
+      _currentShuttleDuration = durationMs / 1000.0;
+      
+      // Snap to start of the shuttle
+      _currentShuttleElapsed = 0.0;
+      _totalElapsedTime = (startTime - 9024) / 1000.0;
+      
+      _audioPlayer.seek(Duration(milliseconds: startTime));
 
       if (_autoSyncResult) {
         _beepLevel = _playerLevel;

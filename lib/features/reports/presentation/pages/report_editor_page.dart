@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:iskra/core/navigation/routes.dart';
 import 'package:iskra/features/reports/data/pdf_report_service.dart';
 import 'package:iskra/features/reports/domain/report_person.dart';
@@ -22,12 +23,15 @@ class _ReportEditorPageState extends ConsumerState<ReportEditorPage> {
   late TextEditingController _intentController;
   late TextEditingController _contentController;
   late TextEditingController _cityController;
+  late TextEditingController _dateController;
 
   // State
   ReportPerson? _selectedSender;
   ReportPerson? _selectedRecipient;
+  DateTime _selectedDate = DateTime.now();
   bool _isGenerating = false;
   bool _showContentEditor = false;
+  bool _isBasicDataExpanded = true;
 
   @override
   void initState() {
@@ -35,11 +39,23 @@ class _ReportEditorPageState extends ConsumerState<ReportEditorPage> {
     _topicController = TextEditingController(text: widget.template.name);
     _intentController = TextEditingController();
     _contentController = TextEditingController(text: widget.template.defaultContent);
-    _cityController = TextEditingController(text: 'Warszawa'); // TODO: Get from user prefs
+    _cityController = TextEditingController(text: '');
+    _dateController = TextEditingController(text: DateFormat('dd.MM.yyyy').format(_selectedDate));
     
+    _loadLastCity();
+
     // If template has content, show editor immediately
     if (widget.template.defaultContent.isNotEmpty && widget.template.defaultContent != "...") {
       _showContentEditor = true;
+    }
+  }
+
+  Future<void> _loadLastCity() async {
+    final city = await ref.read(firestoreReportRepositoryProvider).getLastCity();
+    if (city != null && mounted) {
+      setState(() {
+        _cityController.text = city;
+      });
     }
   }
 
@@ -49,6 +65,7 @@ class _ReportEditorPageState extends ConsumerState<ReportEditorPage> {
     _intentController.dispose();
     _contentController.dispose();
     _cityController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 
@@ -107,10 +124,15 @@ class _ReportEditorPageState extends ConsumerState<ReportEditorPage> {
     setState(() => _isGenerating = true);
 
     try {
+      // Save city for future use
+      if (_cityController.text.isNotEmpty) {
+        await ref.read(firestoreReportRepositoryProvider).saveLastCity(_cityController.text);
+      }
+
       final pdfService = ref.read(pdfReportServiceProvider);
       final pdfData = await pdfService.generateReport(
         city: _cityController.text,
-        date: DateTime.now(),
+        date: _selectedDate,
         sender: _selectedSender!,
         recipient: _selectedRecipient!,
         title: _topicController.text,
@@ -189,6 +211,25 @@ class _ReportEditorPageState extends ConsumerState<ReportEditorPage> {
   @override
   Widget build(BuildContext context) {
     final personsAsync = ref.watch(savedPersonsProvider);
+    
+    // Responsive calculations
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+    final double iconSize = isSmallScreen ? 18 : 24;
+    final double fontSize = isSmallScreen ? 13 : 16;
+    final double labelFontSize = isSmallScreen ? 12 : 14;
+
+    InputDecoration responsiveDecoration(String label, IconData icon, {IconData? suffixIcon}) {
+      return InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(fontSize: labelFontSize),
+        border: const OutlineInputBorder(),
+        prefixIcon: Icon(icon, size: iconSize),
+        suffixIcon: suffixIcon != null ? Icon(suffixIcon, size: iconSize) : null,
+        contentPadding: isSmallScreen ? const EdgeInsets.symmetric(horizontal: 8, vertical: 12) : null,
+        isDense: isSmallScreen,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -212,49 +253,97 @@ class _ReportEditorPageState extends ConsumerState<ReportEditorPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 1. Persons Section
-                _buildSectionHeader('1. Dane podstawowe'),
-                const SizedBox(height: 8),
-                Row(
+                _buildCollapsibleSection(
+                  title: '1. Dane podstawowe',
+                  isExpanded: _isBasicDataExpanded,
+                  onToggle: () => setState(() => _isBasicDataExpanded = !_isBasicDataExpanded),
                   children: [
-                    Expanded(
-                      child: DropdownButtonFormField<ReportPerson>(
-                        value: _selectedSender,
-                        decoration: const InputDecoration(
-                          labelText: 'Nadawca',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.person),
+                    DropdownButtonFormField<ReportPerson>(
+                      isExpanded: true,
+                      value: _selectedSender,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: fontSize),
+                      decoration: responsiveDecoration('Nadawca', Icons.person),
+                      items: persons
+                          .map((p) => DropdownMenuItem(
+                              value: p,
+                              child: Text(
+                                p.fullName,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: fontSize),
+                              )))
+                          .toList(),
+                      onChanged: (val) =>
+                          setState(() => _selectedSender = val),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<ReportPerson>(
+                      isExpanded: true,
+                      value: _selectedRecipient,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: fontSize),
+                      decoration: responsiveDecoration('Odbiorca', Icons.person_outline),
+                      items: persons
+                          .map((p) => DropdownMenuItem(
+                              value: p,
+                              child: Text(
+                                '${p.rank} ${p.lastName} (${p.position})',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: fontSize),
+                              )))
+                          .toList(),
+                      onChanged: (val) => setState(() => _selectedRecipient = val),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: () => context.pushNamed(AppRouteName.reportManagePersons),
+                        icon: Icon(Icons.manage_accounts_outlined, size: iconSize),
+                        label: Text(
+                          'Zarządzaj listą osób',
+                          style: TextStyle(fontSize: labelFontSize),
                         ),
-                        items: persons.map((p) => DropdownMenuItem(value: p, child: Text(p.fullName))).toList(),
-                        onChanged: (val) => setState(() => _selectedSender = val),
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          foregroundColor: Theme.of(context).colorScheme.secondary,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    IconButton.filledTonal(
-                      icon: const Icon(Icons.add),
-                      onPressed: () => context.pushNamed(AppRouteName.reportManagePersons),
-                      tooltip: 'Dodaj osobę',
+                    const SizedBox(height: 4),
+                    TextFormField(
+                      controller: _cityController,
+                      style: TextStyle(fontSize: fontSize),
+                      decoration: responsiveDecoration('Miejscowość', Icons.location_city),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _dateController,
+                      readOnly: true,
+                      style: TextStyle(fontSize: fontSize),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: Theme.of(context).colorScheme,
+                                dialogBackgroundColor: Theme.of(context).colorScheme.surface,
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _selectedDate = picked;
+                            _dateController.text = DateFormat('dd.MM.yyyy').format(picked);
+                          });
+                        }
+                      },
+                      decoration: responsiveDecoration('Data', Icons.calendar_today, suffixIcon: Icons.arrow_drop_down),
                     ),
                   ],
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<ReportPerson>(
-                  value: _selectedRecipient,
-                  decoration: const InputDecoration(
-                    labelText: 'Odbiorca',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person_outline),
-                  ),
-                  items: persons.map((p) => DropdownMenuItem(value: p, child: Text('${p.rank} ${p.lastName} (${p.position})'))).toList(),
-                  onChanged: (val) => setState(() => _selectedRecipient = val),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _cityController,
-                  decoration: const InputDecoration(
-                    labelText: 'Miejscowość',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.location_city),
-                  ),
                 ),
 
                 const SizedBox(height: 24),
@@ -321,6 +410,97 @@ class _ReportEditorPageState extends ConsumerState<ReportEditorPage> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildCollapsibleSection({
+    required String title,
+    required bool isExpanded,
+    required VoidCallback onToggle,
+    required List<Widget> children,
+  }) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onToggle,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.primaryColor,
+                      ),
+                    ),
+                  ),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isExpanded 
+                          ? theme.colorScheme.primaryContainer.withOpacity(0.3)
+                          : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          child: Text(
+                            isExpanded ? 'Zwiń' : 'Rozwiń',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        AnimatedRotation(
+                          turns: isExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOutBack,
+                          child: Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 20,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.fastOutSlowIn,
+          child: SizedBox(
+            width: double.infinity,
+            child: isExpanded
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: children,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+      ],
     );
   }
 

@@ -90,4 +90,32 @@ class FirestoreReportRepository {
   Future<void> deleteTemplate(String templateId) async {
     await _getTemplatesCollection().doc(templateId).delete();
   }
+
+  // --- Settings (City) ---
+
+  DocumentReference<Map<String, dynamic>> _getDataDocument() {
+    final uid = _userId;
+    if (uid == null) throw Exception('User not logged in');
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('reports')
+        .doc('data');
+  }
+
+  Future<String?> getLastCity() async {
+    try {
+      final doc = await _getDataDocument().get();
+      if (doc.exists) {
+        return doc.data()?['lastCity'] as String?;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> saveLastCity(String city) async {
+    await _getDataDocument().set({'lastCity': city}, SetOptions(merge: true));
+  }
 }

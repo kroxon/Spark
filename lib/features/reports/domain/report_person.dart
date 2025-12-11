@@ -3,6 +3,7 @@ class ReportPerson {
   final String firstName;
   final String lastName;
   final String rank; // stopień
+  final String title; // tytuł naukowy (opcjonalne)
   final String position; // stanowisko
   final String unit; // komórka organizacyjna (opcjonalne)
 
@@ -11,6 +12,7 @@ class ReportPerson {
     required this.firstName,
     required this.lastName,
     required this.rank,
+    this.title = '',
     required this.position,
     this.unit = '',
   });
@@ -21,6 +23,7 @@ class ReportPerson {
       'firstName': firstName,
       'lastName': lastName,
       'rank': rank,
+      'title': title,
       'position': position,
       'unit': unit,
     };
@@ -32,12 +35,13 @@ class ReportPerson {
       firstName: map['firstName'] ?? '',
       lastName: map['lastName'] ?? '',
       rank: map['rank'] ?? '',
+      title: map['title'] ?? '',
       position: map['position'] ?? '',
       unit: map['unit'] ?? '',
     );
   }
-  
-  String get fullName => '$rank $firstName $lastName';
+
+  String get fullName => '$rank $title $firstName $lastName'.replaceAll('  ', ' ').trim();
   
   ReportPerson copyWith({
     String? id,

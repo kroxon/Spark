@@ -43,7 +43,7 @@ Zadanie: Napisz lub popraw treść dokumentu zgodnie z intencją.
   Future<String> suggestTopic(String intent) async {
     if (intent.trim().isEmpty) return "";
     
-    final prompt = 'Zaproponuj krótki, formalny temat (tytuł) raportu dla następującej intencji: "$intent". Zwróć TYLKO temat.';
+    final prompt = 'Zaproponuj krótki, formalny temat (tytuł) raportu dla następującej intencji: "$intent". Temat powinien zaczynać się od małej litery "dot.: ...". Zwróć TYLKO temat.';
     
     try {
       final response = await _model.generateContent([Content.text(prompt)]);
